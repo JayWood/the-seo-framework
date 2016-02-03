@@ -24,7 +24,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Init {
+class AutoDescription_Init extends AutoDescription_Core {
 
 	/**
 	 * Allow object caching through a filter.
@@ -147,11 +147,8 @@ class AutoDescription_Init {
 		$functions = array();
 
 		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
+		 * Applies filters 'the_seo_framework_before_output' : array after functions output
+		 * Applies filters 'the_seo_framework_after_output' : array after functions output
 		 */
 		$filter_tag = $before ? 'the_seo_framework_before_output' : 'the_seo_framework_after_output';
 		$filter = (array) apply_filters( $filter_tag, $functions );
@@ -184,6 +181,7 @@ class AutoDescription_Init {
 	 * Applies filters the_seo_framework_pro 	: Adds content after
 	 *											: @param after
 	 *											: cached
+	 * Applies filters the_seo_framework_generator_tag : String generator tag content
 	 * Applies filters the_seo_framework_indicator : True to show indicator in html
 	 *
 	 * @uses hmpl_ad_description()
@@ -234,13 +232,6 @@ class AutoDescription_Init {
 
 			$robots = $this->robots();
 
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
 			$before = (string) apply_filters( 'the_seo_framework_pre', '' );
 
 			$before_actions = $this->header_actions( '', true );
@@ -289,23 +280,10 @@ class AutoDescription_Init {
 
 			$after_actions = $this->header_actions( '', false );
 
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
 			$after = (string) apply_filters( 'the_seo_framework_pro', '' );
 
 			/**
 			 * @see https://wordpress.org/plugins/generator-the-seo-framework/
-			 *
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
 			 */
 			$generator = (string) apply_filters( 'the_seo_framework_generator_tag', '' );
 
@@ -317,13 +295,6 @@ class AutoDescription_Init {
 			$this->object_cache_set( $cache_key, $output, 86400 );
 		}
 
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		$indicator = (bool) apply_filters( 'the_seo_framework_indicator', true );
 
 		$indicatorbefore = '';
@@ -359,8 +330,6 @@ class AutoDescription_Init {
 	 * Redirect singular page to an alternate URL.
 	 * Called outside html_output
 	 *
-	 * Applies filters the_seo_framework_allow_external_redirect
-	 *
 	 * @since 2.0.9
 	 */
 	public function custom_field_redirect() {
@@ -373,14 +342,7 @@ class AutoDescription_Init {
 
 		if ( $url ) {
 
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
-			$allow_external = (bool) apply_filters( 'the_seo_framework_allow_external_redirect', true );
+			$allow_external = $this->allow_external_redirect();
 
 			/**
 			 * If the URL is made relative, prevent scheme issues
@@ -401,53 +363,8 @@ class AutoDescription_Init {
 
 			wp_redirect( esc_url_raw( $url ), 301 );
 			exit;
-
 		}
 
-	}
-
-	/**
-	 * Object cache set wrapper.
-	 * Applies filters 'the_seo_framework_use_object_cache' : Disable object
-	 * caching for this plugin, when applicable.
-	 *
-	 * @param string $key The Object cache key.
-	 * @param mixed $data The Object cache data.
-	 * @param int $expire The Object cache expire time.
-	 * @param string $group The Object cache group.
-	 *
-	 * @since 2.4.3
-	 *
-	 * @return bool true on set, false when disabled.
-	 */
-	public function object_cache_set( $key, $data, $expire = 0, $group = 'the_seo_framework' ) {
-
-		if ( $this->use_object_cache )
-			return wp_cache_set( $key, $data, $group, $expire );
-
-		return false;
-	}
-
-	/**
-	 * Object cache get wrapper.
-	 * Applies filters 'the_seo_framework_use_object_cache' : Disable object
-	 * caching for this plugin, when applicable.
-	 *
-	 * @param string $key The Object cache key.
-	 * @param string $group The Object cache group.
-	 * @param bool $force Wether to force an update of the local cache.
-	 * @param bool $found Wether the key was found in the cache. Disambiguates a return of false, a storable value.
-	 *
-	 * @since 2.4.3
-	 *
-	 * @return mixed wp_cache_get if object caching is allowed. False otherwise.
-	 */
-	public function object_cache_get( $key, $group = 'the_seo_framework', $force = false, &$found = null ) {
-
-		if ( $this->use_object_cache )
-			return wp_cache_get( $key, $group, $force, $found );
-
-		return false;
 	}
 
 	/**
@@ -472,10 +389,9 @@ class AutoDescription_Init {
 	}
 
 	/**
-	 * Header CSS
+	 * After using explosions, you tend to roll away.
 	 *
 	 * @since 2.5.2
-	 * @return annoying front-end CSS.
 	 */
 	public function roll() {
 		?>

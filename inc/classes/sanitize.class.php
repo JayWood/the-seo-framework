@@ -426,13 +426,9 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		 *
 		 * @since 2.2.2
 		 *
-		 * @param array $default_filters Array with keys of sanitization types, and values of the filter function name as a callback
-		 *
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
+		 * Applies filters the_seo_framework_available_sanitizer_filters : array
+		 * 		@param array $default_filters Array with keys of sanitization types,
+		 *		and values of the filter function name as a callback
 		 */
 		return (array) apply_filters( 'the_seo_framework_available_sanitizer_filters', $default_filters );
 	}
@@ -847,14 +843,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 		if ( ! empty( $url ) ) {
 
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
-			$allow_external = (bool) apply_filters( 'the_seo_framework_allow_external_redirect', true );
+			$allow_external = $this->allow_external_redirect();
 
 			/**
 			 * Sanitize the redirect URL to only a relative link and removes first slash
@@ -935,11 +924,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		}
 
 		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
+		 * Applies filters the_seo_framework_301_noqueries : bool remove query args from 301
 		 */
 		$noqueries = (bool) apply_filters( 'the_seo_framework_301_noqueries', true );
 

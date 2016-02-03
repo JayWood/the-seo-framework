@@ -57,18 +57,11 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 *
 	 * Cache various variables
 	 *
-	 * @applies filters the_seo_framework_load_options : Allows the options page to be removed
+	 * Applies filters the_seo_framework_load_options : Boolean Allows the options page to be removed
 	 */
 	public function __construct() {
 		parent::__construct();
 
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		$load_options = (bool) apply_filters( 'the_seo_framework_load_options', true );
 
 		if ( $load_options ) {
@@ -99,7 +92,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	/**
 	 * Enqueue page defaults early.
 	 *
-	 * Applies filter `the_seo_framework_admin_page_defaults`.
+	 * Applies filter `the_seo_framework_admin_page_defaults` : Array
 	 * This filter adds i18n support for buttons and notices.
 	 *
 	 * @since 2.3.1
@@ -107,13 +100,6 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 */
 	public function enqueue_page_defaults() {
 
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		$this->page_defaults = (array) apply_filters(
 			'the_seo_framework_admin_page_defaults',
 			array(
@@ -141,16 +127,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$menu = array(
 			'pagetitle'		=> __( 'SEO Settings', 'autodescription' ),
 			'menutitle'		=> __( 'SEO', 'autodescription' ),
-
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
 			'capability'	=> (string) apply_filters( 'the_seo_framework_settings_capability', 'manage_options' ),
-
 			'menu_slug'		=> 'autodescription-settings',
 			'callback'		=> array( $this, 'admin' ),
 			'icon'			=> 'dashicons-search',
@@ -406,12 +383,6 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		 * Set any to false if you wish the meta box to be removed.
 		 *
 		 * @since 2.2.4
-		 *
-		 * New filters.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filters.
-		 * @since 2.3.5
 		 */
 		$title 			= (bool) apply_filters( 'the_seo_framework_title_metabox', true );
 		$description 	= (bool) apply_filters( 'the_seo_framework_description_metabox', true );
@@ -560,25 +531,9 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		//* Check settings cache
 		if ( isset( $settings_cache[$setting] ) ) {
 			//* Setting has been cached
-
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
 			$options = apply_filters( 'the_seo_framework_get_options', $settings_cache[$setting], $setting );
 		} else {
 			//* Set value and cache setting
-
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
 			$options = $settings_cache[$setting] = apply_filters( 'the_seo_framework_get_options', get_option( $setting ), $setting );
 		}
 

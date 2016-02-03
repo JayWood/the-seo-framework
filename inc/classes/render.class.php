@@ -84,7 +84,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( isset( $url_cache[$url][$page_id][$paged][$from_option] ) )
 			return $url_cache[$url][$page_id][$paged][$from_option];
 
-		$url_cache[$url][$page_id][$paged][$from_option] = $this->the_url( $url, $page_id, array( 'paged' => $paged, 'get_custom_field' => $from_option ) );
+		$url_cache[$url][$page_id][$paged][$from_option] = $this->the_url( $url, array( 'paged' => $paged, 'get_custom_field' => $from_option, 'id' => $page_id ) );
 
 		return $url_cache[$url][$page_id][$paged][$from_option];
 	}
@@ -106,7 +106,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( isset( $url_cache[$force_slash] ) )
 			return $url_cache[$force_slash];
 
-		$url_cache[$force_slash] = $this->the_url( '', '', array( 'home' => true, 'forceslash' => $force_slash ) );
+		$url_cache[$force_slash] = $this->the_url( '', array( 'home' => true, 'forceslash' => $force_slash ) );
 
 		return $url_cache[$force_slash];
 	}
@@ -741,7 +741,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function article_modified_time() {
 
 		// Don't do anything if it's not a page or post, or if both options are disabled
-		if ( ! is_singular() )
+		if ( ! $this->is_singular() )
 			return;
 
 		$is_front_page = is_front_page();
@@ -802,31 +802,6 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		$url = $this->the_url_from_cache();
-
-		/**
-		 * Applies filters the_seo_framework_canonical_force_scheme : Changes scheme.
-		 *
-		 * Accepted variables:
-		 * (string) 'https'		: 	Force https
-		 * (bool) true 			: 	Force https
-		 * (bool) false			: 	Force http
-		 * (string) 'http'		: 	Force http
-		 * (string) 'relative' 	:	Scheme relative
-		 * (void) null			: 	Do nothing
-		 *
-		 * @since 2.4.2
-		 */
-		$scheme_settings = apply_filters( 'the_seo_framework_canonical_force_scheme', null );
-
-		if ( isset( $scheme_settings ) ) {
-			if ( 'https' ===  $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {
-				$url = $this->set_url_scheme( $url, $scheme_settings );
-			} else if ( ! $scheme_settings ) {
-				$url = $this->set_url_scheme( $url, 'http' );
-			} else if ( $scheme_setting ) {
-				$url = $this->set_url_scheme( $url, 'https' );
-			}
-		}
 
 		return '<link rel="canonical" href="' . esc_attr( $url ) . '" />' . "\r\n";
 	}

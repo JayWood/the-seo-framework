@@ -370,13 +370,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 * @return array The SEO Framework Options
 	 */
 	protected function default_site_options( $args = array() ) {
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		return $this->default_site_options = wp_parse_args(
 			$args,
 			apply_filters(

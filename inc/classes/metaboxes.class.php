@@ -431,16 +431,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			);
 
 		/**
-		 * Filter robots_settings_tabs
+		 * Applies filters 'the_seo_framework_robots_settings_tabs' : array see $default_tabs
 		 *
 		 * Used to extend Social tabs
 		 * @since 2.2.4
-		 *
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
 		 */
 		$defaults = (array) apply_filters( 'the_seo_framework_robots_settings_tabs', $default_tabs, $args );
 
@@ -957,17 +951,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		);
 
 		/**
-		 * Filter social_settings_tabs
+		 * Applies filters the_seo_framework_social_settings_tabs : array see $default_tabs
 		 *
 		 * Used to extend Social tabs
-		 *
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
 		 */
-		$defaults = (array) apply_filters( 'the_seo_framework_social_settings_tabs', $default_tabs );
+		$defaults = (array) apply_filters( 'the_seo_framework_social_settings_tabs', $default_tabs, $args );
 
 		$tabs = wp_parse_args( $args, $defaults );
 
@@ -1366,17 +1354,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		);
 
 		/**
-		 * Applies filter knowledgegraph_settings_tabs
+		 * Applies filter knowledgegraph_settings_tabs : Array see $default_tabs
 		 *
 		 * Used to extend Knowledge Graph tabs
-		 *
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
 		 */
-		$defaults = (array) apply_filters( 'the_seo_framework_knowledgegraph_settings_tabs', $default_tabs );
+		$defaults = (array) apply_filters( 'the_seo_framework_knowledgegraph_settings_tabs', $default_tabs, $args );
 
 		$tabs = wp_parse_args( $args, $defaults );
 
@@ -1646,17 +1628,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			);
 
 			/**
-			 * Applies filter the_seo_framework_sitemaps_settings_tabs
+			 * Applies filters the_seo_framework_sitemaps_settings_tabs : array see $default_tabs
 			 *
 			 * Used to extend Knowledge Graph tabs
-			 *
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
 			 */
-			$defaults = (array) apply_filters( 'the_seo_framework_sitemaps_settings_tabs', $default_tabs );
+			$defaults = (array) apply_filters( 'the_seo_framework_sitemaps_settings_tabs', $default_tabs, $args );
 
 			$tabs = wp_parse_args( $args, $defaults );
 			$use_tabs = true;

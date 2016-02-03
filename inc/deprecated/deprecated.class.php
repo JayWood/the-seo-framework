@@ -205,4 +205,28 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 		return;
 	}
 
+
+
+	/**
+	 * Checks a theme's support for a given feature
+	 *
+	 * @since 2.2.5
+	 *
+	 * @global array $_wp_theme_features
+	 *
+	 * @param string $feature the feature being checked
+	 * @return bool
+	 *
+	 * Taken from WP Core, but it now returns true on title-tag support.
+	 *
+	 * @deprecated
+	 * @since 2.6.0
+	 */
+	public function current_theme_supports( $feature ) {
+
+		_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, $this->the_seo_framework_version( '2.6.0' ) );
+
+		return current_theme_supports();
+	}
+
 }

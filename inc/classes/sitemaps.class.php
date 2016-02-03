@@ -409,7 +409,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 								$content .= "	<url>\r\n";
 								// No need to use static vars.
-								$content .= '		<loc>' . $this->the_url( '', $page_id, array( 'get_custom_field' => false, 'external' => true, 'post' => $page ) ) . "</loc>\r\n";
+								$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $page, 'id' => $page_id ) ) . "</loc>\r\n";
 
 								// Keep it consistent. Only parse if page_lastmod is true.
 								if ( $page_lastmod && ( ! $page_is_front || ( $home_lastmod && $page_is_front ) ) ) {
@@ -477,7 +477,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 							$content .= "	<url>\r\n";
 							// No need to use static vars
-							$content .= '		<loc>' . $this->the_url( '', $post_id, array( 'get_custom_field' => false, 'external' => true, 'post' => $post ) ) . "</loc>\r\n";
+							$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $post, 'id' => $post_id ) ) . "</loc>\r\n";
 
 							// Keep it consistent. Only parse if page_lastmod is true.
 							if ( $post_lastmod ) {
@@ -539,7 +539,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 							$content .= "	<url>\r\n";
 							//* No need to use static vars
-							$content .= '		<loc>' . $this->the_url( '', $post_id, array( 'get_custom_field' => false, 'external' => true, 'post' => $ctp_post ) ) . "</loc>\r\n";
+							$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $ctp_post, 'id' => $post_id ) ) . "</loc>\r\n";
 
 							//* Keep it consistent. Only parse if page_lastmod is true.
 							if ( $post_lastmod ) {

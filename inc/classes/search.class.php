@@ -23,7 +23,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Search extends AutoDescription_Generate {
+class AutoDescription_Search extends AutoDescription_Generate_Author {
 
 	/**
 	 * Constructor, load parent constructor

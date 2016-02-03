@@ -48,13 +48,6 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 */
 	public function init_columns() {
 
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		$show_seo_column = (bool) apply_filters( 'the_seo_framework_show_seo_column', true );
 
 		if ( $show_seo_column && $this->post_type_supports_custom_seo() ) {
@@ -287,6 +280,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 					$term_name = $post;
 				}
+
 				//* Fetch from cache.
 				$post = $term_name;
 
@@ -303,12 +297,6 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 			/**
 			 * Square the SEO Bar.
-			 *
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
 			 */
 			$square_it = (bool) apply_filters( 'the_seo_framework_seo_bar_squared', false );
 			$square = $square_it ? ' square' : '';
@@ -559,19 +547,26 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 				$ind_notice = $index_i18n . ' ' . sprintf( __( "%s is being indexed.", 'autodescription' ), $post );
 				$ind_class = $good;
 
+				$but_i18n = _x( 'But', 'But there are...', 'autodescription' );
+				$and_i18n = _x( 'And', 'And there are...', 'autodescription' );
+
 				/**
 				 * Get noindex site option
 				 *
 				 * @since 2.2.2
 				 */
 				if ( $this->get_option( 'site_noindex' ) ) {
-					$ind_notice .= '<br />' . sprintf( __( "But you've disabled indexing for the whole site.", 'autodescription' ), $post );
+					$ind_notice .= '<br />' . __( "But you've disabled indexing for the whole site.", 'autodescription' );
 					$ind_class = $unknown;
+					$ind_but = true;
 				}
 
 				if ( ! get_option( 'blog_public' ) ) {
-					$ind_notice .= '<br />' . sprintf( __( "But the blog isn't set to public. This means WordPress disencourages indexing.", 'autodescription' ), $post );
+					$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
+					/* translators: %s = But or And */
+					$ind_notice .= '<br />' . sprintf( __( "%s the blog isn't set to public. This means WordPress disencourages indexing.", 'autodescription' ), $but_and );
 					$ind_class = $unknown;
+					$ind_but = true;
 				}
 
 				/**
@@ -580,7 +575,10 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 				 * @since 2.2.8
 				 */
 				if ( $is_term && isset( $term->count ) && $term->count === (int) 0 ) {
-					$ind_notice .= '<br />' . sprintf( __( "But there are no posts in this %s. Therefore indexing has been disabled.", 'autodescription' ), $post );
+					$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
+
+					/* translators: %s = But or And */
+					$ind_notice .= '<br />' . sprintf( __( "%s there are no posts in this term. Therefore indexing has been disabled.", 'autodescription' ), $but_and );
 					$ind_class = $unknown;
 				}
 

@@ -20,7 +20,6 @@
  * Class AutoDescription_Detect
  *
  * Detects other plugins and themes
- * Returns booleans
  *
  * @since 2.1.6
  */
@@ -283,12 +282,6 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		/**
 		 * Use this filter to adjust plugin tests.
-		 *
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
 		 */
 		$plugins_check = (array) apply_filters(
 			'the_seo_framework_detect_seo_plugins',
@@ -532,12 +525,12 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( ! $use_cache ) {
 			//* Don't use cache.
 
-			if ( is_string( $features ) && ( $this->current_theme_supports( $features ) ) )
+			if ( is_string( $features ) && ( current_theme_supports( $features ) ) )
 				return true;
 
 			if ( is_array( $features ) ) {
 				foreach ( $features as $feature ) {
-					if ( $this->current_theme_supports( $feature ) ) {
+					if ( current_theme_supports( $feature ) ) {
 						return true;
 						break;
 					}
@@ -568,14 +561,14 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		//* Setup cache values
 		if ( is_string( $features ) ) {
-			if ( $this->current_theme_supports( $features ) ) {
+			if ( current_theme_supports( $features ) ) {
 				return $cache[$features] = true;
 			} else {
 				return $cache[$features] = false;
 			}
 		} else if ( is_array( $features ) ) {
 			foreach ( $features as $feature ) {
-				if ( $this->current_theme_supports( $feature ) ) {
+				if ( current_theme_supports( $feature ) ) {
 					return $cache[$feature] = true;
 					break;
 				} else {
@@ -593,99 +586,31 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	}
 
 	/**
-	 * Checks a theme's support for a given feature
+	 * Checks a theme's support for title-tag.
 	 *
-	 * @since 2.2.5
+	 * @since 2.6.0
+	 * @staticvar bool $supports
 	 *
 	 * @global array $_wp_theme_features
 	 *
-	 * @param string $feature the feature being checked
 	 * @return bool
-	 *
-	 * Taken from WP Core, but it now returns true on title-tag support.
-	 *
-	 * @todo rework, it's a mess.
 	 */
-	public function current_theme_supports( $feature ) {
+	public function current_theme_supports_title_tag() {
+
+		static $supports = null;
+
+		if ( isset( $supports ) )
+			return $supports;
+
 		global $_wp_theme_features;
 
-		//* SEO Framework Edits. {
-		if ( 'custom-header-uploads' == $feature )
-			return $this->detect_theme_support( 'custom-header', 'uploads' );
-		//* } End SEO Framework Edits.
+		if ( ! isset( $_wp_theme_features['title-tag'] ) )
+			return $supports = false;
 
-		if ( ! isset( $_wp_theme_features[$feature] ) )
-			return false;
+		if ( true === $_wp_theme_features['title-tag'] )
+			return $supports = true;
 
-		if ( 'title-tag' == $feature ) {
-
-			//* SEO Framework Edits. {
-
-				//* The SEO Framework unique 'feature'.
-				if ( true === $_wp_theme_features[$feature] )
-					return true;
-
-				//* We might as well return false now preventing the debug_backtrace();
-				return false;
-
-			//* } End SEO Framework Edits.
-
-			// Don't confirm support unless called internally.
-			$trace = debug_backtrace();
-
-			if ( ! in_array( $trace[1]['function'], array( '_wp_render_title_tag', 'wp_title' ) ) ) {
-				return false;
-			}
-		}
-
-		// If no args passed then no extra checks need be performed
-		if ( func_num_args() <= 1 )
-			return true;
-
-		$args = array_slice( func_get_args(), 1 );
-
-		switch ( $feature ) {
-			case 'post-thumbnails':
-				// post-thumbnails can be registered for only certain content/post types by passing
-				// an array of types to add_theme_support(). If no array was passed, then
-				// any type is accepted
-				if ( true === $_wp_theme_features[$feature] )  // Registered for all types
-					return true;
-				$content_type = $args[0];
-				return in_array( $content_type, $_wp_theme_features[$feature][0] );
-
-			case 'html5':
-			case 'post-formats':
-				// specific post formats can be registered by passing an array of types to
-				// add_theme_support()
-
-				// Specific areas of HTML5 support *must* be passed via an array to add_theme_support()
-
-				$type = $args[0];
-				return in_array( $type, $_wp_theme_features[$feature][0] );
-
-			case 'custom-header':
-			case 'custom-background' :
-				// specific custom header and background capabilities can be registered by passing
-				// an array to add_theme_support()
-				$header_support = $args[0];
-				return ( isset( $_wp_theme_features[$feature][0][$header_support] ) && $_wp_theme_features[$feature][0][$header_support] );
-		}
-
-		/**
-		 * Filter whether the current theme supports a specific feature.
-		 *
-		 * The dynamic portion of the hook name, `$feature`, refers to the specific theme
-		 * feature. Possible values include 'post-formats', 'post-thumbnails', 'custom-background',
-		 * 'custom-header', 'menus', 'automatic-feed-links', 'title-tag' and 'html5'.
-		 *
-		 * @since WP 3.4.0
-		 *
-		 * @param bool   true     Whether the current theme supports the given feature. Default true.
-		 * @param array  $args    Array of arguments for the feature.
-		 * @param string $feature The theme feature.
-		 */
-		return apply_filters( "current_theme_supports-{$feature}", true, $args, $_wp_theme_features[$feature] );
+		return $supports = false;
 	}
 
 	/**
@@ -722,7 +647,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		static $seplocation_output = null;
 
 		if ( ! isset( $title_output ) || ! isset( $sep_output ) || ! isset( $seplocation_output ) ) {
-			//* Initiate caches.
+			//* Initiate caches, set up variables.
 
 			if ( '' === $title )
 				$title = 'empty';
@@ -738,6 +663,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 			$seplocation_output = ! isset( $seplocation ) ? 'notset' : esc_attr( $seplocation );
 		}
 
+		//* Echo the HTML comment.
 		if ( true === $output )
 			echo '<!-- Title diw: "' . $title_output . '" : "' . $sep_output . '" : "' . $seplocation_output . '" -->' . "\r\n";
 
@@ -805,6 +731,8 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 * @staticvar array $is_page
 	 *
 	 * @since 2.3.1
+	 *
+	 * @return bool true if post type is a page or post
 	 */
 	public function is_post_type_page( $type ) {
 
@@ -816,86 +744,13 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		$post_page = (array) get_post_types( array( 'public' => true ) );
 
 		foreach ( $post_page as $screen ) {
-			if ( $type == $screen ) {
+			if ( $type === $screen ) {
 				return $is_page[$type] = true;
 				break;
 			}
 		}
 
 		return $is_page[$type] = false;
-	}
-
-	/**
-	 * Get the real page ID, also depending on CPT.
-	 *
-	 * @param bool $use_cache Wether to use the cache or not.
-	 *
-	 * @staticvar int $id the ID.
-	 *
-	 * @since 2.5.0
-	 */
-	public function get_the_real_ID( $use_cache = true ) {
-
-		$is_admin = is_admin();
-
-		//* Never use cache in admin. Only causes bugs.
-		$use_cache = $is_admin ? false : $use_cache;
-
-		if ( $use_cache ) {
-			static $id = null;
-
-			if ( isset( $id ) )
-				return $id;
-		}
-
-		if ( ! $is_admin )
-			$id = $this->check_the_real_ID();
-
-		if ( ! isset( $id ) || empty( $id ) ) {
-			$id = get_queried_object_id();
-
-			if ( empty( $id ) )
-				$id = get_the_ID();
-		}
-
-		return $id;
-	}
-
-	/**
-	 * Get the real ID from plugins.
-	 *
-	 * Only works in front-end as there's no need to check for inconsistent
-	 * functions for the current ID in the admin.
-	 *
-	 * @since 2.5.0
-	 *
-	 * Applies filters the_seo_framework_real_id : The Real ID for plugins on front-end.
-	 *
-	 * @staticvar int $cached_id The cached ID.
-	 *
-	 * @return int|empty the ID.
-	 */
-	public function check_the_real_ID() {
-
-		static $cached_id = null;
-
-		if ( isset( $cached_id ) )
-			return $cached_id;
-
-		$id = '';
-
-		if ( $this->is_wc_shop() ) {
-			//* WooCommerce Shop
-			$id = get_option( 'woocommerce_shop_page_id' );
-		} else if ( function_exists( 'is_anspress' ) && is_anspress() ) {
-			//* Get AnsPress Question ID.
-			if ( function_exists( 'get_question_id' ) )
-				$id = get_question_id();
-		}
-
-		$cached_id = (int) apply_filters( 'the_seo_framework_real_id', $id );
-
-		return $cached_id;
 	}
 
 	/**
@@ -977,7 +832,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		$sof = (string) get_option( 'show_on_front' );
 
-		if ( $sof === 'page' ) {
+		if ( 'page' === $sof ) {
 			$pof = (int) get_option( 'page_on_front' );
 
 			if ( isset( $o_id ) ) {
@@ -1025,7 +880,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( ! isset( $get_locale ) )
 			$get_locale = get_locale();
 
-		return $locale[$str] = strpos( $get_locale, $str ) !== false ? true : false;
+		return $locale[$str] = false !== strpos( $get_locale, $str ) ? true : false;
 	}
 
 	/**
@@ -1178,12 +1033,12 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 */
 	public function is_singular( $id = 0 ) {
 
-		if ( 0 === $id )
-			$id = $this->get_the_real_ID();
-
 		//* WP_Query functions require loop, do alternative check.
 		if ( is_admin() )
-			return $this->is_singular_admin( $id );
+			return $this->is_singular_admin();
+
+		if ( 0 === $id )
+			$id = $this->get_the_real_ID();
 
 		$cache = array();
 
@@ -1223,7 +1078,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	}
 
 	/**
-	 * Calculates wether the theme is outputting the title correctly.
+	 * Determines wether the theme is outputting the title correctly based on transient.
 	 *
 	 * @since 2.5.2
 	 *
