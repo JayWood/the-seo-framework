@@ -248,10 +248,12 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * @param bool $escape Escape output when true.
 	 * @param bool $_escape deprecated.
 	 *
+	 * @staticvar string $title
+	 *
 	 * Gained its own function.
 	 * @since 2.3.3
 	 *
-	 * @return string output The description.
+	 * @return string $output The description.
 	 */
 	public function generate_description_from_id( $args = array(), $escape = true, $_escape = 'depr' ) {
 
@@ -355,8 +357,11 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			}
 		}
 
-		//* Fetch Description Title.
-		$title = $this->generate_description_title( $args['id'], $term, $page_on_front );
+		//* Fetch Description Title. Cache it.
+		static $title = null;
+		if ( ! isset( $title ) )
+			$title = $this->generate_description_title( $args['id'], $term, $page_on_front );
+
 		/* translators: Front-end output. */
 		$on = _x( 'on', 'Placement. e.g. Post Title "on" Blog Name', 'autodescription' );
 		$blogname = $this->get_blogname();
@@ -396,7 +401,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				 *
 				 * 151 will count for the added (single char) ... and the separator + 2 spaces around the separator: makes 155
 				 *
-				 * Default to 200 when $args['social']
+				 * Default to 200 when $args['social'] as there are no additions.
 				 */
 				$max_char_length_normal = $description_additions ? (int) 149 - mb_strlen( html_entity_decode( $title . $on . $blogname ) ) : (int) 151 - mb_strlen( html_entity_decode( $title ) );
 				$max_char_length_social = 200;
@@ -434,7 +439,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				 */
 				$excerpt_exists = ! empty( $excerpt['social'] ) ? true : false;
 
-				if ( $excerpt_exists && $description_additions ) {
+				if ( $excerpt_exists ) {
 					$description = $excerpt['social'];
 				} else {
 					$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
@@ -442,10 +447,12 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			} else {
 				$excerpt_exists = ! empty( $excerpt['normal'] ) ? true : false;
 
-				if ( $excerpt_exists && $description_additions ) {
-					$description = (string) sprintf( '%s %s %s %s %s', $title, $on, $blogname, $sep, $excerpt['normal'] );
-				} else if ( $excerpt_exists ) {
-					$description = (string) sprintf( '%s %s %s', $title, $sep, $excerpt['normal'] );
+				if ( true === $excerpt_exists ) {
+					if ( $description_additions ) {
+						$description = (string) sprintf( '%s %s %s %s %s', $title, $on, $blogname, $sep, $excerpt['normal'] );
+					} else {
+						$description = (string) sprintf( '%s %s %s', $title, $sep, $excerpt['normal'] );
+					}
 				} else {
 					//* We still add the additions when no excerpt has been found.
 					// i.e. home page or empty/shortcode filled page.

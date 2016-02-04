@@ -24,6 +24,9 @@
  */
 class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 
+	/**
+	 * Constructor. Load parent constructor.
+	 */
 	public function __construct() {
 		parent::__construct();
 	}
@@ -204,8 +207,6 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 
 		return;
 	}
-
-
 
 	/**
 	 * Checks a theme's support for a given feature

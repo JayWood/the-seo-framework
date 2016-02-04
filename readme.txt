@@ -38,6 +38,13 @@ The SEO Framework makes sure your Website's SEO is always up-to-date without any
 
 *Read **Transferring SEO Content using SEO Data Transporter** below for SEO plugin transitioning instructions.*
 
+= Unbranded, Free and Professional =
+This plugin is unbranded! This even means that we don't even put the name "The SEO Framework" anywhere within the WordPress interface.
+Like as if this plugin is part of WordPress. No ads, no nags.
+The small HTML comment can be easily disabled with the use of a filter.
+
+Nobody has to know about the tools you've used to create your or someone else's website. A clean interface, for everyone.
+
 = Numbers don't lie =
 Optimizing SEO is a fundamental process for any website. So we try to be non-intrusive with The SEO Framework.
 The SEO Framework is byte and process optimized on PHP level, with each update the optimization is improved when possible.
@@ -79,7 +86,6 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 * Prevents canonical errors with categories, pages, subdomains and multisite domain mapping.
 * Disables 404 pages and empty categories from being indexed, even if they don't send a 404 response.
 * Automatically notifies Google, Bing and Yahoo on Post or Page update when sitemaps are enabled.
-* Prevents duplicated content by disabling
 
 **This plugin allows you to manually set these values for each post, page, supported CPT and term:**
 
@@ -137,12 +143,12 @@ The output will be stored for each page, if you've edited a page the page output
 
 **Supported Caches:**
 
-* Server-level Opcode (optimized)
-* Staticvar functions (prevents running code twice or more)
-* Staticvar class (instead of globals, prevents constructors running multiple times)
-* Objects for database calls
+* Server-level Opcode (optimized).
+* Staticvar functions (prevents running code twice or more).
+* Staticvar class (instead of globals, prevents constructors running multiple times).
+* Objects for database calls.
 * Transients for process intensive operations or persisting communication with front-and back end.
-* CDN for Open Graph and Twitter images
+* CDN for Open Graph and Twitter images.
 * HTML and script Minification caching as well as Database caching are also supported.
 
 = Compatibility =
@@ -365,7 +371,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * TODO Added: Article modified time can now be
 * TODO Added: Per page title additions options (reverse of global settings with doing it right listener).
 * TODO Added: Timing dropdown options for the sitemap. Now you can select how the time is output. Default Date + Time for new installations, data for old.
+* TODO Added: Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
+* TODO Added: Removal commas if the excerpt ends with one in the description.
 * Added: Article Modified Time now also works for WooCommerce. TODO test and compare
+* Updated: Several sentences to have a better English structure to what they do.
+* TODO Updated: .POT translation file.
 * Reworked: URL generation.
 * Reworked: WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 * Reworked: WPML shortlink URL now also redirect correctly when visited in special scenarios.
@@ -374,6 +384,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Removed: Shortlink URL from home page, as it's quite useless there.
 * Fixed: WPML query args canonical pagination links.
 * Fixed: WPML URL base structure check was done wrongfully, the canonical URL's are now fixed for multilingual pages.
+* Fixed: When description additions are disabled, the social description is no longer "title on blogname".
 * Fixed: Incorrect title counter length on all posts and pages when the home page title tagline has been removed. This issue was first encountered in version 2.5.0.
 * Fixed: The removal of title additions now correctly reflect on the title counter length when JavaScript is disabled.
 * Fixed: The removal of title additions are now also reflecting its setting on the placeholders within categories and tags.
@@ -433,6 +444,10 @@ http://testmijnphp7.nl/wp-admin/term.php?taxonomy=category&term_id=76&post_type=
 * Objective translations for grammatically gender noun types like "this post" (male in Dutch) and "this page" (genderless in Dutch) within sentences which are fetched dynamically (like "Product" and "ProductTag"  for WooCommerce) can't currently be translated correctly.
 * Therefore, I've exchanged these types of sentences without losing understanding.
 * Small changes within translations happen over time and I try to reduce it when to only when nessecary, as this is an ongoing project you can expect continous improvements wherever possible. Translating WordPress and its plugins are a team effort :).
+* Other small changes include conversion of WordPress slang to real English. Like "Paged" to "Paginated".
+* Over time, inconsitencies have been created with the language used within this plugin. If you still find any, please notify me through the support forums and I'll address them.
+* Thanks @pidengmor for many (over 30) linguistic improvements, they're really appreciated! :)
+* I also want to make a big shout out to all the other translators who have contributed to this plugin! <3
 
 = 2.5.2.1 - Unforeseen Improvements =
 

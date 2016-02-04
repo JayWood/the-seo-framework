@@ -882,7 +882,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 			if ( $url && $url != untrailingslashit( $scheme . '://' . $current_blog->domain . $current_blog->path ) ) {
 				if ( ( defined( 'VHOST' ) && VHOST != 'yes' ) || ( defined( 'SUBDOMAIN_INSTALL' ) && SUBDOMAIN_INSTALL == false ) ) {
-					$request_uri = str_replace( $current_blog->path, '/', $_SERVER[ 'REQUEST_URI' ] );
+					$request_uri = str_replace( $current_blog->path, '/', $_SERVER['REQUEST_URI'] );
 				}
 
 				$url = trailingslashit( $url . $request_uri ) . ltrim( $path, '\/ ' );
@@ -1076,15 +1076,13 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			if ( $i >= (int) 2 ) {
 				//* Fix adding pagination url.
 
-				//* Cache query arg
+				//* Parse query arg and put in var.
 				$query_arg = parse_url( $urlfromcache, PHP_URL_QUERY );
-
-				if ( isset( $query_arg ) ) {
+				if ( isset( $query_arg ) )
 					$urlfromcache = str_replace( '?' . $query_arg, '', $urlfromcache );
-				}
 
 				// Calculate current page number.
-				$int_current = 'next' === $pos ? $i -1 : $i + 1;
+				$int_current = 'next' === $pos ? ( $i - 1 ) : ( $i + 1 );
 				$string_current = (string) $int_current;
 
 				if ( $i !== (int) 1 ) {
@@ -1096,20 +1094,24 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 				}
 			}
 
-			if ( '' === $this->permalink_structure() || in_array( $post->post_status, array( 'draft', 'pending' ) ) ) {
+			if ( '' === $this->permalink_structure() || in_array( $post->post_status, array( 'draft', 'auto-draft', 'pending' ) ) ) {
 				$url = add_query_arg( 'page', $i, $urlfromcache );
 			} else if ( $this->is_static_frontpage( $post->ID ) ) {
 				global $wp_rewrite;
 
 				$url = trailingslashit( $urlfromcache ) . user_trailingslashit( "$wp_rewrite->pagination_base/" . $i, 'single_paged' );
+
+				//* Add back query arg if removed.
+				if ( isset( $query_arg ) )
+					$url = $url . '?' . $query_arg;
 			} else {
 				$url = trailingslashit( $urlfromcache ) . user_trailingslashit( $i, 'single_paged' );
+
+				//* Add back query arg if removed.
+				if ( isset( $query_arg ) )
+					$url = $url . '?' . $query_arg;
 			}
 		}
-
-		//* Add back query arg if removed.
-		if ( isset( $query_arg ) )
-			$url = $url . '?' . $query_arg;
 
 		return $url;
 	}

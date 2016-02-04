@@ -564,7 +564,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 				if ( ! get_option( 'blog_public' ) ) {
 					$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
 					/* translators: %s = But or And */
-					$ind_notice .= '<br />' . sprintf( __( "%s the blog isn't set to public. This means WordPress disencourages indexing.", 'autodescription' ), $but_and );
+					$ind_notice .= '<br />' . sprintf( __( "%s the blog isn't set to public. This means WordPress discourages indexing.", 'autodescription' ), $but_and );
 					$ind_class = $unknown;
 					$ind_but = true;
 				}
@@ -578,7 +578,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 					$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
 
 					/* translators: %s = But or And */
-					$ind_notice .= '<br />' . sprintf( __( "%s there are no posts in this term. Therefore indexing has been disabled.", 'autodescription' ), $but_and );
+					$ind_notice .= '<br />' . sprintf( __( "%s there are no posts in this term. Therefore, indexing has been disabled.", 'autodescription' ), $but_and );
 					$ind_class = $unknown;
 				}
 

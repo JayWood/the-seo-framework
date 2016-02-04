@@ -468,7 +468,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		if ( $sitemap )
 			add_meta_box(
 				'autodescription-sitemap-settings',
-				__( 'Sitemaps Settings', 'autodescription' ),
+				__( 'Sitemap Settings', 'autodescription' ),
 				array( $this, 'sitemaps_metabox' ),
 				$this->pagehook,
 				'main'

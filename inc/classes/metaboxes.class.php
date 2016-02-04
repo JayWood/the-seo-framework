@@ -249,9 +249,9 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<p id="title-additions-toggle">
 				<label for="<?php $this->field_id( 'title_rem_additions' ); ?>">
 					<input type="checkbox" name="<?php $this->field_name( 'title_rem_additions' ); ?>" id="<?php $this->field_id( 'title_rem_additions' ); ?>" <?php $this->is_conditional_checked( 'title_rem_additions' ); ?> value="1" <?php checked( $this->get_field_value( 'title_rem_additions' ) ); ?> />
-					<?php _e( 'Remove blogname from title?', 'autodescription' ); ?>
+					<?php _e( 'Remove Blogname from title?', 'autodescription' ); ?>
 				</label>
-				<span title="<?php _e( 'This might decouple your posts and pages from the rest of the of the website.', 'autodescription' ); ?>">[?]</span>
+				<span title="<?php _e( 'This might decouple your posts and pages from the rest of the website.', 'autodescription' ); ?>">[?]</span>
 			</p>
 			<span class="description"><?php _e( 'Only use this option if you are aware of its SEO effects.', 'autodescription' ); ?></span>
 			<span class="description"><?php echo $home_page_has_option; ?></span>
@@ -340,7 +340,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p id="description-onblogname-toggle">
 			<label for="<?php $this->field_id( 'description_blogname' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'description_blogname' ); ?>" id="<?php $this->field_id( 'description_blogname' ); ?>" <?php $this->is_conditional_checked( 'description_blogname' ); ?> value="1" <?php checked( $this->get_field_value( 'description_blogname' ) ); ?> />
-				<?php _e( 'Add blogname to automated description?', 'autodescription' ); ?>
+				<?php _e( 'Add Blogname to automated description?', 'autodescription' ); ?>
 			</label>
 		</p>
 		<?php
@@ -375,7 +375,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			'noindex' =>  array(
 				'value' => 'noindex',
 				'name' 	=> __( 'NoIndex', 'autodescription'),
-				'desc' 	=> __( 'These options prevent indexing of the selected archives. If you enable this, the selected archives will be removed from search engine result pages.', 'autodescription' ),
+				'desc' 	=> __( 'These options prevent indexing of the selected archives. If you enable this, the selected archives will be removed from Search Engine result pages.', 'autodescription' ),
 			),
 			'nofollow' =>  array(
 				'value' => 'nofollow',
@@ -473,8 +473,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<hr>
 
-		<h4><?php printf( __( 'Paged Archive Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php printf( __( "Indexing the second or later page of any archive might cause duplication errors, search engines look down upon them. Therefore it's recommended to disable indexing of those pages.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
+		<h4><?php printf( __( 'Paginated Archive Settings', 'autodescription' ) ); ?></h4>
+		<p><span class="description"><?php printf( __( "Indexing the second or later page of any archive might cause duplication errors. Search engines look down upon them; therefore, it's recommended to disable indexing of those pages.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'paged_noindex' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'paged_noindex' ); ?>" id="<?php $this->field_id( 'paged_noindex' ); ?>" <?php $this->is_conditional_checked( 'paged_noindex' ); ?> value="1" <?php checked( $this->get_field_value( 'paged_noindex' ) ); ?> />
@@ -503,10 +503,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<?php
 			foreach ( $types as $type => $i18n ) {
-				if ( $type == 'site' || $type == 'attachment' || $type == 'search' ) {
+				if ( 'site' === $type || 'attachment' === $type || 'search' === $type ) {
 
 					//* Add <hr> if it's 'site'
-					echo $type == 'site' ? '<hr>' : '';
+					echo ( 'site' === $type ) ? '<hr>' : '';
 
 					?>
 					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>">
@@ -764,7 +764,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		}
 
 		?>
-		<p><span class="description"><?php printf( __( 'These settings will take precedence over the settings set within the home page page edit screen, if any.', 'autodescription' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( 'These settings will take precedence over the settings set within the Home Page edit screen, if any.', 'autodescription' ) ); ?></span></p>
 
 		<hr>
 
@@ -877,7 +877,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<label for="<?php $this->field_id( 'homepage_noarchive' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_noarchive' ); ?>" id="<?php $this->field_id( 'homepage_noarchive' ); ?>" <?php $this->is_conditional_checked( 'homepage_noarchive' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_noarchive' ) ); ?> />
 				<?php printf( __( 'Apply %s to the %s?', 'autodescription' ), $this->code_wrap( 'noarchive' ), $home_page_i18n ); ?>
-				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy this page', 'autodescription' ) ) ?>">[?]</a>
+				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noarchive_post ? $checked_home : ''; ?>
 			</label>
 		</p>
@@ -885,7 +885,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<?php
 		// Add notice if any options are checked on the post.
 		if ( $noindex_post || $nofollow_post || $noarchive_post ) {
-			?><p><span class="description"><?php printf( __( 'Note: If any of these options are unchecked, but are checked on the homepage, they will be output regardless.', 'autodescription' ) ); ?></span></p><?php
+			?><p><span class="description"><?php printf( __( 'Note: If any of these options are unchecked, but are checked on the Home Page, they will be outputted regardless.', 'autodescription' ) ); ?></span></p><?php
 		}
 
 		do_action( 'the_seo_framework_homepage_metabox_after' );
@@ -986,7 +986,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<hr>
 
-		<h4><?php _e( 'Output Meta Tags', 'autodescription' ); ?></h4>
+		<h4><?php _e( 'Social Meta Tags Settings', 'autodescription' ); ?></h4>
 		<p><span class="description"><?php printf( __( 'Output various meta tags for social site integration, among other 3rd party services.', 'autodescription' ) ); ?></span></p>
 
 		<hr>
@@ -1000,7 +1000,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<?php
 			if ( $this->has_og_plugin() ) {
 				?>
-				<p class="description"><?php _e( 'Note: Another Open Graph plugin has been detected. This means not all Open Graph meta tags will be output.', 'autodescription' ); ?></p>
+				<p class="description"><?php _e( 'Note: Another Open Graph plugin has been detected. This means not all Open Graph meta tags will be outputted.', 'autodescription' ); ?></p>
 				<?php
 			}
 			?>
@@ -1061,7 +1061,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		?>
 		<h4><?php _e( 'Default Facebook Integration Settings', 'autodescription' ); ?></h4>
 		<p><span class="description"><?php printf( __( 'Facebook post sharing works mostly through Open Graph. However, you can also link your Business and Personal Facebook pages, among various other options.', 'autodescription' ) ); ?></span></p>
-		<p><span class="description"><?php printf( __( 'When these options are filled in, Facebook might link your Facebook Profiles to be followed and liked when your post or page is shared.', 'autodescription' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( 'When these options are filled in, Facebook might link your Facebook profile to be followed and liked when your post or page is shared.', 'autodescription' ) ); ?></span></p>
 
 		<hr>
 
@@ -1181,9 +1181,9 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$home_i18n = __( 'Home Page', 'autodescription' );
 
 		?>
-		<h4><?php printf( __( 'Post Dates Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php _e( "Some Search Engines output the publishing date and modified date next to the search results. These help search engines find new content and could impact SEO value.", 'autodescription' ); ?></span></p>
-		<p><span class="description"><?php _e( "It's recommended on posts, it's not recommended on pages unless you modify or create new pages frequently.", 'autodescription' ); ?></span></p>
+		<h4><?php printf( __( 'Post Date Settings', 'autodescription' ) ); ?></h4>
+		<p><span class="description"><?php _e( "Some Search Engines output the publishing date and modified date next to the search results. These help Search Engines find new content and could impact the SEO value.", 'autodescription' ); ?></span></p>
+		<p><span class="description"><?php _e( "It's recommended on posts, but it's not recommended on pages unless you modify or create new pages frequently.", 'autodescription' ); ?></span></p>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'post_publish_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'post_publish_time' ); ?>" id="<?php $this->field_id( 'post_publish_time' ); ?>" <?php $this->is_conditional_checked( 'post_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_publish_time' ) ); ?> />
@@ -1210,7 +1210,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<h4><?php printf( __( 'Home Page', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php _e( "Because you only publish the home page once, Search Engines might think your site is outdated. This can be prevented by disabling the following options.", 'autodescription' ); ?></span></p>
+		<p><span class="description"><?php _e( "Because you only publish the Home Page once, Search Engines might think your site is outdated. This can be prevented by disabling the following options.", 'autodescription' ); ?></span></p>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'home_publish_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'home_publish_time' ); ?>" id="<?php $this->field_id( 'home_publish_time' ); ?>" <?php $this->is_conditional_checked( 'home_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_publish_time' ) ); ?> />
@@ -1236,7 +1236,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php printf( __( 'Link Relationship Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php _e( "Some Search Engines look for relations between content of your pages. If you have multiple pages for a single Post or Page, or have archives indexed, this option will help Search Engines look for the right page to display in the Search Results.", 'autodescription' ); ?></span></p>
+		<p><span class="description"><?php _e( "Some Search Engines look for relations between the content of your pages. If you have multiple pages for a single Post or Page, or have archives indexed, this option will help Search Engines look for the right page to display in the Search Results.", 'autodescription' ); ?></span></p>
 		<p><span class="description"><?php _e( "It's recommended to turn this option on for better SEO consistency and to prevent duplicated content errors.", 'autodescription' ); ?></span></p>
 		<hr>
 		<p class="fields">
@@ -1289,7 +1289,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p>
 			<label for="<?php $this->field_id( 'bing_verification' ); ?>">
 				<strong><?php _e( "Bing Webmaster Verification Code", 'autodescription' ); ?></strong>
-				<a href="<?php echo esc_url( $bing_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get Bing Verification Code', 'autodescription' ); ?>">[?]</a>
+				<a href="<?php echo esc_url( $bing_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get the Bing Verification Code', 'autodescription' ); ?>">[?]</a>
 			</label>
 		</p>
 		<p class="fields">
@@ -1299,7 +1299,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p>
 			<label for="<?php $this->field_id( 'pint_verification' ); ?>">
 				<strong><?php _e( "Pinterest Analytics Verification Code", 'autodescription' ); ?></strong>
-				<a href="<?php echo esc_url( $pint_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get Pinterest Verification Code', 'autodescription' ); ?>">[?]</a>
+				<a href="<?php echo esc_url( $pint_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get the Pinterest Verification Code', 'autodescription' ); ?>">[?]</a>
 			</label>
 		</p>
 		<p class="fields">
@@ -1398,7 +1398,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<p class="fields">
 				<label for="<?php $this->field_id( 'knowledge_logo' ); ?>">
 					<input type="checkbox" name="<?php $this->field_name( 'knowledge_logo' ); ?>" id="<?php $this->field_id( 'knowledge_logo' ); ?>" <?php $this->is_conditional_checked( 'knowledge_logo' ); ?> value="1" <?php checked( $this->get_field_value( 'knowledge_logo' ) ); ?> />
-					<?php _e( 'Use the Favicon from Customizer as Organization Logo?', 'autodescription' ); ?>
+					<?php _e( 'Use the Favicon from Customizer as the Organization Logo?', 'autodescription' ); ?>
 				</label>
 			</p>
 			<p><span class="description"><?php printf( __( "This option only has effect when this site represents an Organization. If left disabled, Search Engines will look elsewhere for a logo, if it exists and is assigned as a logo.", 'autodescription' ) ); ?></span></p>
@@ -1584,7 +1584,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 			?>
 			<h4><?php _e( "You're using the default permalink structure.", 'autodescription' ); ?></h4>
-			<p><span class="description"><?php _e( "This means we can't output the sitemap through WordPress rewrite.", 'autodescription' ); ?></span></p>
+			<p><span class="description"><?php _e( "This means we can't output the sitemap through the WordPress rewrite rules.", 'autodescription' ); ?></span></p>
 			<hr>
 			<p><span class="description"><?php printf( _x( "Change your permalink settings %s (Recommended: 'postname').", '%s = here', 'autodescription' ), $here ); ?></span></p>
 			<?php
@@ -1698,7 +1698,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<?php
 		} else {
 			?>
-			<p><span class="description"><?php printf( __( "The Sitemap is an XML file that lists pages and posts for your site along with optional metadata about each post or page. This helps Search Engines crawl your site easier.", 'autodescription' ) ); ?></span></p>
+			<p><span class="description"><?php printf( __( "The Sitemap is an XML file that lists pages and posts for your site along with optional metadata about each post or page. This helps Search Engines crawl your website more easy.", 'autodescription' ) ); ?></span></p>
 			<p><span class="description"><?php printf( __( "The optional metadata include the post and page modified time and a page priority indication, which is automated.", 'autodescription' ) ); ?></span></p>
 
 			<hr>
@@ -1737,7 +1737,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php printf( __( 'Robots.txt Settings', 'autodescription' ) ) ?></h4>
-		<p><span><?php printf( __( 'The robots.txt file is the first thing Search Engine look for. If you add the sitemap location in the robots.txt file, then search engines will look for and index the sitemap.', 'autodescription' ) ); ?></span></p>
+		<p><span><?php printf( __( 'The robots.txt file is the first thing Search Engines look for. If you add the sitemap location in the robots.txt file, then search engines will look for and index the sitemap.', 'autodescription' ) ); ?></span></p>
 		<p><span><?php printf( __( 'If you do not add the sitemap location to the robots.txt file, you will need to notify search engines manually through the Webmaster Console provided by the search engines.', 'autodescription' ) ); ?></span></p>
 
 		<hr>
@@ -1768,7 +1768,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php printf( __( 'Timestamps Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php printf( __( 'The modified time hint Search Engines where to look for content changes. It has no impact on SEO value unless you drastically change pages or posts. It then depends on how well your content is constructed.', 'autodescription' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( 'The modified time suggests to Search Engines where to look for content changes. It has no impact on the SEO value unless you drastically change pages or posts. It then depends on how well your content is constructed.', 'autodescription' ) ); ?></span></p>
 		<p><span class="description"><?php printf( __( "By default, the sitemap only outputs the modified date if you've enabled them within the Social Metabox. This setting overrides those settings for the Sitemap.", 'autodescription' ) ); ?></span></p>
 
 		<hr>

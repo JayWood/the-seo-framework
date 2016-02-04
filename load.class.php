@@ -223,7 +223,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 			}
 		} else if ( $version ) {
 			$version = $this->the_seo_framework_version( $version );
-			_doing_it_wrong( (string) $callback, __( "Function needs to be called as string.", 'autodescription' ), $version );
+			_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version );
 		}
 
 		return $output;

@@ -393,7 +393,7 @@ class AutoDescription_Inpost extends AutoDescription_PageOptions {
 
 						<label for="autodescription-meta[noarchive]"><input name="autodescription-meta[noarchive]" id="autodescription-meta[noarchive]" type="checkbox" value="1" <?php checked( $ad_noarchive ); ?> />
 							<?php printf( __( 'Apply %s to this term', 'autodescription' ), $this->code_wrap( 'noarchive' ) ); ?>
-							<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy this page', 'autodescription' ) ) ?>">[?]</a>
+							<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 						</label>
 
 						<?php // Saved flag, if set then it won't fetch for Genesis meta anymore ?>
@@ -628,7 +628,7 @@ class AutoDescription_Inpost extends AutoDescription_PageOptions {
 
 			<label for="autodescription_noarchive"><input type="checkbox" name="autodescription[_genesis_noarchive]" id="autodescription_noarchive" value="1" <?php checked( $this->get_custom_field( '_genesis_noarchive' ) ); ?> />
 				<?php printf( __( 'Apply %s to this page', 'autodescription' ), $this->code_wrap( 'noarchive' ) ); ?>
-				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy this page', 'autodescription' ) ) ?>">[?]</a>
+				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 			</label>
 
 			<?php // Saved flag, if set then it won't fetch for genesis meta anymore ?>
