@@ -40,6 +40,8 @@ class AutoDescription_Core {
 	 * @staticvar int $id the ID.
 	 *
 	 * @since 2.5.0
+	 *
+	 * @return int|false The ID.
 	 */
 	public function get_the_real_ID( $use_cache = true ) {
 
@@ -59,11 +61,15 @@ class AutoDescription_Core {
 			$id = $this->check_the_real_ID();
 
 		if ( ! isset( $id ) || empty( $id ) ) {
+			//* Does not always return false.
 			$id = get_queried_object_id();
 
 			if ( empty( $id ) )
 				$id = get_the_ID();
 		}
+
+		//* Turn ID into false if empty.
+		$id = ! empty( $id ) ? $id : false;
 
 		return $id;
 	}

@@ -118,7 +118,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * @since 2.2.5
 		 */
 		if ( ! $args['meta'] ) {
-			if ( ! $this->current_theme_supports_title_tag() && doing_filter( 'wp_title' ) ) {
+			if ( false === $this->current_theme_supports_title_tag() && doing_filter( 'wp_title' ) ) {
 				if ( ! empty( $seplocation ) ) {
 					//* Set doing it wrong parameters.
 					$this->tell_title_doing_it_wrong( $title, $sep, $seplocation, false );
@@ -155,10 +155,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		//* Notify cache to keep using the same output. We're doing it right :).
 		if ( ! isset( $this->title_doing_it_wrong ) )
 			$this->title_doing_it_wrong = false;
-
-		//* Set transient to true if the theme is doing it right.
-		if ( false !== $this->title_doing_it_wrong )
-			$this->set_theme_dir_transient( true );
 
 		//* Empty title and rebuild it.
 		return $this->build_title( $title = '', $seplocation, $args );
@@ -651,9 +647,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * @since 2.5.2
 			 */
 			$add_blogname_option = (bool) ! $this->get_option( 'title_rem_additions' );
-
 			//* If theme is doing it wrong, add it anyway in the admin area.
-			if ( is_admin() && ! $this->theme_title_doing_it_right() )
+			if ( is_admin() && ! $this->can_manipulate_title() )
 				$add_blogname_option = true;
 
 			/**

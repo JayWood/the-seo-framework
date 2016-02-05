@@ -596,7 +596,6 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 * @return bool
 	 */
 	public function current_theme_supports_title_tag() {
-
 		static $supports = null;
 
 		if ( isset( $supports ) )
@@ -1103,6 +1102,42 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		 * or the theme is doing it right ('1').
 		 */
 		return $dir = true;
+	}
+
+	/**
+	 * Detect theme title fix extension plugin.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool True theme will do it right.
+	 */
+	public function theme_title_fix_active() {
+
+		static $fixed = null;
+
+		if ( isset( $fixed ) )
+			return $fixed;
+
+		if ( defined( 'THE_SEO_FRAMEWORK_TITLE_FIX' ) && THE_SEO_FRAMEWORK_TITLE_FIX )
+			return $fixed = true;
+
+
+		return $fixed = false;
+	}
+
+	/**
+	 * Checks whether we can use special manipulation filters.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool True if we can manipulate title.
+	 */
+	public function can_manipulate_title() {
+
+		if ( $this->theme_title_doing_it_right() || $this->theme_title_fix_active() )
+			return true;
+
+		return false;
 	}
 
 }

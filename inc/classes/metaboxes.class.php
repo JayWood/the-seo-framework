@@ -242,7 +242,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<?php
 		//* Only add this option if the theme is doing it right.
-		if ( $this->theme_title_doing_it_right() ) : ?>
+		if ( $this->can_manipulate_title() ) : ?>
 			<hr>
 
 			<h4><?php _e( 'Remove Blogname from Title', 'autodescription' ); ?></h4>

@@ -299,7 +299,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 				$title = $this->title( '', '', '', $generated_doctitle_args );
 
-				if ( ! $title_rem_additions || ! $this->theme_title_doing_it_right() ) {
+				if ( ! $title_rem_additions || ! $this->can_manipulate_title() ) {
 					$additions = $blog_name;
 					$tagline = true;
 				} else {

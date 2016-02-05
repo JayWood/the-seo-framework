@@ -42,13 +42,15 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 	 *
 	 * @global WP_Query $wp_query Query object.
 	 *
+	 * @TODO rewrite (optimize)
+	 *
 	 * @return array|null robots
 	 */
 	public function robots_meta() {
 		global $wp_query;
 
-		$query_vars = is_object( $wp_query ) ? (array) $wp_query->query_vars : '';
-		$paged = is_array( $query_vars ) ? $query_vars["paged"] : '';
+		$query_vars = isset( $wp_query->query_vars ) ? $wp_query->query_vars : '';
+		$paged = isset( $query_vars['paged'] ) ? $query_vars['paged'] : 0;
 
 		//* Defaults
 		$meta = array(
@@ -77,68 +79,48 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 
 		//* Check home page SEO settings, set noindex, nofollow and noarchive
 		if ( is_front_page() ) {
-			$meta['noindex']   = $this->get_option( 'homepage_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = $this->get_option( 'homepage_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $this->get_option( 'homepage_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'homepage_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'homepage_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] &&  $this->get_option( 'homepage_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
-		if ( is_category() ) {
+		if ( is_category() && ! $this->is_singular() ) {
 			$term = $wp_query->get_queried_object();
 
-			$meta['noindex']   = $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 
-			if ( empty( $meta['noindex'] ) )
-				$meta['noindex'] = $this->get_option( 'category_noindex' ) ? 'noindex' : $meta['noindex'];
-
-			if ( empty( $meta['nofollow'] ) )
-				$meta['nofollow'] = $this->get_option( 'category_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-
-			if ( empty( $meta['noarchive'] ) )
-				$meta['noarchive'] = $this->get_option( 'category_noindex' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'category_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'category_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $this->get_option( 'category_noindex' ) ? 'noarchive' : $meta['noarchive'];
 
 			$flag = $term->admeta['saved_flag'] != '0' ? true : false;
 
 			if ( ! $flag && isset( $term->meta ) ) {
-				if ( empty( $meta['noindex'] ) )
-					$meta['noindex'] = $term->meta['noindex'] ? 'noindex' : $meta['noindex'];
-
-				if ( empty( $meta['nofollow'] ) )
-					$meta['nofollow'] = $term->meta['nofollow'] ? 'nofollow' : $meta['nofollow'];
-
-				if ( empty( $meta['noarchive'] ) )
-					$meta['noarchive'] = $term->meta['noarchive'] ? 'noarchive' : $meta['noarchive'];
+				$meta['noindex']   = '' === $meta['noindex'] && $term->meta['noindex'] ? 'noindex' : $meta['noindex'];
+				$meta['nofollow']  = '' === $meta['nofollow'] && $term->meta['nofollow'] ? 'nofollow' : $meta['nofollow'];
+				$meta['noarchive'] = '' === $meta['noarchive'] && $term->meta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 			}
 		}
 
 		if ( is_tag() ) {
 			$term = $wp_query->get_queried_object();
 
-			$meta['noindex']   = $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 
-			if ( empty( $meta['noindex'] ) )
-				$meta['noindex'] = $this->get_option( 'tag_noindex' ) ? 'noindex' : $meta['noindex'];
-
-			if ( empty( $meta['nofollow'] ) )
-				$meta['nofollow'] = $this->get_option( 'tag_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-
-			if ( empty( $meta['noarchive'] ) )
-				$meta['noarchive'] = $this->get_option( 'tag_noindex' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'tag_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'tag_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $this->get_option( 'tag_noindex' ) ? 'noarchive' : $meta['noarchive'];
 
 			$flag = $term->admeta['saved_flag'] != '0' ? true : false;
 
 			if ( ! $flag && isset( $term->meta ) ) {
-				if ( empty( $meta['noindex'] ) )
-					$meta['noindex'] = $term->meta['noindex'] ? 'noindex' : $meta['noindex'];
-
-				if ( empty( $meta['nofollow'] ) )
-					$meta['nofollow'] = $term->meta['nofollow'] ? 'nofollow' : $meta['nofollow'];
-
-				if ( empty( $meta['noarchive'] ) )
-					$meta['noarchive'] = $term->meta['noarchive'] ? 'noarchive' : $meta['noarchive'];
+				$meta['noindex']   = '' === $meta['noindex'] && $term->meta['noindex'] ? 'noindex' : $meta['noindex'];
+				$meta['nofollow']  = '' === $meta['nofollow'] && $term->meta['nofollow'] ? 'nofollow' : $meta['nofollow'];
+				$meta['noarchive'] = '' === $meta['noarchive'] && $term->meta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 			}
 		}
 
@@ -146,9 +128,9 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 		if ( is_tax() ) {
 			$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 
-			$meta['noindex']   = $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 		}
 
 		if ( is_author() ) {
@@ -156,39 +138,39 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 			/**
 			 * @todo really, @todo. External plugin?
 			 */
-			/*
-			$meta['noindex']   = get_the_author_meta( 'noindex', (int) get_query_var( 'author' ) ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = get_the_author_meta( 'nofollow', (int) get_query_var( 'author' ) ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = get_the_author_meta( 'noarchive', (int) get_query_var( 'author' ) ) ? 'noarchive' : $meta['noarchive'];
-			*/
+			$author = (int) get_query_var( 'author' );
 
-			$meta['noindex'] = $this->get_option( 'author_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow'] = $this->get_option( 'author_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $this->get_option( 'author_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && get_the_author_meta( 'noindex', $author ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && get_the_author_meta( 'nofollow', $author ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && get_the_author_meta( 'noarchive', $author ) ? 'noarchive' : $meta['noarchive'];
+
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'author_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'author_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $this->get_option( 'author_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
 		if ( is_date() ) {
-			$meta['noindex'] = $this->get_option( 'date_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow'] = $this->get_option( 'date_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $this->get_option( 'date_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'date_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'date_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $this->get_option( 'date_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
 		if ( is_search() ) {
-			$meta['noindex'] = $this->get_option( 'search_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow'] = $this->get_option( 'search_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $this->get_option( 'search_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'search_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'search_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $this->get_option( 'search_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
 		if ( is_attachment() ) {
-			$meta['noindex']   = $this->get_option( 'attachment_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = $this->get_option( 'attachment_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $this->get_option( 'attachment_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_option( 'attachment_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_option( 'attachment_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] &&  $this->get_option( 'attachment_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
 		if ( $this->is_singular() ) {
-			$meta['noindex'] = $this->get_custom_field( '_genesis_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow'] = $this->get_custom_field( '_genesis_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = $this->get_custom_field( '_genesis_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			$meta['noindex']   = '' === $meta['noindex'] && $this->get_custom_field( '_genesis_noindex' ) ? 'noindex' : $meta['noindex'];
+			$meta['nofollow']  = '' === $meta['nofollow'] && $this->get_custom_field( '_genesis_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+			$meta['noarchive'] = '' === $meta['noarchive'] && $this->get_custom_field( '_genesis_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
 		//* Strip empty array items

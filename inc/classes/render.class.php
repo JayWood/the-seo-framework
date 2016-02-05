@@ -153,7 +153,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.4.0
 		 */
-		if ( isset( $this->title_doing_it_wrong ) && ! $this->title_doing_it_wrong ) {
+		if ( isset( $this->title_doing_it_wrong ) && false === $this->title_doing_it_wrong ) {
 			$title = $title_param_cache;
 			$sep = $sep_param_cache;
 			$seplocation = $seplocation_param_cache;
