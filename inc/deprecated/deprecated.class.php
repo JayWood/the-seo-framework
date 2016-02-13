@@ -203,7 +203,7 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 	 */
 	public function title_doing_it_wrong() {
 
-		_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, $this->the_seo_framework_version( '2.5.2.1' ) );
+		_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, $this->the_seo_framework_version( '2.5.2.1' ), 'AutoDescription_Detect::tell_title_doing_it_wrong()' );
 
 		return;
 	}
@@ -225,9 +225,25 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 	 */
 	public function current_theme_supports( $feature ) {
 
-		_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, $this->the_seo_framework_version( '2.6.0' ) );
+		_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, $this->the_seo_framework_version( '2.6.0' ), 'current_theme_supports()' );
 
 		return current_theme_supports();
 	}
 
+	/**
+	 * Echo debug values.
+	 *
+	 * @param mixed $values What to be output.
+	 *
+	 * @since 2.3.4
+	 *
+	 * @deprecated
+	 * @since 2.6.0
+	 */
+	public function echo_debug_information( $values ) {
+
+		_deprecated_function( 'AutoDescription_Debug::' . __FUNCTION__, $this->the_seo_framework_version( '2.6.0' ), 'AutoDescription_Debug::get_debug_information' );
+
+		echo $this->get_debug_information( $values );
+	}
 }

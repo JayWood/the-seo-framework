@@ -62,31 +62,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function title( $title = '', $sep = '', $seplocation = '', $args = array() ) {
 
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, func_get_args() );
+
 		//* Use WordPress default feed title.
 		if ( is_feed() )
 			return trim( $title );
-
-		/**
-		 * Debug parameters.
-		 * @since 2.3.4
-		 */
-		if ( $this->the_seo_framework_debug ) {
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			echo  "\r\n" . 'START: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n";
-
-			if ( $this->the_seo_framework_debug_more ) {
-				$this->echo_debug_information( array( 'title' => $title ) );
-				$this->echo_debug_information( array( 'sep' => $sep ) );
-				$this->echo_debug_information( array( 'seplocation' => $seplocation ) );
-				$this->echo_debug_information( array( 'args' => $args ) );
-			}
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
 
 		$default_args = $this->parse_title_args( '', '', true );
 
@@ -420,7 +400,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * Now also considers seplocation.
 			 * @since 2.4.1
 			 */
-			if ( $seplocation == 'right' ) {
+			if ( 'right' === $seplocation ) {
 				if ( $tit_len > 2 && ! mb_strpos( $title, $sep_to_replace, $tit_len - 2 ) )
 					$title = $title . ' ' . $sep_to_replace;
 			} else {
@@ -445,7 +425,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * Now also considers seplocation.
 			 * @since 2.4.1
 			 */
-			if ( $seplocation == 'right' ) {
+			if ( 'right' === $seplocation ) {
 				$title = trim( rtrim( $title, "$sep_to_replace " ) ) . " $sep ";
 			} else {
 				$title = " $sep " . trim( ltrim( $title, " $sep_to_replace" ) );
@@ -467,13 +447,13 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * @applies filters core : protected_title_format
 		 * @applies filters core : private_title_format
 		 */
-		if ( ! $args['description_title'] ) {
+		if ( false === $args['description_title'] ) {
 			$post = get_post( $args['term_id'], OBJECT );
 
 			if ( isset( $post->post_password ) && ! empty( $post->post_password ) ) {
 				$protected_title_format = apply_filters( 'protected_title_format', __( 'Protected: %s', 'autodescription' ), $post );
 				$title = sprintf( $protected_title_format, $title );
-			} else if ( isset( $post->post_status ) && 'private' == $post->post_status ) {
+			} else if ( isset( $post->post_status ) && 'private' === $post->post_status ) {
 				$private_title_format = apply_filters( 'private_title_format', __( 'Private: %s', 'autodescription' ), $post );
 				$title = sprintf( $private_title_format, $title );
 			}
@@ -487,20 +467,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = capital_P_dangit( $title );
 		}
 
-		/**
-		 * Debug output.
-		 * @since 2.3.4
-		 */
-		if ( $this->the_seo_framework_debug ) {
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			$this->echo_debug_information( array( 'title output' => $title ) );
-			echo "\r\n<br>\r\n" . 'END: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n<br><br>";
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'title' => $title ) );
 
 		return $title;
 	}
@@ -616,15 +583,15 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * @applies filters core : protected_title_format
 		 * @applies filters core : private_title_format
 		 */
-		if ( ! $args['description_title'] ) {
+		if ( false === $args['description_title'] ) {
 			global $page, $paged;
 
 			$post = get_post( $args['term_id'], OBJECT );
 
-			if ( isset( $post->post_password ) && ! empty( $post->post_password ) ) {
+			if ( isset( $post->post_password ) && '' !== $post->post_password ) {
 				$protected_title_format = apply_filters( 'protected_title_format', __( 'Protected: %s', 'autodescription' ), $post );
 				$title = sprintf( $protected_title_format, $title );
-			} else if ( isset( $post->post_status ) && 'private' == $post->post_status ) {
+			} else if ( isset( $post->post_status ) && 'private' === $post->post_status ) {
 				$private_title_format = apply_filters( 'private_title_format', __( 'Private: %s', 'autodescription' ), $post );
 				$title = sprintf( $private_title_format, $title );
 			}
@@ -667,7 +634,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 				$title = trim( $title );
 				$blogname = trim( $blogname );
 
-				if ( 'right' == $seplocation ) {
+				if ( 'right' === $seplocation ) {
 					$title = $title . " $sep " . $blogname;
 				} else {
 					$title = $blogname . " $sep " . $title;
@@ -683,22 +650,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			}
 		}
 
-		/**
-		 * Debug output.
-		 * @since 2.3.4
-		 */
-		if ( $this->the_seo_framework_debug ) {
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			$this->echo_debug_information( array( 'is static frontpage' => $this->is_static_frontpage( $this->get_the_real_ID() ) ) );
-			$this->echo_debug_information( array( 'title output' => $title ) );
-			echo "\r\n<br>\r\n" . 'END: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n<br><br>";
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'title' => $title ) );
 
 		return $title;
 	}
@@ -1163,7 +1115,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *
 	 * @param object $term The Term object.
 	 *
-	 * @since 2.5.2.2
+	 * @since 2.6.0
 	 */
 	public function get_the_real_archive_title( $term = null ) {
 
@@ -1178,11 +1130,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * 		@param object $term The Term object.
 			 *	}
 			 *
-			 * @since 2.5.2.2
+			 * @since 2.6.0
 			 */
-			$title = (string) apply_filters( 'the_seo_framework_the_archive_title', null, $term );
+			$title = (string) apply_filters( 'the_seo_framework_the_archive_title', '', $term );
 
-			if ( isset( $title ) && ! empty( $title ) )
+			if ( '' !== $title )
 				return $title;
 
 			/**
@@ -1191,7 +1143,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * 		@param object $term The Term object.
 			 *	}
 			 *
-			 * @since 2.5.2.2
+			 * @since 2.6.0
 			 */
 			$prefix = (bool) apply_filters( 'the_seo_framework_use_archive_title_prefix', true, $term );
 
@@ -1289,6 +1241,22 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		//* Not a taxonomy.
 		return '';
+	}
+
+	/**
+	 * Detemrmines wether to add or remove title additions.
+	 *
+	 * @since 2.5.2
+	 * @return bool True when additions are allowed.
+	 */
+	public function add_title_additions() {
+
+		$remove = $this->get_option( 'title_rem_additions' );
+
+		if ( ! $remove )
+			return true;
+
+		return false;
 	}
 
 }

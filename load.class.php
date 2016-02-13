@@ -67,7 +67,10 @@ function the_seo_framework_load() {
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'compat.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'optionsapi.php' );
 
+// require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'benchmark.php' );
+
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'core.class.php' );
+require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'debug.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'init.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'admininit.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'render.class.php' );
@@ -85,6 +88,7 @@ require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'generate-author.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'search.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'doingitright.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'pageoptions.class.php' );
+require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'authoroptions.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'inpost.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'adminpages.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'sanitize.class.php' );
@@ -107,15 +111,18 @@ require_once( THE_SEO_FRAMEWORK_DIR_PATH . 'inc/deprecated/deprecated.class.php'
 class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 
 	/**
-	 * Cached debug constants. Initialized on plugins_loaded.
+	 * Cached debug/profile constants. Initialized on plugins_loaded.
 	 *
 	 * @since 2.2.9
 	 *
-	 * @var bool The SEO Framework Debug is defined.
+	 * @var bool The SEO Framework Debug/Profile constants is/are defined.
 	 */
 	public $the_seo_framework_debug = false;
 	public $the_seo_framework_debug_more = false;
 	public $the_seo_framework_debug_hidden = false;
+	public $the_seo_framework_profile = false;
+	public $the_seo_framework_profile_specific = false;
+	public $script_debug = false;
 
 	/**
 	 * Constructor, load parent constructor
@@ -124,12 +131,19 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 		parent::__construct();
 
 		$this->the_seo_framework_debug = defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG ? true : $this->the_seo_framework_debug;
-
 		if ( $this->the_seo_framework_debug ) {
 			//* No need to set these to true if no debugging is enabled.
 			$this->the_seo_framework_debug_more = defined( 'THE_SEO_FRAMEWORK_DEBUG_MORE' ) && THE_SEO_FRAMEWORK_DEBUG_MORE ? true : $this->the_seo_framework_debug_more;
 			$this->the_seo_framework_debug_hidden = defined( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN' ) && THE_SEO_FRAMEWORK_DEBUG_HIDDEN ? true : $this->the_seo_framework_debug_hidden;
 		}
+
+		$this->the_seo_framework_profile = defined( 'THE_SEO_FRAMEWORK_PROFILE' ) && THE_SEO_FRAMEWORK_PROFILE ? true : $this->the_seo_framework_profile;
+		if ( $this->the_seo_framework_profile ) {
+			//* No need to set these to true if no profiling is enabled.
+			$this->the_seo_framework_profile_specific = defined( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC' ) && THE_SEO_FRAMEWORK_PROFILE_SPECIFIC ? true : $this->the_seo_framework_profile_specific;
+		}
+
+		$this->script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? true : $this->script_debug;
 	}
 
 	/**
@@ -175,7 +189,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 		if ( is_object( $function[0] ) ) {
 			$method = (string) $function[1];
 
-			if ( $function[0] == $this ) {
+			if ( get_class( $function[0] ) === get_class( $this ) ) {
 				if ( method_exists( $this, $method ) ) {
 					if ( empty( $args ) ) {
 						// In-Object calling.

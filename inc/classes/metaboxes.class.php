@@ -117,10 +117,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 					?>
 					<span>
-						<input type="radio" class="<?php echo $id; ?>-tabs-radio" id="<?php echo $id; ?>-tab-<?php echo $tab ?>" name="<?php echo $id; ?>-tabs" <?php echo $count == abs(1) ? 'checked' : ''; ?>>
-						<label for="<?php echo $id; ?>-tab-<?php echo $tab ?>" class="nav-tab <?php echo $count == abs(1) ? 'nav-tab-active' : '' ?>">
-							<?php echo ! empty( $dashicon ) ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' dashicons-tabs"></span>' : ''; ?>
-							<?php echo ! empty( $name ) ? '<span class="seoframework-nav-desktop">' . esc_attr( $name ) . '</span>' : ''; ?>
+						<input type="radio" class="<?php echo $id; ?>-tabs-radio" id="<?php echo $id; ?>-tab-<?php echo $tab ?>" name="<?php echo $id; ?>-tabs" <?php echo $count === abs(1) ? 'checked' : ''; ?>>
+						<label for="<?php echo $id; ?>-tab-<?php echo $tab ?>" class="nav-tab <?php echo $count === abs(1) ? 'nav-tab-active' : '' ?>">
+							<?php echo '' !== $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' dashicons-tabs"></span>' : ''; ?>
+							<?php echo '' !== $name ? '<span class="seoframework-nav-desktop">' . esc_attr( $name ) . '</span>' : ''; ?>
 						</label>
 					</span>
 					<?php
@@ -209,7 +209,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<p id="title-separator" class="fields">
 			<?php foreach ( $title_separator as $name => $html ) { ?>
 				<input type="radio" name="<?php $this->field_name( 'title_seperator' ); ?>" id="<?php $this->field_id( 'title_seperator_' . $name ); ?>" value="<?php echo $name ?>" <?php checked( $this->get_field_value( 'title_seperator' ), $name ); ?> />
-				<label for="<?php $this->field_id( 'title_seperator_' . $name ); ?>" <?php echo ( $name == 'pipe' || $name == 'dash' ) ? $recommended : ''; ?>><?php echo $html ?></label>
+				<label for="<?php $this->field_id( 'title_seperator_' . $name ); ?>" <?php echo ( $name === 'pipe' || $name === 'dash' ) ? $recommended : ''; ?>><?php echo $html ?></label>
 			<?php } ?>
 			</p>
 			<span class="description"><?php _e( 'If the title consists of two parts (original title and optional addition), then the separator will go in between them.', 'autodescription' ); ?></span>
@@ -328,7 +328,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<p id="description-separator" class="fields">
 			<?php foreach ( $description_separator as $name => $html ) { ?>
 				<input type="radio" name="<?php $this->field_name( 'description_separator' ); ?>" id="<?php $this->field_id( 'description_separator' . $name ); ?>" value="<?php echo $name ?>" <?php checked( $sep_option, $name ); ?> />
-				<label for="<?php $this->field_id( 'description_separator' . $name ); ?>" <?php echo ( $name == 'pipe' || $name == 'dash' ) ? $recommended : ''; ?>><?php echo $html ?></label>
+				<label for="<?php $this->field_id( 'description_separator' . $name ); ?>" <?php echo ( 'pipe' === $name || 'dash' === $name ) ? $recommended : ''; ?>><?php echo $html ?></label>
 			<?php } ?>
 			</p>
 			<span class="description"><?php _e( 'If the Automated Description consists of two parts (title and excerpt), then the separator will go in between them.', 'autodescription' ); ?></span>
@@ -570,7 +570,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$home_page_i18n = __( 'Home Page', 'autodescription' );
 
 		//* Is the frontpage static or a blog?
-		if ( 'page' == get_option( 'show_on_front' ) ) {
+		if ( 'page' === get_option( 'show_on_front' ) ) {
 			$home_id = (int) get_option( 'page_on_front' );
 		} else {
 			$home_id = 0;
@@ -1577,7 +1577,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		do_action( 'the_seo_framework_sitemaps_metabox_before' );
 
-		if ( '' == get_option( 'permalink_structure' ) ) {
+		if ( '' === $this->permalink_structure() ) {
 
 			$permalink_settings_url = esc_url( admin_url( 'options-permalink.php' ) );
 			$here = '<a href="' . $permalink_settings_url  . '" target="_blank" title="' . __( 'Permalink settings', 'autodescription' ) . '">' . _x( 'here', 'The sitemap can be found %s.', 'autodescription' ) . '</a>';

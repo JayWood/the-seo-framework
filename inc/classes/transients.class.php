@@ -193,15 +193,15 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 * Generate home page cache key for the Home Page metabox.
 		 * @since 2.4.3.1
 		 */
-		if ( $this->is_menu_page( $this->pagehook ) ) {
+		if ( is_admin() && $this->is_menu_page( $this->pagehook ) ) {
 			//* We're on the SEO Settings page now.
 
-			if ( 'posts' == get_option( 'show_on_front' ) ) {
+			if ( 'posts' === get_option( 'show_on_front' ) ) {
 				/**
 				 * Detected home page.
 				 * @since 2.3.4
 				 */
-				$the_id = 'hpage_' . (string) get_option( 'page_on_front' );
+				$the_id = 'hblog_' . (string) get_option( 'page_on_front' );
 			} else {
 				/**
 				 * Detected home page.
@@ -214,7 +214,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 			//* All other pages, admin and front-end.
 
 			if ( ! is_search() ) {
-				if ( ( false === $page_id || is_front_page() ) && ( 'posts' == get_option( 'show_on_front' ) ) ) {
+				if ( ( false === $page_id || is_front_page() ) && ( 'posts' === get_option( 'show_on_front' ) ) ) {
 					if ( is_404() ) {
 						$the_id = '_404_';
 					} else {
@@ -225,7 +225,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 						 */
 						$the_id = 'hblog_' . (string) get_option( 'page_on_front' );
 					}
-				} else if ( ( false === $page_id || is_front_page() || $page_id == get_option( 'page_on_front' ) ) && ( empty( $taxonomy ) && 'page' == get_option( 'show_on_front' ) ) ) {
+				} else if ( ( false === $page_id || is_front_page() || $page_id === get_option( 'page_on_front' ) ) && ( empty( $taxonomy ) && 'page' === get_option( 'show_on_front' ) ) ) {
 					if ( is_404() ) {
 						$the_id = '_404_';
 					} else {
@@ -235,14 +235,14 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 						 */
 						$the_id = 'hpage_' . (string) get_option( 'page_on_front' );
 					}
-				} else if ( ! is_front_page() && empty( $taxonomy ) && ( ( $page_id == get_option( 'page_for_posts' ) && get_option( 'page_for_posts' ) != 0 ) || ( $page_id === false && did_action( 'admin_init' ) ) ) ) {
+				} else if ( false === is_front_page() && empty( $taxonomy ) && ( ( $page_id === get_option( 'page_for_posts' ) && 0 !== get_option( 'page_for_posts' ) ) || ( false === $page_id && did_action( 'admin_init' ) ) ) ) {
 					/**
 					 * Generate key for blog page that's not the home page.
 					 * Bugfix
 					 * @since 2.3.4
 					 */
 					$the_id = 'blog_' . $page_id;
-				} else if ( ! $this->is_singular() && empty( $taxonomy ) && ! did_action( 'admin_init' ) ) {
+				} else if ( false === $this->is_singular() && empty( $taxonomy ) && false === did_action( 'admin_init' ) ) {
 					//* Unsigned CPT, AnsPress question, etc.
 					global $wp_query;
 
@@ -286,7 +286,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 						//* add Page ID.
 						$the_id .= (string) $this->get_the_real_ID();
 					}
-				} else if ( ! $this->is_singular() && ! empty( $taxonomy ) ) {
+				} else if ( false === $this->is_singular() && ! empty( $taxonomy ) ) {
 					//* Taxonomy
 
 					$the_id = '';
@@ -514,6 +514,29 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 			set_transient( $this->theme_doing_it_right_transient, $dir, $expiration );
 		}
 
+	}
+
+	/**
+	 * Flushes the home page LD+Json transient.
+	 *
+	 * @staticvar bool $flushed
+	 * @since 2.6.0
+	 */
+	public function delete_front_ld_json_transient() {
+
+		static $flushed = null;
+
+		if ( isset( $flushed ) )
+			return;
+
+		$front_id = $this->get_the_front_page_ID();
+
+		if ( false === $front_id )
+			$front_id = 'hblog_' . (string) get_option( 'page_on_front' );
+
+		$this->delete_ld_json_transient( $front_id );
+
+		return $flushed = true;
 	}
 
 }

@@ -236,7 +236,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	/**
 	 * Generate description from content
 	 *
-	 * @since 1.0.0
+	 * @since 2.3.3
 	 *
 	 * @param array $args description args : {
 	 * 		@param int $id the term or page id.
@@ -250,18 +250,11 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *
 	 * @staticvar string $title
 	 *
-	 * Gained its own function.
-	 * @since 2.3.3
-	 *
 	 * @return string $output The description.
 	 */
 	public function generate_description_from_id( $args = array(), $escape = true, $_escape = 'depr' ) {
 
-		//* @TODO remove @since 2.6.0
-		if ( 'depr' !== $_escape ) {
-			_deprecated_argument( __FUNCTION__, $this->the_seo_framework_version( '2.5.2' ), 'Use 2nd argument for escape.' );
-			$escape = (bool) $_escape;
-		}
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, func_get_args() );
 
 		/**
 		 * Applies filters bool 'the_seo_framework_enable_auto_description' : Enable or disable the description.
@@ -287,28 +280,6 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			$args = $this->parse_description_args( $args, $default_args );
 		} else {
 			$args = $default_args;
-		}
-
-		/**
-		 * Debug parameters.
-		 * @since 2.3.4
-		 */
-		if ( $this->the_seo_framework_debug ) {
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			echo "\r\n<br>\r\n" . 'START: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n";
-
-			$timer_start = microtime( true );
-
-			if ( $this->the_seo_framework_debug_more ) {
-				$this->echo_debug_information( array( 'args' => $args ) );
-			}
-
-			echo "\r\n<br>\r\n";
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
 		}
 
 		$term = '';
@@ -437,7 +408,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				/**
 				 * @since 2.5.2
 				 */
-				$excerpt_exists = ! empty( $excerpt['social'] ) ? true : false;
+				$excerpt_exists = empty( $excerpt['social'] ) ? false : true;
 
 				if ( $excerpt_exists ) {
 					$description = $excerpt['social'];
@@ -445,7 +416,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 					$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
 				}
 			} else {
-				$excerpt_exists = ! empty( $excerpt['normal'] ) ? true : false;
+				$excerpt_exists = empty( $excerpt['normal'] ) ? false : true;
 
 				if ( true === $excerpt_exists ) {
 					if ( $description_additions ) {
@@ -472,28 +443,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			$description = trim( $description );
 		}
 
-		/**
-		 * Debug cache key and output.
-		 * @since 2.3.4
-		 */
-		if ( $this->the_seo_framework_debug ) {
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			$excerpt = $page_on_front ? 'Front page has no excerpt.' : $excerpt;
-
-			$this->echo_debug_information( array( 'description excerpt cache key' => $this->auto_description_transient ) );
-			$this->echo_debug_information( array( 'page on front' => $page_on_front ) );
-			$this->echo_debug_information( array( 'is static frontpage' => $this->is_static_frontpage( $args['id'] ) ) );
-			$this->echo_debug_information( array( 'description excerpt' => $excerpt ) );
-			$this->echo_debug_information( array( 'Generation time' => number_format( microtime(true) - $timer_start, 5 ) . 's' ) );
-
-			echo "\r\n<br>\r\n" . 'END: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n<br><br>";
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'description' => $description ) );
 
 		return (string) $description;
 	}

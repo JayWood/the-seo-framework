@@ -73,16 +73,23 @@ function the_seo_framework_dot_version( $version = '2.4' ) {
 
 	if ( $current_version ) {
 		$version_len = strlen( $version );
+		$current_version_len = strlen( $current_version );
 
 		//* Only allow 3 or 5 length.
-		if ( $version_len != 3 && $version_len != 5 )
+		if ( 3 !== $version_len && 5 !== $version_len )
 			return false;
 
 		//* If 5 length, chop.
-		if ( $version_len == 5 ) {
+		if ( 5 === $version_len ) {
 			$version = (string) substr( $version, 0, -2 );
 		} else {
 			$version = (string) $version;
+		}
+
+		if ( 5 === $current_version_len ) {
+			$offset = -2;
+		} else {
+			$offset = -4;
 		}
 
 		$current_version = (string) substr( $current_version, 0, -2 );

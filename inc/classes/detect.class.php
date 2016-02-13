@@ -776,24 +776,24 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		$pfp = get_option( 'page_for_posts' );
 
-		if ( $pfp != 0 ) {
+		if ( 0 !== $pfp ) {
 
 			static $pof = null;
 
 			if ( ! isset( $pof ) )
 				$pof = 'page' === get_option( 'show_on_front' ) ? true : false;
 
-			if ( $pof && ! is_front_page() && ! is_archive() ) {
+			if ( $pof && false === is_front_page() && false === is_archive() ) {
 				if ( isset( $o_id ) ) {
-					if ( $o_id == $pfp )
+					if ( $o_id === $pfp )
 						return $is_blog_page[$id] = true;
 				} else {
-					if ( $id == $pfp )
+					if ( $id === $pfp )
 						return $is_blog_page[$id] = true;
 
 					$o_id = $this->get_the_real_ID();
 
-					if ( $o_id == $pfp )
+					if ( $o_id === $pfp )
 						return $is_blog_page[$id] = true;
 				}
 			}
@@ -839,12 +839,12 @@ class AutoDescription_Detect extends AutoDescription_Render {
 					return $is_frontpage[$id] = true;
 			} else {
 
-				if ( $id == $pof )
+				if ( $id === $pof )
 					return $is_frontpage[$id] = true;
 
 				$o_id = $this->get_the_real_ID();
 
-				if ( $o_id == $pof )
+				if ( $o_id === $pof )
 					return $is_frontpage[$id] = true;
 			}
 		}

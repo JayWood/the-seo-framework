@@ -19,8 +19,7 @@
 /**
  * Class AutoDescription_PostData
  *
- * Pulls data from posts/pages
- * Returns strings/arrays
+ * Holds Post data.
  *
  * @since 2.1.6
  */
@@ -146,11 +145,11 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		}
 
 		// Something went wrong, nothing to be found. Return empty.
-		if ( ! isset( $post ) || ! is_array( $post ) )
+		if ( false === isset( $post ) || false === is_array( $post ) )
 			return '';
 
 		//* Stop getting something that doesn't exists. E.g. 404
-		if ( isset( $post['ID'] ) && 0 == $post['ID'] )
+		if ( isset( $post['ID'] ) && 0 === $post['ID'] )
 			return '';
 
 		/**

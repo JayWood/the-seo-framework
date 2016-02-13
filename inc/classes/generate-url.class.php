@@ -72,29 +72,11 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 */
 	public function the_url( $url = '', $args = array() ) {
 
+		if ( $this->the_seo_framework_debug && false === $this->doing_sitemap ) $this->debug_init( __CLASS__, __FUNCTION__, func_get_args() );
+
 		//* Reset cache.
 		$this->url_slashit = true;
 		$this->add_subdomain = '';
-
-		/**
-		 * Debug parameters.
-		 * @since 2.4.2
-		 */
-		if ( $this->the_seo_framework_debug && ! $this->doing_sitemap ) {
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			echo  "\r\n" . 'START: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n";
-			$this->echo_debug_information( array( 'input url' => $url ) );
-
-			if ( $this->the_seo_framework_debug_more )
-				$this->echo_debug_information( array( 'args' => $args ) );
-
-			$timer_start = microtime( true );
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
 
 		$default_args = $this->parse_url_args( '', '', true );
 
@@ -201,30 +183,11 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 				$output = trailingslashit( $output );
 		}
 
-		$output = esc_url( $output );
+		$url = esc_url( $output );
 
-		/**
-		 * Debug parameters.
-		 * @since 2.4.2
-		 */
-		if ( $this->the_seo_framework_debug && ! $this->doing_sitemap ) {
+		if ( $this->the_seo_framework_debug && false === $this->doing_sitemap ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'url' => $url ) );
 
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			$this->echo_debug_information( array( 'output' => $output ) );
-
-			if ( $this->the_seo_framework_debug_more )
-				$this->echo_debug_information( array( 'args' => $args ) );
-
-			$this->echo_debug_information( array( 'Generation time' => number_format( microtime(true) - $timer_start, 5 ) . 's' ) );
-			echo  "\r\n<br>\r\n" . 'END: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n<br>\r\n";
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
-
-		return $output;
+		return $url;
 	}
 
 	/**
@@ -305,7 +268,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			$term = $args['term'];
 
 			//* Term or Taxonomy.
-			if ( ! isset( $term ) )
+			if ( false === isset( $term ) )
 				$term = get_queried_object();
 
 			if ( isset( $term->taxonomy ) ) {
@@ -327,7 +290,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			 * Fetch post object
 			 * @since 2.2.4
 			 */
-			if ( ! isset( $post ) )
+			if ( false === isset( $post ) )
 				$post = get_post( $args['id'], OBJECT );
 
 			/**
@@ -338,11 +301,9 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 				$post_id = isset( $post->ID ) ? $post->ID : $args['id'];
 
-				if ( ! empty( $post_id ) ) {
+				if ( false === empty( $post_id ) ) {
 
-					$permalink_structure = $this->permalink_structure();
-
-					if ( '' === $permalink_structure ) {
+					if ( '' === $this->permalink_structure() ) {
 						$path = $this->the_url_path_default_permalink_structure( $post );
 					} else {
 						$path = $this->get_relative_url( $post, $args['external'], $post_id );
@@ -352,10 +313,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			}
 		}
 
-		if ( ! isset( $path ) )
-			$path = '';
+		if ( isset( $path ) )
+			return $path;
 
-		return $path;
+		return '';
 	}
 
 	/**
@@ -602,10 +563,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	public function get_relative_term_url( $term = null, $no_request = false ) {
 
 		// We can't fetch the Term object within sitemaps.
-		if ( $no_request && ! isset( $term ) )
+		if ( $no_request && false === isset( $term ) )
 			return '';
 
-		if ( ! isset( $term ) ) {
+		if ( false === isset( $term ) ) {
 			global $wp_query;
 			$term = $wp_query->get_queried_object();
 		}
@@ -620,9 +581,9 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		$t = get_taxonomy( $taxonomy );
 
 		if ( empty( $termlink ) ) {
-			if ( 'category' == $taxonomy ) {
+			if ( 'category' === $taxonomy ) {
 				$termlink = '?cat=' . $term->term_id;
-			} elseif ( isset( $t->query_var ) && ! empty( $t->query_var ) ) {
+			} elseif ( isset( $t->query_var ) && '' !== $t->query_var ) {
 				$termlink = "?$t->query_var=$slug";
 			} else {
 				$termlink = "?taxonomy=$taxonomy&term=$slug";
@@ -880,17 +841,17 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 			$request_uri = '';
 
-			if ( $url && $url != untrailingslashit( $scheme . '://' . $current_blog->domain . $current_blog->path ) ) {
-				if ( ( defined( 'VHOST' ) && VHOST != 'yes' ) || ( defined( 'SUBDOMAIN_INSTALL' ) && SUBDOMAIN_INSTALL == false ) ) {
+			if ( $url && $url !== untrailingslashit( $scheme . '://' . $current_blog->domain . $current_blog->path ) ) {
+				if ( ( defined( 'VHOST' ) && 'yes' !== VHOST ) || ( defined( 'SUBDOMAIN_INSTALL' ) && false === SUBDOMAIN_INSTALL ) ) {
 					$request_uri = str_replace( $current_blog->path, '/', $_SERVER['REQUEST_URI'] );
 				}
 
 				$url = trailingslashit( $url . $request_uri ) . ltrim( $path, '\/ ' );
 
-				if ( ! $get_scheme ) {
-					return $url;
-				} else {
+				if ( $get_scheme ) {
 					return array( $url, $scheme );
+				} else {
+					return $url;
 				}
 			}
 		}
@@ -1004,10 +965,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 			$paged = get_query_var( 'paged' ) ? (int) get_query_var( 'paged' ) : 1;
 
-			if ( $prev_next === 'prev' )
+			if ( 'prev' === $prev_next )
 				$prev = $paged > 1 ? get_previous_posts_page_link() : $prev;
 
-			if ( $prev_next === 'next' )
+			if ( 'next' === $prev_next )
 				$next = $paged < $wp_query->max_num_pages ? get_next_posts_page_link() : $next;
 
 		} else if ( $this->get_option( 'prev_next_posts' ) && is_singular() ) {
@@ -1015,17 +976,17 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			$page = (int) get_query_var( 'page' );
 			$numpages = substr_count( $wp_query->post->post_content, '<!--nextpage-->' ) + 1;
 
-			if ( $numpages && ! $page ) {
+			if ( ! $page && $numpages ) {
 				$page = 1;
 			}
 
-			if ( $prev_next === 'prev' ) {
+			if ( 'prev' === $prev_next ) {
 				if ( $page > 1 ) {
 					$prev = (string) $this->get_paged_post_url( $page - 1, $post_id, 'prev' );
 				}
 			}
 
-			if ( $prev_next === 'next' ) {
+			if ( 'next' === $prev_next ) {
 				if ( $page < $numpages ) {
 					$next = (string) $this->get_paged_post_url( $page + 1, $post_id, 'next' );
 				}

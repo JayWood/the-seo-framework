@@ -787,18 +787,14 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function canonical() {
 
-		//* if WPSEO is active
-		if ( $this->has_og_plugin() !== false )
-			return;
-
 		/**
 		 * Applies filters the_seo_framework_output_canonical : Don't output canonical if false.
 		 * @since 2.4.2
 		 */
-		if ( ! apply_filters( 'the_seo_framework_output_canonical', true ) )
+		if ( false === (bool) apply_filters( 'the_seo_framework_output_canonical', true ) )
 			return;
 
-		if ( ! get_option( 'permalink_structure' ) || is_404() )
+		if ( '' === $this->permalink_structure() || is_404() )
 			return;
 
 		$url = $this->the_url_from_cache();
@@ -824,21 +820,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 
 		$this->setup_ld_json_transient( $this->get_the_real_ID() );
 
-		/**
-		 * Debug transient key.
-		 * @since 2.4.2
-		 */
-		if ( $this->the_seo_framework_debug ) {
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			echo  "\r\n" . 'START: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n";
-			$this->echo_debug_information( array( 'LD Json transient name' => $this->ld_json_transient ) );
-			$this->echo_debug_information( array( 'Output from transient' => (bool) get_transient( $this->ld_json_transient ) ) );
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) get_transient( $this->ld_json_transient ) ) );
 
 		$output = get_transient( $this->ld_json_transient );
 		if ( false === $output ) {
@@ -884,19 +866,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 * Debug output.
 		 * @since 2.4.2
 		 */
-		if ( $this->the_seo_framework_debug ) {
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "<!--\r\n";
-
-			if ( $this->the_seo_framework_debug_hidden ) {
-				$this->echo_debug_information( array( 'LD Json transient output' => $output ) );
-			}
-			echo  "\r\n<br>\r\n" . 'END: ' . __CLASS__ . '::' . __FUNCTION__ .  "\r\n";
-
-			if ( $this->the_seo_framework_debug_hidden )
-				echo "\r\n-->";
-		}
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient output' => $output ) );
 
 		return $output;
 	}
@@ -911,10 +881,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function google_site_output() {
 
 		//* @since 2.3.0
-		$code = (string) apply_filters( 'the_seo_framework_googlesite_output', '' );
-
-		if ( empty( $code ) )
-			$code = $this->get_option( 'google_verification' );
+		$code = (string) apply_filters( 'the_seo_framework_googlesite_output', $this->get_option( 'google_verification' ) );
 
 		if ( empty( $code ) )
 			return '';
@@ -932,10 +899,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function bing_site_output() {
 
 		//* @since 2.3.0
-		$code = (string) apply_filters( 'the_seo_framework_bingsite_output', '' );
-
-		if ( empty( $code ) )
-			$code = $this->get_option( 'bing_verification' );
+		$code = (string) apply_filters( 'the_seo_framework_bingsite_output', $this->get_option( 'bing_verification' ) );
 
 		if ( empty( $code ) )
 			return '';
@@ -953,10 +917,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function pint_site_output() {
 
 		//* @since 2.3.0
-		$code = (string) apply_filters( 'the_seo_framework_pintsite_output', '' );
-
-		if ( empty( $code ) )
-			$code = $this->get_option( 'pint_verification' );
+		$code = (string) apply_filters( 'the_seo_framework_pintsite_output', $this->get_option( 'pint_verification' ) );
 
 		if ( empty( $code ) )
 			return '';
@@ -973,12 +934,11 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function robots() {
 
-		// Don't do anything if the blog isn't set to public.
-		if ( ! get_option( 'blog_public' ) )
+		//* Don't do anything if the blog isn't set to public.
+		if ( false === $this->is_blog_public() )
 			return '';
 
-		$robots = '';
-		$meta = $this->robots_meta();
+		$meta = (array) apply_filters( 'the_seo_framework_robots_meta', $this->robots_meta() );
 
 		//* Add meta if any exist
 		if ( ! empty( $meta ) )
@@ -1023,7 +983,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function shortlink() {
 
-		$url = $this->get_shortlink();
+		$url = (string) apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink() );
 
 		if ( ! empty( $url ) )
 			return sprintf( '<link rel="shortlink" href="%s" />' . "\r\n", $url );
@@ -1045,30 +1005,16 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		$next = $this->get_paged_url( 'next' );
 		$prev = $this->get_paged_url( 'prev' );
 
-		$output = '';
+		$output = (string) apply_filters( 'the_seo_framework_paged_url_output', '' );
 
-		if ( $prev )
-			$output .= sprintf( '<link rel="prev" href="%s" />' . "\r\n", $prev );
-		if ( $next )
-			$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
+		if ( empty( $output ) ) {
+			if ( $prev )
+				$output .= sprintf( '<link rel="prev" href="%s" />' . "\r\n", $prev );
+			if ( $next )
+				$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
+		}
 
 		return $output;
-	}
-
-	/**
-	 * Detemrmines wether to add or remove title additions.
-	 *
-	 * @since 2.5.2
-	 * @return bool True when additions are allowed.
-	 */
-	public function add_title_additions() {
-
-		$remove = $this->get_option( 'title_rem_additions' );
-
-		if ( ! $remove )
-			return true;
-
-		return false;
 	}
 
 }

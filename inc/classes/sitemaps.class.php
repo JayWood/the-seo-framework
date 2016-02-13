@@ -138,15 +138,13 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	public function maybe_output_sitemap() {
 
 		if ( (bool) $this->get_option( 'sitemaps_output' ) && $this->pretty_permalinks ) {
-			global $current_blog;
-
 			/**
 			 * Don't do anything on a deleted or spam blog.
 			 * There's nothing to find anyway. Multisite Only.
 			 *
 			 * @since 2.2.9
 			 */
-			if ( isset( $current_blog ) && ( 1 == $current_blog->spam || 1 == $current_blog->deleted ) )
+			if ( $this->current_blog_is_spam_or_deleted() )
 				return;
 
 			global $wp_query;
@@ -179,7 +177,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $this->the_seo_framework_debug && headers_sent() )
 			$setheader = false;
 
-		if ( false !== $setheader )
+		if ( $setheader )
 			header( 'Content-type: text/xml; charset=utf-8' );
 
 		echo $xml_content . "\r\n";
@@ -205,7 +203,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 */
 		$sitemap_content = get_transient( $this->sitemap_transient );
 
-		if ( false == $sitemap_content ) {
+		if ( false === $sitemap_content ) {
 			$cached_content = "\r\n<!-- " . __( 'Sitemap is generated for this view', 'autodescription' ) . " -->";
 		} else {
 			$cached_content = "\r\n<!-- " . __( 'Sitemap is served from cache', 'autodescription' ) . " -->";
@@ -220,10 +218,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		/**
 		 * Output debug info.
-		 *
 		 * @since 2.3.7
 		 */
-		if ( defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG && function_exists( 'memory_get_usage' ) ) {
+		if ( $this->the_seo_framework_debug ) {
 			$content .= "\r\n<!-- Site current usage: " . ( memory_get_usage() / 1024 / 1024 ) . " MB -->";
 			$content .= "\r\n<!-- System current usage: " . ( memory_get_usage( true ) / 1024 / 1024 ) . " MB -->";
 			$content .= "\r\n<!-- Sitemap generation time: " . ( number_format( microtime( true ) - $timer_start, 6 ) ) . " seconds -->";
@@ -386,7 +383,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$page_on_front = (int) get_option( 'page_on_front' );
 			$page_for_posts_option = (int) get_option( 'page_for_posts' );
-			$page_show_on_front = ( 'page' == get_option( 'show_on_front' ) ) ? true : false;
+			$page_show_on_front = 'page' === get_option( 'show_on_front' ) ? true : false;
 
 			/**
 			 * This can be heavy.
@@ -403,9 +400,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 						$noindex = (bool) $this->get_custom_field( '_genesis_noindex', $page_id );
 
 						//* Continue if indexed.
-						if ( ! $noindex ) {
+						if ( false === $noindex ) {
 							//* Don't add the posts page.
-							if ( ! $page_show_on_front || ! ( $page_show_on_front && $page_id == $page_for_posts_option ) ) {
+							if ( false === $page_show_on_front || false === ( $page_show_on_front && $page_id === $page_for_posts_option ) ) {
 
 								$content .= "	<url>\r\n";
 								// No need to use static vars.
@@ -576,7 +573,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 */
 		$custom_urls = (array) apply_filters( 'the_seo_framework_sitemap_additional_urls', array() );
 
-		if ( ! empty( $custom_urls ) ) {
+		if ( false === empty( $custom_urls ) ) {
 			foreach ( $custom_urls as $url => $args ) {
 
 				if ( ! is_array( $args ) ) {
@@ -627,7 +624,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 *
 		 * @since 2.3.1
 		 */
-		if ( ! $this->get_option( 'site_noindex' ) && get_option( 'blog_public' ) ) {
+		if ( false === $this->is_option_checked( 'site_noindex' ) && $this->is_blog_public() ) {
 			global $blog_id;
 
 			$blog_id = (string) $blog_id;
@@ -718,7 +715,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		/**
 		 * Don't do anything if the blog isn't public
 		 */
-		if ( '0' == $public )
+		if ( '0' === $public )
 			return $robots_txt;
 
 		$revision = '1';
@@ -753,7 +750,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 * Prevents query indexing
 			 * @since 2.2.9
 			 *
-			 * Applies filters the_seo_framework_robots_disallow_queries : Wether to allow queries for robots.
+			 * Applies filters the_seo_framework_robots_disallow_queries : Whether to allow queries for robots.
 			 * @since 2.5.0
 			 */
 			if ( (bool) apply_filters( 'the_seo_framework_robots_disallow_queries', false ) )
@@ -888,7 +885,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	public function wpmudev_domainmap_flush_fix( $options_saved = false ) {
 
 		if ( $this->pretty_permalinks && $this->is_domainmapping_active() ) {
-			if ( current_action() == 'init' || $options_saved ) {
+			if ( 'init' === current_action() || $options_saved ) {
 				if ( class_exists( 'Domainmap_Module_Cdsso' ) && defined( 'Domainmap_Module_Cdsso::SSO_ENDPOINT' ) ) {
 					add_rewrite_endpoint( Domainmap_Module_Cdsso::SSO_ENDPOINT, EP_ALL );
 
@@ -902,7 +899,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 								update_site_option( $key, false );
 							}
 						} else {
-							if ( ! get_site_option( $key ) ) {
+							if ( false === get_site_option( $key ) ) {
 								//* Prevent flushing multiple times.
 								update_site_option( $key, true );
 

@@ -5,9 +5,9 @@ table.wp-list-table .column-name {
 	width: 15%;
 }
 
- table.wp-list-table .column-is_in_stock,
- table.wp-list-table .column-sku,
- table.wp-list-table .column-price {
+table.wp-list-table .column-is_in_stock,
+table.wp-list-table .column-sku,
+table.wp-list-table .column-price {
 	 width: 8%;
 }
 

@@ -24,7 +24,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Init extends AutoDescription_Core {
+class AutoDescription_Init extends AutoDescription_Debug {
 
 	/**
 	 * Allow object caching through a filter.
@@ -41,6 +41,7 @@ class AutoDescription_Init extends AutoDescription_Core {
 	 * @since 2.1.6
 	 */
 	public function __construct() {
+		parent::__construct();
 
 		add_action( 'init', array( $this, 'autodescription_run' ), 1 );
 		add_action( 'template_redirect', array( $this, 'custom_field_redirect') );

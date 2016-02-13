@@ -266,7 +266,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		//* Prefered 1500px, resize it
 		if ( $w > 1500 || $h > 1500 ) {
 
-			if ( $w == $h ) {
+			if ( $w === $h ) {
 				//* Square
 				$w = 1500;
 				$h = 1500;
@@ -294,10 +294,10 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 			$i_file_old_name	= basename( get_attached_file( $id ) );
 			$i_file_ext			= pathinfo( $i_file_path, PATHINFO_EXTENSION );
 
-			if ( ! empty( $i_file_ext ) ) {
+			if ( false === empty( $i_file_ext ) ) {
 				$i_file_dir_name 	= pathinfo( $i_file_path, PATHINFO_DIRNAME );
 				// Add trailing slash
-				$i_file_dir_name	.= ( substr( $i_file_dir_name, -1 ) == '/' ? '' : '/' );
+				$i_file_dir_name	.= '/' === ( substr( $i_file_dir_name, -1 ) ? '' : '/' );
 
 				$i_file_file_name 	= pathinfo( $i_file_path, PATHINFO_FILENAME );
 
@@ -400,7 +400,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 				}
 			}
 
-			$image = ! empty( $path ) ? $path : '';
+			$image = empty( $path ) ? '' : $path;
 		}
 
 		return $image;
@@ -419,7 +419,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		$icon = '';
 
 		if ( function_exists( 'has_site_icon' ) && $this->wp_version( '4.3.0', '>=' ) ) {
-			if ( $size == 'full' ) {
+			if ( 'full' === $size ) {
 				$site_icon_id = get_option( 'site_icon' );
 
 				$url_data = '';

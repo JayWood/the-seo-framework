@@ -205,7 +205,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		 * Check hook first.
 		 * @since 2.3.9
 		 */
-		if ( isset( $hook ) && ! empty( $hook ) && ( $hook == 'edit.php' || $hook == 'post.php' || $hook = 'edit-tags.php' ) ) {
+		if ( isset( $hook ) && false === empty( $hook ) && ( $hook === 'edit.php' || $hook === 'post.php' || $hook === 'edit-tags.php' ) ) {
 			/**
 			 * @uses $this->post_type_supports_custom_seo()
 			 * @since 2.3.9
@@ -230,7 +230,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 */
 	public function enqueue_admin_javascript( $hook ) {
 
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$suffix = $this->script_debug ? '' : '.min';
 
 		wp_enqueue_script( $this->js_name, THE_SEO_FRAMEWORK_DIR_URL . "lib/js/autodescription{$suffix}.js", array( 'jquery' ), THE_SEO_FRAMEWORK_VERSION, true );
 
@@ -343,7 +343,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 				// Home is a blog.
 				$inpost_title = '';
 			}
-			$title = ! empty( $inpost_title ) ? $inpost_title : $blog_name;
+			$title = false === empty( $inpost_title ) ? $inpost_title : $blog_name;
 			$additions = $home_tagline ? $home_tagline : $description;
 		}
 
@@ -379,7 +379,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		if ( is_rtl() )
 			$rtl = '-rtl';
 
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$suffix = $this->script_debug ? '' : '.min';
 
 		wp_enqueue_style( 'autodescription-css', THE_SEO_FRAMEWORK_DIR_URL . "lib/css/autodescription{$rtl}{$suffix}.css", array(), THE_SEO_FRAMEWORK_VERSION, 'all' );
 

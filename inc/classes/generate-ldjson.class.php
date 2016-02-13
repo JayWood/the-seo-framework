@@ -135,15 +135,15 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			 * Sort by parents without children ($todo). These are singular 2 item scripts.
 			 */
 			foreach ( $kittens as $parent => $kitten ) {
-				if ( ! empty( $kitten ) ) {
-					if ( 1 == count( $kitten ) ) {
+				if ( empty( $kitten ) ) {
+					$todo[] = $parent;
+				} else {
+					if ( 1 === count( $kitten ) ) {
 						$trees[] = array( $kitten[0], $parent );
 					} else {
 						//* @TODO, this is very, very complicated. Requires multiple loops.
 						$trees[] = array();
 					}
-				} else {
-					$todo[] = $parent;
 				}
 			}
 
@@ -292,7 +292,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 			if ( $home_title ) {
 				$custom_name = $home_title;
-			} else if ( 'page' == get_option( 'show_on_front' ) ) {
+			} else if ( 'page' === get_option( 'show_on_front' ) ) {
 				$home_id = (int) get_option( 'page_on_front' );
 
 				$custom_name = $this->get_custom_field( '_genesis_title', $home_id );

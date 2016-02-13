@@ -772,11 +772,11 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$default = $this->is_default_checked( $key, $setting, false, false );
 		$warned = $this->is_warning_checked( $key, $setting, false, false );
 
-		if ( ! empty( $default ) && ! empty( $warned ) ) {
+		if ( false === empty( $default ) && false === empty( $warned ) ) {
 			$class = $default . ' ' . $warned;
-		} else if ( ! empty( $default ) ) {
+		} else if ( false === empty( $default ) ) {
 			$class = $default;
-		} else if ( ! empty( $warned ) ) {
+		} else if ( false === empty( $warned ) ) {
 			$class = $warned;
 		}
 

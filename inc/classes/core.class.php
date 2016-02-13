@@ -26,11 +26,9 @@
 class AutoDescription_Core {
 
 	/**
-	 * Constructor, load parent constructor
+	 * Constructor, just be there for me when I need you.
 	 */
-	public function __construct() {
-		parent::__construct();
-	}
+	public function __construct() {	}
 
 	/**
 	 * Get the real page ID, also depending on CPT.
@@ -60,7 +58,7 @@ class AutoDescription_Core {
 		if ( ! $is_admin )
 			$id = $this->check_the_real_ID();
 
-		if ( ! isset( $id ) || empty( $id ) ) {
+		if ( false === isset( $id ) || empty( $id ) ) {
 			//* Does not always return false.
 			$id = get_queried_object_id();
 
@@ -69,7 +67,7 @@ class AutoDescription_Core {
 		}
 
 		//* Turn ID into false if empty.
-		$id = ! empty( $id ) ? $id : false;
+		$id = empty( $id ) ? false : $id;
 
 		return $id;
 	}
@@ -109,6 +107,23 @@ class AutoDescription_Core {
 		$cached_id = (int) apply_filters( 'the_seo_framework_real_id', $id );
 
 		return $cached_id;
+	}
+
+	/**
+	 * Returns the front page ID, if home is a page.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool|int false or the ID.
+	 */
+	public function get_the_front_page_ID() {
+
+		static $front_id = null;
+
+		if ( isset( $front_id ) )
+			return $front_id;
+
+		return $front_id = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : false;
 	}
 
 	/**
@@ -339,6 +354,133 @@ class AutoDescription_Core {
 			return wp_cache_get( $key, $group, $force, $found );
 
 		return false;
+	}
+
+	/**
+	 * Checks if the string input is exactly an empty string.
+	 *
+	 * @param string $string The string to check.
+	 *
+	 * @since 2.6.0
+	 * @return bool
+	 */
+	public function is_empty_string( $string ) {
+
+		if ( '' === $string )
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Checks if the option is used and not empty.
+	 *
+	 * @param string $option The option name.
+	 *
+	 * @since 2.6.0
+	 * @return bool Option is filled in.
+	 */
+	public function is_option_filled_in( $option ) {
+
+		$option = $this->get_option( $option );
+
+		if ( $this->is_empty_string( $option ) )
+			return false;
+
+		return true;
+	}
+
+	/**
+	 * Checks if the string input is exactly '1'.
+	 *
+	 * @param string $value The value to check.
+	 *
+	 * @since 2.6.0
+	 * @return bool true if value is '1'
+	 */
+	public function is_checked( $value ) {
+
+		if ( '1' === $value )
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Checks if the option is used and checked.
+	 *
+	 * @param string $option The option name.
+	 *
+	 * @since 2.6.0
+	 * @return bool Option is checked.
+	 */
+	public function is_option_checked( $option ) {
+
+		$option = $this->get_option( $option );
+
+		if ( $this->is_checked( $option ) )
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Checks if blog is public through WordPress core settings.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @return bool True is blog is public.
+	 */
+	public function is_blog_public() {
+
+		$cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		if ( '1' === get_option( 'blog_public' ) )
+			return $cache = true;
+
+		return $cache = false;
+	}
+
+	/**
+	 * Whether the current blog is spam or deleted.
+	 * Multisite Only.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @global object $current_blog. NULL on single site.
+	 *
+	 * @return bool Current blog is spam.
+	 */
+	public function current_blog_is_spam_or_deleted() {
+		global $current_blog;
+
+		if ( isset( $current_blog ) && ( '1' === $current_blog->spam || '1' === $current_blog->deleted ) )
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Whether to lowercase the noun or keep it UCfirst.
+	 * Depending if language is German.
+	 *
+	 * @staticvar array $lowercase Contains nouns.
+	 * @since 2.6.0
+	 *
+	 * @return string The maybe lowercase noun.
+	 */
+	public function maybe_lowercase_noun( $noun ) {
+
+		static $lowercase = array();
+
+		if ( isset( $lowercase[$noun] ) )
+			return $lowercase[$noun];
+
+		return $lowercase[$noun] = $this->is_locale( 'de' ) ? $noun : strtolower( $noun );
 	}
 
 }

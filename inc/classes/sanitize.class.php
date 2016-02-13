@@ -530,13 +530,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		if ( $key )
 			return (string) $new_value;
 
-		static $home_id = null;
-
-		if ( ! isset( $home_id ) ) {
-			// $home_id as false will flush blog front-page.
-			$home_id = 'page' == get_option( 'show_on_front' ) ? get_option( 'page_on_front' ) : false;
-			$this->delete_ld_json_transient( $home_id );
-		}
+		$this->delete_front_ld_json_transient();
 
 		$previous = $this->get_field_value( 'knowledge_type' );
 
@@ -553,7 +547,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 */
 	protected function s_left_right( $new_value ) {
 
-		if ( (string) $new_value == 'left' || (string) $new_value == 'right' )
+		if ( $new_value === 'left' || $new_value === 'right' )
 			return (string) $new_value;
 
 		$previous = $this->get_field_value( 'title_location' );
@@ -575,7 +569,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 */
 	protected function s_left_right_home( $new_value ) {
 
-		if ( (string) $new_value == 'left' || (string) $new_value == 'right' )
+		if ( $new_value === 'left' || $new_value === 'right' )
 			return (string) $new_value;
 
 		$previous = $this->get_field_value( 'home_title_location' );
@@ -702,13 +696,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 */
 	protected function s_url( $new_value ) {
 
-		static $home_id = null;
-
-		if ( ! isset( $home_id ) ) {
-			// $home_id as false will flush blog front-page.
-			$home_id = 'page' == get_option( 'show_on_front' ) ? get_option( 'page_on_front' ) : false;
-			$this->delete_ld_json_transient( $home_id );
-		}
+		$this->delete_front_ld_json_transient();
 
 		/**
 		 * Remove query strings
@@ -736,13 +724,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 * @return string String a safe URL with Query Arguments.
 	 */
 	protected function s_url_query( $new_value ) {
-		static $home_id = null;
 
-		if ( ! isset( $home_id ) ) {
-			// $home_id as false will flush blog front-page.
-			$home_id = 'page' == get_option( 'show_on_front' ) ? get_option( 'page_on_front' ) : false;
-			$this->delete_ld_json_transient( $home_id );
-		}
+		$this->delete_front_ld_json_transient();
 
 		return esc_url_raw( $new_value );
 	}
