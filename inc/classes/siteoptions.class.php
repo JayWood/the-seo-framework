@@ -415,15 +415,16 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 * @thanks StudioPress (http://www.studiopress.com/) for some code.
 	 */
 	public function register_settings() {
+
 		//* If this page doesn't store settings, no need to register them
-		if ( ! $this->settings_field )
+		if ( empty( $this->settings_field ) )
 			return;
 
 		register_setting( $this->settings_field, $this->settings_field );
 		add_option( $this->settings_field, $this->default_site_options() );
 
 		//* If this page isn't the SEO Settings page, there's no need to check for a reset.
-		if ( ! $this->is_menu_page( $this->page_id ) )
+		if ( false === $this->is_menu_page( $this->page_id ) )
 			return;
 
 		if ( $this->get_option( 'reset', $this->settings_field ) ) {

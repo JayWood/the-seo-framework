@@ -42,7 +42,7 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 	 */
 	public function the_content_feed( $content, $feed_type ) {
 
-		if ( ! empty( $content ) ) {
+		if ( $content ) {
 
 			if ( $this->get_option( 'excerpt_the_feed' ) ) {
 				//* Strip all code and lines.

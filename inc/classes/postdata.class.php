@@ -66,7 +66,7 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		//* Remove line breaks
 		foreach ( $lines as $i => $line ) {
 			//* Don't add empty lines or paragraphs
-			if ( ! empty( $line ) && '&nbsp;' !== $line )
+			if ( $line && '&nbsp;' !== $line )
 				$new_lines[] = trim( $line ) . ' ';
 		}
 
@@ -145,7 +145,7 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		}
 
 		// Something went wrong, nothing to be found. Return empty.
-		if ( false === isset( $post ) || false === is_array( $post ) )
+		if ( ! isset( $post ) || ! is_array( $post ) )
 			return '';
 
 		//* Stop getting something that doesn't exists. E.g. 404

@@ -43,7 +43,7 @@ class AutoDescription_Core {
 	 */
 	public function get_the_real_ID( $use_cache = true ) {
 
-		$is_admin = is_admin();
+		$is_admin = $this->is_admin();
 
 		//* Never use cache in admin. Only causes bugs.
 		$use_cache = $is_admin ? false : $use_cache;
@@ -55,19 +55,19 @@ class AutoDescription_Core {
 				return $id;
 		}
 
-		if ( ! $is_admin )
+		if ( false === $is_admin )
 			$id = $this->check_the_real_ID();
 
-		if ( false === isset( $id ) || empty( $id ) ) {
+		if ( ! isset( $id ) || ! $id ) {
 			//* Does not always return false.
 			$id = get_queried_object_id();
 
-			if ( empty( $id ) )
+			if ( ! $id && false === $this->is_archive() )
 				$id = get_the_ID();
 		}
 
-		//* Turn ID into false if empty.
-		$id = empty( $id ) ? false : $id;
+		//* Turn ID into 0 if empty.
+		$id = ! $id ? 0 : $id;
 
 		return $id;
 	}
@@ -114,7 +114,7 @@ class AutoDescription_Core {
 	 *
 	 * @since 2.6.0
 	 *
-	 * @return bool|int false or the ID.
+	 * @return int the ID.
 	 */
 	public function get_the_front_page_ID() {
 
@@ -123,7 +123,7 @@ class AutoDescription_Core {
 		if ( isset( $front_id ) )
 			return $front_id;
 
-		return $front_id = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : false;
+		return $front_id = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : 0;
 	}
 
 	/**
@@ -230,7 +230,7 @@ class AutoDescription_Core {
 		$custom_field = get_post_meta( $post_id, $field, true );
 
 		// If custom field is empty, return null.
-		if ( ! $custom_field )
+		if ( empty( $custom_field ) )
 			$field_cache[$field][$post_id] = '';
 
 		//* Render custom field, slashes stripped, sanitized if string
@@ -357,37 +357,35 @@ class AutoDescription_Core {
 	}
 
 	/**
-	 * Checks if the string input is exactly an empty string.
+	 * Faster way of doing an in_array search compared to default PHP behavior.
+	 * @NOTE only to show improvement with large arrays. Might slow down with small arrays.
+	 * @NOTE can't do type checks. Always assume the comparing value is a string.
 	 *
-	 * @param string $string The string to check.
+	 * @uses array_flip()
+	 * @uses isset()
 	 *
-	 * @since 2.6.0
-	 * @return bool
+	 * @since 2.5.2
+	 *
+	 * @param string|array $needle The needle(s) to search for
+	 * @param array $array The single dimensional array to search in.
+	 *
+	 * @return bool true if value is in array.
 	 */
-	public function is_empty_string( $string ) {
+	public function in_array( $needle, $array ) {
 
-		if ( '' === $string )
-			return true;
+		$array = array_flip( $array );
+
+		if ( is_string( $needle ) ) {
+			if ( isset( $array[$needle] ) )
+				return true;
+		} else if ( is_array( $needle ) ) {
+			foreach ( $needle as $str ) {
+				if ( isset( $array[$str] ) )
+					return true;
+			}
+		}
 
 		return false;
-	}
-
-	/**
-	 * Checks if the option is used and not empty.
-	 *
-	 * @param string $option The option name.
-	 *
-	 * @since 2.6.0
-	 * @return bool Option is filled in.
-	 */
-	public function is_option_filled_in( $option ) {
-
-		$option = $this->get_option( $option );
-
-		if ( $this->is_empty_string( $option ) )
-			return false;
-
-		return true;
 	}
 
 	/**

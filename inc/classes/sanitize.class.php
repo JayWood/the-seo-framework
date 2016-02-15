@@ -504,7 +504,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		//* Remove line breaks
 		foreach ( $lines as $i => $line ) {
 			//* Don't add empty lines or paragraphs
-			if ( ! empty( $line ) && '&nbsp;' !== $line )
+			if ( $line && '&nbsp;' !== $line )
 				$new_lines[] = trim( $line ) . ' ';
 		}
 
@@ -772,7 +772,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 		if ( substr( $profile, 0, 4 ) === 'http' ) {
 			$path = str_replace( '/', '', parse_url( $profile, PHP_URL_PATH ) );
-			$profile = ! empty( $path ) ? '@' . $path : '';
+			$profile = $path ? '@' . $path : '';
 
 			return (string) $profile;
 		}
@@ -824,7 +824,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 		$url = strip_tags( $new_value );
 
-		if ( ! empty( $url ) ) {
+		if ( $url ) {
 
 			$allow_external = $this->allow_external_redirect();
 
@@ -833,7 +833,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			 *
 			 * @requires WP 4.1.0 and up to prevent adding upon itself.
 			 */
-			if ( ! $allow_external )
+			if ( false === $allow_external )
 				$url = ltrim( wp_make_link_relative( $url ), '/' );
 
 			//* URL pattern without path
@@ -847,7 +847,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 						;
 
 			//* If link is relative, make it full again
-			if ( preg_match( $pattern, $url ) !== 1 ) {
+			if ( _wp_can_use_pcre_u() && 1 !== preg_match( $pattern, $url ) ) {
 
 				//* The url is a relative path
 				$path = $url;
@@ -867,7 +867,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 						$this->object_cache_set( $mapped_key, $mapped_domain, 3600 );
 					}
 
-					if ( ! empty( $mapped_domain ) ) {
+					if ( $mapped_domain ) {
 						//* Set that the domain is mapped
 						$ismapped = '1';
 
@@ -880,7 +880,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 							$this->object_cache_set( $scheme_key, $mappedscheme, 3600 );
 						}
 
-						if ( $mappedscheme === '1' ) {
+						if ( '1' === $mappedscheme ) {
 							$scheme_full = 'https://';
 							$scheme = 'https';
 						} else {
@@ -894,12 +894,12 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				}
 
 				//* Non-mapped URL
-				if ( $ismapped !== '1' ) {
+				if ( '1' !== $ismapped ) {
 					$url = home_url( add_query_arg( array(), $path ) );
 					$scheme = is_ssl() ? 'https' : 'http';
 				}
 
-				$scheme = ! empty( $scheme ) ? $scheme : '';
+				$scheme = $scheme ? $scheme : '';
 
 				$url = esc_url_raw( $url, $scheme );
 

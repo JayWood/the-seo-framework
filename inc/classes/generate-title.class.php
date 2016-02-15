@@ -76,9 +76,9 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 */
 		if ( ! is_array( $args ) ) {
 			//* Old style parameters are used. Doing it wrong.
-			_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', $this->the_seo_framework_version( '2.4.0' ) );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.4.0', __LINE__ );
 			$args = $default_args;
-		} else if ( ! empty( $args ) ) {
+		} else if ( $args ) {
 			$args = $this->parse_title_args( $args, $default_args );
 		} else {
 			$args = $default_args;
@@ -99,7 +99,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 */
 		if ( ! $args['meta'] ) {
 			if ( false === $this->current_theme_supports_title_tag() && doing_filter( 'wp_title' ) ) {
-				if ( ! empty( $seplocation ) ) {
+				if ( $seplocation ) {
 					//* Set doing it wrong parameters.
 					$this->tell_title_doing_it_wrong( $title, $sep, $seplocation, false );
 					//* And echo them.
@@ -112,7 +112,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 					$this->set_theme_dir_transient( false );
 
 					return $this->build_title_doingitwrong( $title, $sep, $seplocation, $args );
-				} else if ( ! empty( $sep ) ) {
+				} else if ( $sep ) {
 					//* Set doing it wrong parameters.
 					$this->tell_title_doing_it_wrong( $title, $sep, $seplocation, false );
 					//* And echo them.
@@ -266,11 +266,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 			if ( $args['page_on_front'] ) {
 				$title = get_the_title( get_option( 'page_on_front' ) );
-			} else if ( '' !== $args['taxonomy'] ) {
+			} else if ( $args['taxonomy'] ) {
 				$term = get_term( $term_id, $args['taxonomy'], OBJECT, 'raw' );
 
 				$title = $this->get_the_real_archive_title( $term );
-			} else if ( ! empty( $term_id ) ) {
+			} else if ( $term_id ) {
 				$title = get_the_title( $term_id );
 			} else {
 				$post = get_post( $term_id, OBJECT );
@@ -279,7 +279,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 				 * Memory leak fix
 				 * @since 2.3.5
 				 */
-				$title = isset( $post->post_title ) && ! empty( $post->post_title ) ? $post->post_title : '';
+				$title = isset( $post->post_title ) && $post->post_title ? $post->post_title : '';
 			}
 		}
 
@@ -350,7 +350,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		$add_sep = (bool) apply_filters( 'the_seo_framework_doingitwrong_add_sep', true );
 
 		//* Maybe remove separator.
-		if ( $add_sep && ( ! empty( $sep ) || ! empty( $title ) ) ) {
+		if ( $add_sep && ( $sep || $title ) ) {
 			$sep_replace = true;
 			$sep_to_replace = (string) $sep;
 		}
@@ -361,7 +361,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 			if ( empty( $title_special ) ) {
 				$title_from_custom_field = $this->title_from_custom_field( $title, false, $args['term_id'] );
-				$title = ! empty( $title_from_custom_field ) ? $title_from_custom_field : $title;
+				$title = $title_from_custom_field ? $title_from_custom_field : $title;
 			} else {
 				$title = $title_special;
 			}
@@ -450,7 +450,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( false === $args['description_title'] ) {
 			$post = get_post( $args['term_id'], OBJECT );
 
-			if ( isset( $post->post_password ) && ! empty( $post->post_password ) ) {
+			if ( isset( $post->post_password ) && $post->post_password ) {
 				$protected_title_format = apply_filters( 'protected_title_format', __( 'Protected: %s', 'autodescription' ), $post );
 				$title = sprintf( $protected_title_format, $title );
 			} else if ( isset( $post->post_status ) && 'private' === $post->post_status ) {
@@ -515,7 +515,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Filters the separator location
 		 * @since 2.1.8
 		 */
-		if ( '' === $seplocation || 'right' !== $seplocation || 'left' !== $seplocation || empty( $seplocation ) ) {
+		if ( empty( $seplocation ) || 'right' !== $seplocation || 'left' !== $seplocation ) {
 			/**
 			 * Applies filters 'the_seo_framework_title_seplocation' : String the title location.
 			 */
@@ -534,7 +534,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 			if ( empty( $title_special ) ) {
 				$title_from_custom_field = $this->title_from_custom_field( $title, '', $args['term_id'] );
-				$title = ! empty( $title_from_custom_field ) ? $title_from_custom_field : $title;
+				$title = $title_from_custom_field ? $title_from_custom_field : $title;
 			} else {
 				$title = $title_special;
 			}
@@ -556,7 +556,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $is_front_page || $this->is_static_frontpage( $args['term_id'] ) || $args['is_front_page'] ) {
 			$generated = (array) $this->generate_home_title( $args['get_custom_field'], $seplocation, $seplocation_home, $escape = false );
 
-			if ( ! empty( $generated ) && is_array( $generated ) ) {
+			if ( $generated && is_array( $generated ) ) {
 				$title = $generated['title'] ? (string) $generated['title'] : $title;
 				$blogname = $generated['blogname'] ? (string) $generated['blogname'] : $blogname;
 				$add_tagline = $generated['add_tagline'] ? (bool) $generated['add_tagline'] : $add_tagline;
@@ -609,14 +609,16 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 				$title = $blogname;
 			}
 
-			/**
-			 * Get blogname additions from option, invert it and cast to bool.
-			 * @since 2.5.2
-			 */
-			$add_blogname_option = (bool) ! $this->get_option( 'title_rem_additions' );
-			//* If theme is doing it wrong, add it anyway in the admin area.
-			if ( is_admin() && ! $this->can_manipulate_title() )
+			if ( $this->is_admin() && false === $this->can_manipulate_title() ) {
+				//* If theme is doing it wrong, add it anyway in the admin area.
 				$add_blogname_option = true;
+			} else {
+				/**
+				 * Get blogname additions from option, invert it and cast to bool.
+				 * @since 2.5.2
+				 */
+				$add_blogname_option = (bool) ! $this->get_option( 'title_rem_additions' );
+			}
 
 			/**
 			 * Applies filters the_seo_framework_add_blogname_to_title.
@@ -630,7 +632,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 *
 			 * @since 2.4.3
 			 */
-			if ( ( $add_blogname && ! $is_front_page ) || ( $is_front_page && $add_tagline ) ) {
+			if ( ( $add_blogname && false === $is_front_page ) || ( $is_front_page && $add_tagline ) ) {
 				$title = trim( $title );
 				$blogname = trim( $blogname );
 
@@ -668,7 +670,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		$title = '';
 
-		if ( ! is_admin() ) {
+		if ( false === $this->is_admin() ) {
 			if ( $this->is_ultimate_member_user_page() && um_is_core_page( 'user' ) && um_get_requested_user() ) {
 				$title = um_user( 'display_name' );
 			}
@@ -697,8 +699,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Check for singular first, like WooCommerce shop.
 		 * @since 2.5.2
 		 */
-		if ( ! $this->is_singular( $term_id ) ) {
-			if ( is_category() || is_tag() || is_tax() || ( ! empty( $term_id ) && ! empty( $taxonomy ) ) ) {
+		if ( false === $this->is_singular( $term_id ) ) {
+			if ( is_category() || is_tag() || is_tax() || ( $term_id && $taxonomy ) ) {
 				$title = $this->title_for_terms( '', $term_id, $taxonomy );
 			} else if ( is_archive() ) {
 				/**
@@ -727,11 +729,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		}
 
 		//* Generate admin placeholder for taxonomies
-		if ( empty( $title ) && ! empty( $term_id ) && ! empty( $taxonomy ) ) {
+		if ( empty( $title ) && $term_id && $taxonomy ) {
 			$term = get_term_by( 'id', $term_id, $taxonomy, OBJECT );
 
-			if ( ! empty( $term ) && is_object( $term ) ) {
-				$term_name = ! empty( $term->name ) ? $term->name : $term->slug;
+			if ( $term && is_object( $term ) ) {
+				$term_name = $term->name ? $term->name : $term->slug;
 			} else {
 				/* translators: Front-end output. */
 				$term_name = __( 'Untitled', 'autodescription' );
@@ -834,7 +836,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * @since 2.3.8
 			 */
 			$tagline = (string) $this->get_option( 'homepage_title_tagline' );
-			$title = ! empty( $tagline ) ? $tagline : $this->get_blogdescription();
+			$title = $tagline ? $tagline : $this->get_blogdescription();
 		} else {
 			$title = '';
 		}
@@ -844,7 +846,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * @since 2.2.8
 		 */
 		$title_for_home = $this->title_for_home( '', $get_custom_field, false );
-		$blogname = ! empty( $title_for_home ) ? $title_for_home : $this->get_blogname();
+		$blogname = $title_for_home ? $title_for_home : $this->get_blogname();
 
 		if ( empty( $seplocation_home ) || $seplocation_home !== 'left' || $seplocation_home !== 'right' ) {
 			/**
@@ -887,7 +889,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * @since 2.2.2
 		 */
 		$home_title_option = (string) $this->get_option( 'homepage_title' );
-		$home_title = ! empty( $home_title_option ) ? $home_title_option : $home_title;
+		$home_title = $home_title_option ? $home_title_option : $home_title;
 
 		/**
 		 * Fetch from Home Page InPost SEO Box if empty.
@@ -902,7 +904,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 */
 		if ( $get_custom_field && 'page' === get_option( 'show_on_front' ) && empty( $home_title ) ) {
 			$custom_field = $this->get_custom_field( '_genesis_title' );
-			$home_title = ! empty( $custom_field ) ? (string) $custom_field : $home_title;
+			$home_title = $custom_field ? (string) $custom_field : $home_title;
 		}
 
 		if ( $escape ) {
@@ -934,7 +936,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( '' !== $term_id && '' !== $taxonomy )
 			$term = get_term( $term_id, $taxonomy, OBJECT, 'raw' );
 
-		if ( isset( $term ) || is_category() || is_tag() ) {
+		if ( isset( $term ) || $this->is_category() || $this->is_tag() ) {
 
 			if ( ! isset( $term ) ) {
 				global $wp_query;
@@ -942,27 +944,26 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 				$term = $wp_query->get_queried_object();
 			}
 
-			$title = ! empty( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : $title;
+			$title = empty( $term->admeta['doctitle'] ) ? $title : $term->admeta['doctitle'];
 
-			$flag = $term->admeta['saved_flag'] != '0' ? true : false;
+			$flag = $this->is_checked( $term->admeta['saved_flag'] );
 
-			if ( ! $flag && empty( $title ) && isset( $term->meta['doctitle'] ) )
-				$title = ! empty( $term->meta['doctitle'] ) ? $term->meta['doctitle'] : $title;
+			if ( false === $flag && empty( $title ) && isset( $term->meta['doctitle'] ) )
+				$title = empty( $term->meta['doctitle'] ) ? $title : $term->meta['doctitle'];
 
 			if ( empty( $title ) )
 				$title = $this->get_the_real_archive_title( $term );
 
 		} else if ( is_tax() ) {
 
-			if ( ! isset( $term ) ) {
-				$term  = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
-			}
+			if ( ! isset( $term ) )
+				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 
-			$title = ! empty( $term->admeta['doctitle'] ) ? wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['doctitle'] ) ) : $title;
-			$flag = $term->admeta['saved_flag'] != '0' ? true : false;
+			$title = empty( $term->admeta['doctitle'] ) ? $title : wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['doctitle'] ) );
+			$flag = $this->is_checked( $term->admeta['saved_flag'] );
 
-			if ( ! $flag && empty( $title ) && isset( $term->meta['doctitle'] ) )
-				$title = ! empty( $term->meta['doctitle'] ) ? wp_kses_stripslashes( wp_kses_decode_entities( $term->meta['doctitle'] ) ) : $title;
+			if ( false === $flag && empty( $title ) && isset( $term->meta['doctitle'] ) )
+				$title = empty( $term->meta['doctitle'] ) ? $title : wp_kses_stripslashes( wp_kses_decode_entities( $term->meta['doctitle'] ) );
 
 			if ( empty( $title ) )
 				$title = $this->get_the_real_archive_title( $term );
@@ -1026,89 +1027,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		return (string) $title;
 	}
 
-
-	/**
-	 * Get the archive Title.
-	 *
-	 * WordPress core function 4.1.0
-	 *
-	 * @since 2.3.6
-	 */
-	public function get_the_archive_title() {
-
-		//* Return WP Core function.
-		if ( function_exists( 'get_the_archive_title' ) )
-			return get_the_archive_title();
-
-		if ( is_category() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Category: %s', 'autodescription' ), single_cat_title( '', false ) );
-		} elseif ( is_tag() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Tag: %s', 'autodescription' ), single_tag_title( '', false ) );
-		} elseif ( is_author() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Author: %s', 'autodescription' ), '<span class="vcard">' . get_the_author() . '</span>' );
-		} elseif ( is_year() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Year: %s', 'autodescription' ), get_the_date( _x( 'Y', 'yearly archives date format', 'autodescription' ) ) );
-		} elseif ( is_month() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Month: %s', 'autodescription' ), get_the_date( _x( 'F Y', 'monthly archives date format', 'autodescription' ) ) );
-		} elseif ( is_day() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Day: %s', 'autodescription' ), get_the_date( _x( 'F j, Y', 'daily archives date format', 'autodescription' ) ) );
-		} elseif ( is_tax( 'post_format' ) ) {
-			if ( is_tax( 'post_format', 'post-format-aside' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Asides', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-gallery' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Galleries', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-image' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Images', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-video' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Videos', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-quote' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Quotes', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-link' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Links', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-status' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Statuses', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-audio' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Audio', 'post format archive title', 'autodescription' );
-			} elseif ( is_tax( 'post_format', 'post-format-chat' ) ) {
-				/* translators: Front-end output. */
-				$title = _x( 'Chats', 'post format archive title', 'autodescription' );
-			}
-		} elseif ( is_post_type_archive() ) {
-			/* translators: Front-end output. */
-			$title = sprintf( __( 'Archives: %s' ), post_type_archive_title( '', false ) );
-		} elseif ( is_tax() ) {
-			$tax = get_taxonomy( get_queried_object()->taxonomy );
-			/* translators: Front-end output. 1: Taxonomy singular name, 2: Current taxonomy term */
-			$title = sprintf( __( '%1$s: %2$s', 'autodescription' ), $tax->labels->singular_name, single_term_title( '', false ) );
-		} else {
-			/* translators: Front-end output. */
-			$title = __( 'Archives', 'autodescription' );
-		}
-
-		/**
-		* Filter the archive title.
-		*
-		* @since 4.1.0
-		*
-		* @param string $title Archive title to be displayed.
-		*/
-		return apply_filters( 'get_the_archive_title', $title );
-	}
-
 	/**
 	 * Get the archive Title, including filter. Also works in admin.
 	 * Based from WordPress core function 4.1.0
@@ -1119,14 +1037,14 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function get_the_real_archive_title( $term = null ) {
 
-		if ( ! isset( $term ) )
+		if ( is_null( $term ) )
 			$term = get_queried_object();
 
-		if ( isset( $term ) || is_archive() ) {
+		if ( $term || $this->is_archive() ) {
 
 			/**
 			 * Applies filters the_seo_framework_the_archive_title : {
-			 *		string Title to short circuit title output.
+			 *		@param string empty short circuit the function.
 			 * 		@param object $term The Term object.
 			 *	}
 			 *
@@ -1147,7 +1065,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 */
 			$prefix = (bool) apply_filters( 'the_seo_framework_use_archive_title_prefix', true, $term );
 
-			if ( is_admin() ) {
+			if ( $this->is_admin() ) {
 				$tax_type = $term->taxonomy;
 
 				/**
@@ -1239,7 +1157,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			return $title;
 		}
 
-		//* Not a taxonomy.
+		//* Not a taxonomy or term.
 		return '';
 	}
 

@@ -97,7 +97,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 		register_setting( $this->network_settings_field, $this->network_settings_field );
 		add_site_option( $this->network_settings_field, $this->default_network_options );
 
-		if ( ! $this->is_menu_page( $this->network_page_id ) )
+		if ( false === $this->is_menu_page( $this->network_page_id ) )
 			return;
 
 		if ( get_site_option( 'reset', $this->network_settings_field ) ) {

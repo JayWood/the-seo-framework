@@ -145,17 +145,17 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<div class="<?php echo $id; ?>-tab-content <?php echo (int) 1 === $_count ? 'checked-tab' : ''; ?> <?php echo (int) 1 !== $_count ? 'hide-if-js' : ''; ?>" id="<?php echo $id; ?>-tab-<?php echo $tab ?>-box">
 				<h3 class="nav-tab-wrapper hide-if-js">
 					<span class="nav-tab nav-tab-active">
-						<?php echo ! empty( $dashicon ) ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' dashicons-tabs"></span>' : ''; ?>
+						<?php echo $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' dashicons-tabs"></span>' : ''; ?>
 						<?php
 						// This is no-javascript
-						echo ! empty( $name ) ? esc_attr( $name ) : '';
+						echo $name ? esc_attr( $name ) : '';
 						?>
 					</span>
 				</h3>
 			<?php
 				$callback = isset( $value['callback'] ) ? $value['callback'] : '';
 
-				if ( ! empty( $callback ) ) {
+				if ( $callback ) {
 					$params = isset( $value['args'] ) ? $value['args'] : '';
 					$output = $this->call_function( $callback, $version, $params );
 					echo $output;
@@ -186,7 +186,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		$latest_post_id = $this->get_latest_post_id();
 
-		if ( ! empty( $latest_post_id ) ) {
+		if ( $latest_post_id ) {
 			$post = get_post( $latest_post_id, OBJECT );
 			$title = esc_attr( $post->post_title );
 		} else {
@@ -592,7 +592,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * title and the frompost title.
 		 * @since 2.3.4
 		 */
-		if ( empty( $home_title ) && ! $home_is_blog_notify && ! empty( $frompost_title ) )
+		if ( empty( $home_title ) && false === $home_is_blog_notify && $frompost_title )
 			$home_title_frompost = true;
 
 		//* Get blog tagline
@@ -619,14 +619,14 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * Reworked. Creates placeholders for when it's being emptied.
 		 * @since 2.3.4
 		 */
-		if ( ! empty( $frompost_title ) ) {
+		if ( $frompost_title ) {
 			//* Fetch frompost title.
 			if ( $this->get_option( 'homepage_tagline' ) ) {
 				$home_title_placeholder = $frompost_title . " $sep " . $blog_description;
 			} else {
 				$home_title_placeholder = $frompost_title;
 			}
-		} else if ( ! empty( $home_title ) ) {
+		} else if ( $home_title ) {
 			//* Fetch default title
 			$blogname = $this->get_blogname();
 
@@ -658,15 +658,15 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * Double (nested) check.
 		 * @param string $frompost_title The possible title from the post.
 		 */
-		$title_example_pre = ! empty( $home_title ) ? $home_title : $frompost_title;
-		$title_example = ! empty( $title_example_pre ) ? $title_example_pre : $this->get_blogname();
+		$title_example_pre = $home_title ? $home_title : $frompost_title;
+		$title_example = $title_example_pre ? $title_example_pre : $this->get_blogname();
 
 		/**
 		 * Check for options to calculate title length.
 		 *
 		 * @since 2.3.4
 		 */
-		if ( ! empty( $home_title ) ) {
+		if ( $home_title ) {
 			if ( $this->get_option( 'homepage_tagline' ) ) {
 				$tit_len_pre = $home_title . " $sep " . $blog_description;
 			} else {
@@ -689,7 +689,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * Reworked. Always create a placeholder.
 		 * @since 2.3.4
 		 */
-		if ( ! empty( $frompost_description ) ) {
+		if ( $frompost_description ) {
 			$description_placeholder = $frompost_description;
 		} else {
 			$description_args = array(
@@ -706,7 +706,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * the frompost description.
 		 * @since 2.3.4
 		 */
-		if ( empty( $home_description ) && ! $home_is_blog_notify && ! empty( $frompost_description )  )
+		if ( empty( $home_description ) && false === $home_is_blog_notify && $frompost_description )
 			$home_description_frompost = true;
 
 		/**
@@ -730,7 +730,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		if ( $home_description_frompost )
 			$description_from_post_message = __( 'Note:', 'autodescription' ) . ' ' . sprintf( __( 'The %s is fetched from the %s on the %s.', 'autodescription' ), $description_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
 
-		$desc_len_pre = ! empty( $home_description ) ? $home_description : $description_placeholder;
+		$desc_len_pre = $home_description ? $home_description : $description_placeholder;
 
 		/**
 		 * Convert to what Google outputs.
@@ -1552,7 +1552,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<label for="<?php $this->field_id( $value['option'] ); ?>">
 					<strong><?php echo $value['desc'] ?></strong>
 					<?php
-					if ( ! empty( $value['examplelink'] ) ) {
+					if ( $value['examplelink'] ) {
 						?><a href="<?php echo esc_url( $value['examplelink'] ); ?>" target="_blank">[?]</a><?php
 					}
 					?>

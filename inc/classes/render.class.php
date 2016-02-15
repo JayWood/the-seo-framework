@@ -214,7 +214,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $description ) )
 			$description = $this->description_from_cache();
 
-		if ( ! empty( $description ) )
+		if ( $description )
 			return '<meta name="description" content="' . esc_attr( $description ) . '" />' . "\r\n";
 
 		return '';
@@ -379,17 +379,17 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 
 			$output = '';
 
-			if ( ! empty( $image ) )
+			if ( $image )
 				$output .= '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
 
 			$images = $this->get_image_from_woocommerce_gallery();
 
-			if ( is_array( $images ) && ! empty( $images ) ) {
+			if ( $images && is_array( $images ) ) {
 				foreach ( $images as $id ) {
 					//* Parse 1500px url.
 					$img = $this->parse_og_image( $id );
 
-					if ( ! empty( $img ) )
+					if ( $img )
 						$output .= '<meta property="og:image" content="' . esc_attr( $img ) . '" />' . "\r\n";
 				}
 			} else if ( empty( $output ) ) {
@@ -539,7 +539,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			 * Return site:id instead of creator is no twitter:site is found.
 			 * Per Twitter requirements
 			 */
-			if ( empty( $site ) && ! empty( $creator ) )
+			if ( empty( $site ) && $creator )
 				return '<meta name="twitter:site:id" content="' . esc_attr( $creator ) . '" />' . "\r\n";
 		}
 
@@ -612,7 +612,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $image ) )
 			$image = $this->get_image_from_cache();
 
-		if ( ! empty( $image ) ) {
+		if ( $image ) {
 			return '<meta name="twitter:image:src" content="' . esc_attr( $image ) . '" />' . "\r\n";
 		} else {
 			return '';
@@ -638,7 +638,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $author ) )
 			$author = $this->get_option( 'facebook_author' );
 
-		if ( ! empty( $author ) )
+		if ( $author )
 			return '<meta property="article:author" content="' . esc_attr( esc_url_raw( $author ) ) . '" />' . "\r\n";
 
 		return '';
@@ -662,7 +662,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $publisher ) )
 			$publisher = $this->get_option( 'facebook_publisher' );
 
-		if ( ! empty( $publisher ) )
+		if ( $publisher )
 			return '<meta property="article:publisher" content="' . esc_attr( esc_url_raw( $publisher ) ) . '" />' . "\r\n";
 
 		return '';
@@ -686,7 +686,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $app_id ) )
 			$app_id = $this->get_option( 'facebook_appid' );
 
-		if ( ! empty( $app_id ) )
+		if ( $app_id )
 			return '<meta property="fb:app_id" content="' . esc_attr( $app_id ) . '" />' . "\r\n";
 
 		return '';
@@ -725,7 +725,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $time ) )
 			$time = get_the_date( 'Y-m-d', '' );
 
-		if ( ! empty( $time ) )
+		if ( $time )
 			return '<meta property="article:published_time" content="' . esc_attr( $time ) . '" />' . "\r\n";
 
 		return '';
@@ -764,7 +764,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $time ) )
 			$time = the_modified_date( 'Y-m-d', '', '', false );
 
-		if ( ! empty( $time ) ) {
+		if ( $time ) {
 			$output = '<meta property="article:modified_time" content="' . esc_attr( $time ) . '" />' . "\r\n";
 
 			if ( $this->get_option( 'og_tags' ) )
@@ -820,9 +820,9 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 
 		$this->setup_ld_json_transient( $this->get_the_real_ID() );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) get_transient( $this->ld_json_transient ) ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
 
-		$output = get_transient( $this->ld_json_transient );
+		$output = $this->get_transient( $this->ld_json_transient );
 		if ( false === $output ) {
 
 			$output = '';
@@ -838,16 +838,16 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 				$searchhelper = $this->ld_json_search();
 				$knowledgegraph = $this->ld_json_knowledge();
 
-				if ( ! empty( $searchhelper ) )
+				if ( $searchhelper )
 					$output .= "<script type='application/ld+json'>" . $searchhelper . "</script>" . "\r\n";
 
-				if ( ! empty( $knowledgegraph ) )
+				if ( $knowledgegraph )
 					$output .= "<script type='application/ld+json'>" . $knowledgegraph . "</script>" . "\r\n";
 			} else {
 				$breadcrumbhelper = $this->ld_json_breadcrumbs();
 
 				//* No wrapper, is done within script generator.
-				if ( ! empty( $breadcrumbhelper ) )
+				if ( $breadcrumbhelper )
 					$output .= $breadcrumbhelper;
 			}
 
@@ -926,7 +926,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	}
 
 	/**
-	 * Output the `index`, `follow`, `noodp`, `noydir`, `noarchive` robots meta code in the document `head`.
+	 * Output robots meta tags
 	 *
 	 * @since 2.0.0
 	 *
@@ -938,10 +938,14 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( false === $this->is_blog_public() )
 			return '';
 
+		/**
+		 * Applies filters 'the_seo_framework_robots_meta' : array
+		 * @since 2.6.0
+		 */
 		$meta = (array) apply_filters( 'the_seo_framework_robots_meta', $this->robots_meta() );
 
 		//* Add meta if any exist
-		if ( ! empty( $meta ) )
+		if ( $meta )
 			return sprintf( '<meta name="robots" content="%s" />' . "\r\n", implode( ',', $meta ) );
 
 		 return '';
@@ -985,7 +989,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 
 		$url = (string) apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink() );
 
-		if ( ! empty( $url ) )
+		if ( $url )
 			return sprintf( '<link rel="shortlink" href="%s" />' . "\r\n", $url );
 
 		return '';

@@ -60,12 +60,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		 */
 		add_filter( 'genesis_detect_seo_plugins', array( $this, 'no_more_genesis_seo' ), 10 );
 
-		/**
-		 * @since 2.5.0
-		 * Doesn't work. ePanel filters are buggy and inconsistent.
-		 */
-		// add_filter( 'epanel_page_maintabs', array( $this, 'no_more_elegant_seo' ), 10, 1 );
-
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 10, 1 );
 
 		$this->js_name = 'autodescription-js';
@@ -87,7 +81,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		$allow_states = (bool) apply_filters( 'the_seo_framework_allow_states', true );
 
 		//* Prevent this function from running if this plugin is set to disabled.
-		if ( ! $allow_states )
+		if ( false === $allow_states )
 			return;
 
 		add_filter( 'display_post_states', array( $this, 'add_post_state' ) );
@@ -139,60 +133,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	}
 
 	/**
-	 * Removes ePanel (Elegant Themes) SEO options.
-	 *
-	 * @since 2.5.0
-	 */
-	public function no_more_elegant_seo( $modules = array() ) {
-
-		//* Something went wrong here.
-		if ( ! is_array( $modules ) )
-			return $modules;
-
-		$modules = array_flip( $modules );
-		unset( $modules['seo'] );
-		//* Fill the keys back in order.
-		$modules = array_values( array_flip( $modules ) );
-
-		/**
-		 * Unset globals $options['randomkeyforseo']
-		 *
-		 * @NOTE to Elegant Themes:
-		 * Why Elegant Themes? This is why I never trusted your themes. :(
-		 * Uploading most of them in binary will crash also the layout.
-		 * And having unsanitized globals $options (great name for a global!), shouldn't be used.
-		 *
-		 * Try statically cached functions, take a look at the `the_seo_framework_init` function for a great example of countering globals.
-		 *
-		 * Please also provide more documentation for developers.
-		 *
-		 * Please rewrite your ePanel. Try to start by adding keys to options and removing globals.
-		 * More filters are also for everyone's pleasure :).
-		 *
-		 * I also recommend using Atom.io or Notepad++, because whatever you're using:
-		 * It's not working well with UTF-8.
-		 *
-		 * @global $options
-		 */
-		global $options;
-
-		if ( is_array( $options ) ) {
-			$keys = array();
-
-			foreach ( $options as $key => $array ) {
-				$seo_key = array_search( 'seo', $array );
-				if ( false !== $seo_key && 'name' === $seo_key )
-					$keys[] = $seo_key;
-			}
-
-			foreach ( $keys as $key )
-				unset( $options[$key] );
-		}
-
-		return (array) $modules;
-	}
-
-	/**
 	 * Enqueues scripts in the admin area on the supported screens.
 	 *
 	 * @since 2.3.3
@@ -205,7 +145,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		 * Check hook first.
 		 * @since 2.3.9
 		 */
-		if ( isset( $hook ) && false === empty( $hook ) && ( $hook === 'edit.php' || $hook === 'post.php' || $hook === 'edit-tags.php' ) ) {
+		if ( isset( $hook ) && $hook && ( 'edit.php' === $hook || 'post.php' === $hook || 'edit-tags.php' === $hook || 'term.php' === $hook ) ) {
 			/**
 			 * @uses $this->post_type_supports_custom_seo()
 			 * @since 2.3.9
@@ -299,7 +239,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 				$title = $this->title( '', '', '', $generated_doctitle_args );
 
-				if ( ! $title_rem_additions || ! $this->can_manipulate_title() ) {
+				if ( false === $title_rem_additions || false === $this->can_manipulate_title() ) {
 					$additions = $blog_name;
 					$tagline = true;
 				} else {
@@ -343,7 +283,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 				// Home is a blog.
 				$inpost_title = '';
 			}
-			$title = false === empty( $inpost_title ) ? $inpost_title : $blog_name;
+			$title = $inpost_title ? $inpost_title : $blog_name;
 			$additions = $home_tagline ? $home_tagline : $description;
 		}
 
@@ -419,7 +359,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 */
 	public function admin_redirect( $page, array $query_args = array() ) {
 
-		if ( ! $page )
+		if ( empty( $page ) )
 			return;
 
 		$url = html_entity_decode( menu_page_url( $page, 0 ) );

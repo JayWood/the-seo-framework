@@ -493,7 +493,6 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( 3 === strlen( $wp_version ) )
 			$wp_version = $wp_version . '.0';
 
-		//* Evade 'true-ish' values.
 		if ( empty( $compare ) )
 			$compare = '>=';
 
@@ -753,106 +752,6 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	}
 
 	/**
-	 * Detect the blog page.
-	 *
-	 * @param int $id the Page ID.
-	 *
-	 * @since 2.3.4
-	 *
-	 * @staticvar bool $is_blog_page
-	 * @staticvar bool $pof
-	 *
-	 * @return bool true if is blog page. Always false if blog page is homepage.
-	 */
-	public function is_blog_page( $id = '' ) {
-
-		if ( '' === $id )
-			$o_id = $this->get_the_real_ID();
-
-		static $is_blog_page = array();
-
-		if ( isset( $is_blog_page[$id] ) )
-			return $is_blog_page[$id];
-
-		$pfp = get_option( 'page_for_posts' );
-
-		if ( 0 !== $pfp ) {
-
-			static $pof = null;
-
-			if ( ! isset( $pof ) )
-				$pof = 'page' === get_option( 'show_on_front' ) ? true : false;
-
-			if ( $pof && false === is_front_page() && false === is_archive() ) {
-				if ( isset( $o_id ) ) {
-					if ( $o_id === $pfp )
-						return $is_blog_page[$id] = true;
-				} else {
-					if ( $id === $pfp )
-						return $is_blog_page[$id] = true;
-
-					$o_id = $this->get_the_real_ID();
-
-					if ( $o_id === $pfp )
-						return $is_blog_page[$id] = true;
-				}
-			}
-		}
-
-		return $is_blog_page[$id] = false;
-	}
-
-	/**
-	 * Detect the static front page.
-	 *
-	 * @param int $id the Page ID.
-	 *
-	 * @since 2.3.9
-	 *
-	 * @staticvar array $is_frontpage
-	 * @since 2.3.8
-	 *
-	 * @return bool true if is blog page. Always false if blog page is homepage.
-	 * False early when false as ID is entered.
-	 */
-	public function is_static_frontpage( $id = '' ) {
-
-		//* Oops, passed a false ID. No need to process.
-		if ( false === $id )
-			return false;
-
-		if ( '' === $id )
-			$o_id = $this->get_the_real_ID();
-
-		static $is_frontpage = array();
-
-		if ( isset( $is_frontpage[$id] ) )
-			return $is_frontpage[$id];
-
-		$sof = (string) get_option( 'show_on_front' );
-
-		if ( 'page' === $sof ) {
-			$pof = (int) get_option( 'page_on_front' );
-
-			if ( isset( $o_id ) ) {
-				if ( $o_id === $pof )
-					return $is_frontpage[$id] = true;
-			} else {
-
-				if ( $id === $pof )
-					return $is_frontpage[$id] = true;
-
-				$o_id = $this->get_the_real_ID();
-
-				if ( $o_id === $pof )
-					return $is_frontpage[$id] = true;
-			}
-		}
-
-		return $is_frontpage[$id] = false;
-	}
-
-	/**
 	 * Detect WordPress language.
 	 * Considers en_UK, en_US, etc.
 	 *
@@ -972,111 +871,6 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	}
 
 	/**
-	 * Is Ulimate Member user page.
-	 * Check for function accessibility: um_user, um_is_core_page, um_get_requested_user
-	 *
-	 * @staticvar bool $cache
-	 * @uses $this->can_i_use()
-	 *
-	 * @since 2.5.2
-	 */
-	public function is_ultimate_member_user_page() {
-
-		static $cache = null;
-
-		if ( isset( $cache ) )
-			return $cache;
-
-		$caniuse = (bool) $this->can_i_use( array( 'functions' => array( 'um_user', 'um_is_core_page', 'um_get_requested_user' ) ), false );
-
-		return $cache = $caniuse;
-	}
-
-	/**
-	 * Check for shop page.
-	 *
-	 * @staticvar bool $cache
-	 *
-	 * @since 2.5.2
-	 */
-	public function is_wc_shop() {
-
-		static $cache = null;
-
-		if ( isset( $cache ) )
-			return $cache;
-
-		//* Can't check in admin.
-		if ( ! is_admin() && function_exists( 'is_shop' ) && is_shop() )
-			return $cache = true;
-
-		return $cache = false;
-	}
-
-	/**
-	 * Replaces default WordPress is_singular.
-	 *
-	 * @uses $this->is_blog_page()
-	 * @uses $this->is_wc_shop()
-	 * @uses is_single()
-	 * @uses is_page()
-	 * @uses is_attachment()
-	 *
-	 * @param int $id the Page ID.
-	 *
-	 * @staticvar bool $cache
-	 *
-	 * @since 2.5.2
-	 *
-	 * @return bool Post Type is singular
-	 */
-	public function is_singular( $id = 0 ) {
-
-		//* WP_Query functions require loop, do alternative check.
-		if ( is_admin() )
-			return $this->is_singular_admin();
-
-		if ( 0 === $id )
-			$id = $this->get_the_real_ID();
-
-		$cache = array();
-
-		if ( isset( $cache[$id] ) )
-			return $cache[$id];
-
-		if ( is_single( $id ) || is_page( $id ) || is_attachment( $id ) || $this->is_blog_page( $id ) || $this->is_wc_shop() )
-			return $cache[$id] = true;
-
-		return $cache[$id] = false;
-	}
-
-	/**
-	 * Extends default WordPress is_singular and made available in admin.
-	 *
-	 * @staticvar bool $cache
-	 *
-	 * @since 2.5.2
-	 *
-	 * @global object $current_screen
-	 *
-	 * @return bool Post Type is singular
-	 */
-	public function is_singular_admin() {
-
-		$cache = null;
-
-		if ( isset( $cache ) )
-			return $cache;
-
-		global $current_screen;
-
-		if ( isset( $current_screen->base ) && ( 'edit' === $current_screen->base || 'post' === $current_screen->base ) )
-			return $cache = true;
-
-		return $cache = false;
-	}
-
-	/**
 	 * Determines wether the theme is outputting the title correctly based on transient.
 	 *
 	 * @since 2.5.2
@@ -1092,7 +886,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( isset( $dir ) )
 			return $dir;
 
-		$transient = get_transient( $this->theme_doing_it_right_transient );
+		$transient = $this->get_transient( $this->theme_doing_it_right_transient );
 
 		if ( '0' === $transient )
 			return $dir = false;
@@ -1120,7 +914,6 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		if ( defined( 'THE_SEO_FRAMEWORK_TITLE_FIX' ) && THE_SEO_FRAMEWORK_TITLE_FIX )
 			return $fixed = true;
-
 
 		return $fixed = false;
 	}

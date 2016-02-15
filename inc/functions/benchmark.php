@@ -7,6 +7,9 @@ function the_seo_framework_php_benchmark() {
 	//* Boolean.
 	$b = true;
 
+	//* String.
+	$s = '';
+
 	//* Iterations
 	$it = 10000000;
 
@@ -24,6 +27,9 @@ function the_seo_framework_php_benchmark() {
 			$a = $b;
 		}
 		if ( isset( $b ) ) {
+			$a = $b;
+		}
+		if ( the_seo_framework_is_empty_string( $b ) ) {
 			$a = $b;
 		}
 		$i++;
@@ -118,6 +124,62 @@ function the_seo_framework_php_benchmark() {
 	}
 	$issetstricttime = microtime(true) - $t;
 
+	//* Loose Empty string
+	$i = 0;
+	$t = microtime(true);
+	while( $i < $it ) {
+		if ( $s ) {
+			// valuated
+		}
+		++$i;
+	}
+	$looseemptystring = microtime(true) - $t;
+
+	//* Loose Neg Empty string
+	$i = 0;
+	$t = microtime(true);
+	while( $i < $it ) {
+		if ( ! $s ) {
+			// valuated
+		}
+		++$i;
+	}
+	$loosenegemptystring = microtime(true) - $t;
+
+	//* Empty string
+	$i = 0;
+	$t = microtime(true);
+	while( $i < $it ) {
+		if ( empty( $s ) ) {
+			// valuated
+		}
+		++$i;
+	}
+	$emptystring = microtime(true) - $t;
+
+	//* Empty string strict
+	$i = 0;
+	$t = microtime(true);
+	while( $i < $it ) {
+		if ( '' === $s ) {
+			// valuated
+		}
+		++$i;
+	}
+	$emptystrictstring = microtime(true) - $t;
+
+	//* Empty string strict
+	$i = 0;
+	$t = microtime(true);
+	while( $i < $it ) {
+		if ( the_seo_framework_is_empty_string( $s ) ) {
+			// valuated
+		}
+		++$i;
+	}
+	$emptystrictfunctionstring = microtime(true) - $t;
+
+
 	//* With PHP 7 results @ 10,000,000 iterations.
 	echo 'Loose time: ' . $loosetime . " seconds\r\n"; 					// 0.1115360260009765625 seconds
 	echo 'Strict time: ' . $stricttime . " seconds\r\n";				// 0.1202042102813720703125 seconds
@@ -128,4 +190,15 @@ function the_seo_framework_php_benchmark() {
 	echo 'Isset time: ' . $issettime . " seconds\r\n"; 					// 0.115377902984619140625 seconds
 	echo 'Strict Isset time: ' . $issetstricttime . " seconds\r\n"; 	// 0.17035007476806640625 seconds
 
+	echo 'Loose Empty String time: ' . $looseemptystring . " seconds\r\n";						// 0.1340930461883544921875 seconds
+	echo 'Loose Neg Empty String time: ' . $loosenegemptystring . " seconds\r\n";				// 0.15882110595703125 seconds
+	echo 'Empty String time: ' . $emptystring . " seconds\r\n"; 								// 0.135138034820556640625 seconds
+	echo 'Strict Empty String time: ' . $emptystrictstring . " seconds\r\n"; 					// 0.1573431491851806640625 seconds
+	echo 'Strict Empty Function String time: ' . $emptystrictfunctionstring . " seconds\r\n"; 	// 0.385016918182373046875 seconds
+
+}
+
+function the_seo_framework_is_empty_string( $string ) {
+	if ( '' === $string ) return true;
+	return false;
 }

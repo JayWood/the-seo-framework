@@ -353,7 +353,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 */
 	public function notices() {
 
-		if ( ! $this->is_menu_page( $this->pagehook ) )
+		if ( false === $this->is_menu_page( $this->pagehook ) )
 			return;
 
 		if ( isset( $_REQUEST['settings-updated'] ) && 'true' === $_REQUEST['settings-updated'] )
@@ -695,7 +695,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		$default = $this->get_default_settings( $key, $setting );
 
-		if ( ! is_string( $default ) && $default != -1 && $default )
+		if ( 1 === $default )
 			$class = 'seoframework-default-selected';
 
 		if ( $echo ) {
@@ -733,7 +733,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		$warned = $this->get_warned_settings( $key, $setting );
 
-		if ( $warned )
+		if ( 1 === $warned )
 			$class = 'seoframework-warning-selected';
 
 		if ( $echo ) {
@@ -772,11 +772,11 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$default = $this->is_default_checked( $key, $setting, false, false );
 		$warned = $this->is_warning_checked( $key, $setting, false, false );
 
-		if ( false === empty( $default ) && false === empty( $warned ) ) {
+		if ( '' !== $default && '' !== $warned ) {
 			$class = $default . ' ' . $warned;
-		} else if ( false === empty( $default ) ) {
+		} else if ( '' !== $default ) {
 			$class = $default;
-		} else if ( false === empty( $warned ) ) {
+		} else if ( '' !== $warned ) {
 			$class = $warned;
 		}
 
@@ -806,6 +806,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 *
 	 * @since 2.2.5
 	 *
+	 * @TODO use this
+	 *
 	 * @return string|null the default selected class.
 	 */
 	public function is_default_radio( $key, $value, $setting = '', $wrap = true, $echo = true ) {
@@ -814,7 +816,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		$default = $this->get_default_settings( $key, $setting );
 
-		if ( $default && $default === $value )
+		if ( $value === $default )
 			$class = 'seoframework-default-selected';
 
 		if ( $echo ) {

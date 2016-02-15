@@ -116,7 +116,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			if ( is_object( $object ) ) {
 				$labels = isset( $object->labels ) ? $object->labels : '';
 
-				if ( ! empty( $labels ) ) {
+				if ( $labels ) {
 					$singular_name = isset( $labels->singular_name ) ? $labels->singular_name : $labels->name;
 
 					//* Title and type are used interchangeably.
@@ -202,7 +202,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		} else {
 			$term = get_term_by( 'id', $object->term_id, $object->taxonomy, OBJECT );
 
-			if ( ! empty( $term ) && is_object( $term ) ) {
+			if ( $term && is_object( $term ) ) {
 				$tax_type = $term->taxonomy;
 
 				/**
@@ -310,8 +310,8 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		 * @since 2.3.4
 		 */
 		$doc_pre_rem = ! $rem_title_additions ? $ad_doctitle . " | " . $blog_name : $ad_doctitle;
-		$ad_doctitle_len	= ! empty( $ad_doctitle ) 		? $doc_pre_rem : $generated_doctitle;
-		$ad_description_len = ! empty( $ad_description )	? $ad_description : $generated_description;
+		$ad_doctitle_len	= $ad_doctitle 		? $doc_pre_rem : $generated_doctitle;
+		$ad_description_len = $ad_description	? $ad_description : $generated_description;
 
 		/**
 		 * Convert to what Google outputs.
@@ -498,9 +498,9 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		 */
 		if ( $is_static_frontpage ) {
 			if ( ! $this->get_option( 'homepage_tagline' ) ) {
-				$tit_len_pre = ! empty( $title ) ? $title : $generated_doctitle;
+				$tit_len_pre = $title ? $title : $generated_doctitle;
 			} else {
-				$tit_len_pre = ! empty( $title ) ? $title . " | " . $this->get_blogdescription() : $generated_doctitle;
+				$tit_len_pre =  $title ? $title . " | " . $this->get_blogdescription() : $generated_doctitle;
 			}
 		} else {
 			/**
@@ -517,9 +517,9 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			 * @since 2.3.4
 			 */
 			if ( $add_additions ) {
-				$tit_len_pre = ! empty( $title ) ? $title . " | " . $blog_name : $generated_doctitle;
+				$tit_len_pre = $title ? $title . " | " . $blog_name : $generated_doctitle;
 			} else {
-				$tit_len_pre = ! empty( $title ) ? $title : $generated_doctitle;
+				$tit_len_pre = $title ? $title : $generated_doctitle;
 			}
 		}
 
@@ -536,13 +536,13 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			//* The homepage description takes precedence.
 			$homepage_description = $this->get_option( 'homepage_description' );
 
-			if ( ! empty( $description ) ) {
-				$desc_len_pre = ! empty( $homepage_description ) ? $homepage_description : $description;
+			if ( $description ) {
+				$desc_len_pre = $homepage_description ? $homepage_description : $description;
 			} else {
-				$desc_len_pre = ! empty( $homepage_description ) ? $homepage_description : $generated_description;
+				$desc_len_pre = $homepage_description ? $homepage_description : $generated_description;
 			}
 		} else {
-			$desc_len_pre = ! empty( $description ) ? $description : $generated_description;
+			$desc_len_pre = $description ? $description : $generated_description;
 		}
 
 		/**

@@ -355,7 +355,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Preamble:**
 
-* This is a dot version bump update, which is done so as the core code has been changed drastically. **Eleven new classes** have been added to maintain structured code, including many more function to fetch data easily and consitently.
+* This is a dot version bump update, which is done so as the core code has been changed drastically. **Twelve new classes** have been added to maintain structured code, including many more function to fetch data easily and consitently.
 * With hundreds of changes, I had to find a new way to present this update in an understandable manner. So here goes!
 
 **Summarized:**
@@ -363,7 +363,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * At long last, something that was planned for almost half a year, **Author SEO** has finally been included, this affects all posts, yet no pages.
 * As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
 * Also, many minor **translation improvements** have been put in place on many places. And **WPML compatibility** has received a rework, now all canonical URL's in the sitemap and front-end are always correct.
-* And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes**.
+* And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes** including major refactorization.
 
 **SEO Tip of the Update:**
 /
@@ -374,11 +374,22 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * I'm announcing a new plugin extension for The SEO Framework! [Title Fix - The SEO Framework](https://wordpress.org/plugins/the-seo-framework-title-fix/).
 * This update ensures extra compatiblity with the Title Fix plugin, this will add back removed title features for if the theme is doing it wrong and when the Title Fix plugin is active.
 
+**About: Plugin progression & help required:**
+
+* This dear project has taken me over 2500 hours to perfectionize and maintain. This update alone has cost me over 160 hours to complete.
+* I really want to keep this project free. In fact, Author SEO was actually planned to be a premium extension.
+* I also want to turn this project into my full-time job, even if it's free from monetization and/or premium content.
+* And I will keep my promise: This plugin will stay free of ads, (self-)reference and will be updated.
+* All with all, this means I can't do it without any help!
+* Please consider making a donation. The link can be found on the WordPress.org plugin page. Or [here](https://theseoframework.com/?p=572).
+* Thank you so much!
+
 **About: Changes in Changelog**
 
-* To clean up the massive changelogs, detailed information on updates are put aside and are visible on the plugin's website.
+* I love to push many changes at once every update, as I'm only happy when everything works. If I find a bug, I'll be sure to fix it!
+* So to clean up the massive changelogs, detailed information on updates are put aside and are visible on the plugin's website.
 * With each update, I try to find better ways of presenting information and I try to minimize confusion.
-* Putting everything in lists is one way of presenting information, to erase sentence flow and prevent misunderstanding.
+* Putting everything in categorized lists is one way of presenting information, to erase sentence flow and to prevent misunderstanding.
 
 **For everyone - About Author SEO:**
 /
@@ -420,13 +431,13 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * These benchmarks can be found in the aptly named `benchmark.php` file.
 * What I found is that an if-statement looks passes if the value is a boolean. So converting any value to a boolean will improve its speed.
 * I also found that strict false checks are faster than using an exclamation mark. E.g. `false === $thing` is faster than `! $thing`, as the latter flips the boolean, which requires processing power.
-* `true !== isset( $thing )` is faster than `! isset( $thing )`
-* These methodologic improvements have put into effect throughout the whole plugin, with this you will notice an extremely minor performance improvement.
+* These methodologic improvements have put into effect throughout the whole plugin, with this you will notice an extremely minor performance improvement. But every little bit matters in a framework.
 
 **For developers - Doing it Right:**
 
-* The class `AutoDescription_DoingItRight` has been rewritten to improve performance and maintainability.
+* The class `AutoDescription_DoingItRight` has been greatly refactored to improve performance and maintainability.
 * This class affects and outputs the SEO Bar.
+* The SEO Bar initialization functions have maintained their handling.
 
 **Detailed log:**
 
@@ -464,7 +475,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * TODO Improved: The canonical URL now also allows page pagination.
 * Improved: LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
 * Improved: Robots tag generation time.
-* TODO Fixed: The plugin timing indicator can be influenced by other header plugin times, now it's shows the real time, which can be lower is many cases.
+* TODO Fixed: Added back Genesis schema.org head markup indicator.
+* Fixed: Post type support check was run throughout the WordPress admin dashboard, now it only checks if there are actually posts to check.
 * Fixed: WPML query args canonical pagination links.
 * Fixed: Plausible description cache conflict when the home page has been switched from page to blog in the SEO settings page.
 * Fixed: WPML URL base structure check was done wrongfully, the canonical URL's are now fixed for multilingual pages.
@@ -490,15 +502,19 @@ http://testmijnphp7.nl/wp-admin/term.php?taxonomy=category&term_id=76&post_type=
 * TODO Added: `AutoDescription_PostInfo` class.
 * TODO Added: `AutoDescription_TermInfo` class.
 * Added: `AutoDescription_Debug` class.
+* Added: `AutoDescription_Query` class.
 * Added: `AutoDescription_Admin_Init::localize_admin_javascript()` function.
 * Added: `AutoDescription_Generate_Title::get_the_real_archive_title()` function, which also works in the admin area and has a term object argument and outputs no HTML, effectively speading the whole plugin up on archive pages.
 * Added: `AutoDescription_Detect::current_theme_supports_title_tag()` function, returns cached true if theme supports title tag.
-* TODO Added: Complete plugin performance profiling of every single function run when profile debugging is on.
+* Added: Customized debug handler.
+* Added: `THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS` boolean constant listener to disable transients.
+* TODO Changed: `AutoDescription_Core::post_type_support` now has an array argument parameter.
+* TODO Changed: `AutoDescription_Core::get_the_real_ID` now returns 0 instead of false if no ID is found.
 * TODO Reworked: Class structure and order.
 * TODO Reworked: `AutoDescription_Generate_Url::the_url` function, by splitting it into multiple functions, again.
 * Reworked: `AutoDescription_DoingItRight` and all its contents.
+* Reworked: `AutoDescription_Generate_Description` and all its contents.
 * Deprecated: `AutoDescription_Debug::echo_debug_information` function, replaced by get `AutoDescription_Debug::get_debug_information`;
-* TODO Changed: `AutoDescription_Core::post_type_support` now has an array argument parameter.
 * Reworked: Functions have been put in their respective aptly named classes where applicable.
 * Reworked: Debugging has been modified to clean up the code greatly.
 * Deprecated: `AutoDescription_Detect::current_theme_supports`, use core `current_theme_supports` instead.
@@ -511,11 +527,16 @@ http://testmijnphp7.nl/wp-admin/term.php?taxonomy=category&term_id=76&post_type=
 * Improved: `the_seo_framework_sitemaps_settings_tabs` filter now has an argument parameter.
 * Improved: `the_seo_framework_social_settings_tabs` filter now has an argument parameter.
 * Improved: `the_seo_framework_canonical_force_scheme` filter now works on all URL's generated by this plugin and has now an `$scheme` argument which passes the current used scheme.
-* Fixed: `the_seo_framework_dot_version`
+* Improved: WordPress Query detection.
+* Improved: Blog page and Home Page query detection.
+* Fixed: `the_seo_framework_dot_version` now checks for four dot versions if applicable.
+* Fixed: `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial achives.
+* Fixed: `AutoDescription_Generate_Image::get_image()` now returns something when the third parameter is set to false.
 * Removed: Open Graph plugins check from Canonical URL output, these are unrelated.
 * Removed: Filter/Constant/Action change PHP comments from 2.3.0 to clean up code.
 * Removed: Transient for title doing it right is now not anymore set if the theme is doing it right to reduce extra database calls. This caused the transient sometimes to be true regardless.
 * Cleaned up code, massively.
+* Note: I marked a few functions with `@access private`. These functions can change behaviour at any time and should never be used in extension plugins, even though publically accessible.
 * TODO Next improvement also counts "for everyone"?, split it?
 * TODO Improved: When settings are hidden because of theme or plugin (in)compatibilities, or because a settings box is removed through a filter or action, the previous value is maintained on save.
 
@@ -528,6 +549,14 @@ NOTE
 * the_seo_framework_paged_url_output output string
 * TODO the_seo_framework_pre_add_title
 * TODO the_seo_Framework_pro_add_title
+
+**New constants
+/
+NOTE
+/d
+define( 'THE_SEO_FRAMEWORK_PROFILE', true );
+define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
+define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
 
 = Full changelog =
 

@@ -66,11 +66,11 @@ function the_seo_framework_load() {
  */
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'compat.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'optionsapi.php' );
-
-// require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'benchmark.php' );
+//require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'benchmark.php' );
 
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'core.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'debug.class.php' );
+require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'query.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'init.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'admininit.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'render.class.php' );
@@ -120,6 +120,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	public $the_seo_framework_debug = false;
 	public $the_seo_framework_debug_more = false;
 	public $the_seo_framework_debug_hidden = false;
+	public $the_seo_framework_use_transients = true;
 	public $the_seo_framework_profile = false;
 	public $the_seo_framework_profile_specific = false;
 	public $script_debug = false;
@@ -144,6 +145,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 		}
 
 		$this->script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? true : $this->script_debug;
+		$this->the_seo_framework_use_transients = defined( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS' ) && THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS ? false : $this->the_seo_framework_use_transients;
 	}
 
 	/**
@@ -199,8 +201,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( array( $this, $method ), (array) $args );
 					}
 				} else if ( $version ) {
-					$version = $this->the_seo_framework_version( $version );
-					 _doing_it_wrong( (string) $this . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
+					$this->_doing_it_wrong( (string) $this . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version, __LINE__ );
 				}
 			} else {
 				// This doesn't work in Apache configurations.
@@ -216,11 +217,10 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( $class . '::'. $method, (array) $args );
 					}
 				} else if ( $version ) {
-					$version = $this->the_seo_framework_version( $version );
-					 _doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
+					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version, __LINE__ );
 				}
 			}
-		} else if ( is_string( $function[0] ) && ! empty( $function[1] ) ) {
+		} else if ( is_string( $function[0] ) && $function[1] ) {
 			if ( empty( $args ) ) {
 				// Static calling
 				$output = call_user_func( $function[0] . '::' . $function[1] );
@@ -236,8 +236,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 				$output = call_user_func_array( $func, (array) $args );
 			}
 		} else if ( $version ) {
-			$version = $this->the_seo_framework_version( $version );
-			_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version );
+			$this->_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version, __LINE__ );
 		}
 
 		return $output;
@@ -253,38 +252,6 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 		$output = empty( $version ) ? '' : sprintf( __( '%s of The SEO Framework', 'autodescription' ), esc_attr( $version ) );
 
 		return $output;
-	}
-
-	/**
-	 * Faster way of doing an in_array search compared to default PHP behavior.
-	 * @NOTE only to show improvement with large arrays. Might slow down with small arrays.
-	 * @NOTE can't do type checks. Always assume the comparing value is a string.
-	 *
-	 * @uses array_flip()
-	 * @uses isset()
-	 *
-	 * @since 2.5.2
-	 *
-	 * @param string|array $needle The needle(s) to search for
-	 * @param array $array The single dimensional array to search in.
-	 *
-	 * @return bool true if value is in array.
-	 */
-	public function in_array( $needle, $array ) {
-
-		$array = array_flip( $array );
-
-		if ( is_string( $needle ) ) {
-			if ( isset( $array[$needle] ) )
-				return true;
-		} else if ( is_array( $needle ) ) {
-			foreach ( $needle as $str ) {
-				if ( isset( $array[$str] ) )
-					return true;
-			}
-		}
-
-		return false;
 	}
 
 }

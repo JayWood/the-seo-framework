@@ -162,7 +162,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			$items = '';
 
 			foreach ( $trees as $tree ) {
-				if ( ! empty( $tree ) ) {
+				if ( $tree ) {
 
 					$tree = array_reverse( $tree );
 
@@ -174,13 +174,13 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 						$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'is_term' => true, 'term' => $cat ) ) );
 
 						$custom_field_name = isset( $cat->admeta['doctitle'] ) ? $cat->admeta['doctitle'] : '';
-						$cat_name = ! empty( $custom_field_name ) ? $custom_field_name : $cat->name;
+						$cat_name = $custom_field_name ? $custom_field_name : $cat->name;
 						$name = json_encode( $cat_name );
 
 						$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
 					}
 
-					if ( ! empty( $items ) ) {
+					if ( $items ) {
 
 						$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $post_id );
 
@@ -192,7 +192,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			}
 
 			//* For each of the todo items, create a separated script.
-			if ( ! empty( $todo ) ) {
+			if ( $todo ) {
 				foreach ( $todo as $tid ) {
 
 					$items = '';
@@ -206,13 +206,13 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 							$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'is_term' => true, 'term' => $cat ) ) ); // Why not external???
 
 							$custom_field_name = isset( $cat->admeta['doctitle'] ) ? $cat->admeta['doctitle'] : '';
-							$cat_name = ! empty( $custom_field_name ) ? $custom_field_name : $cat->name;
+							$cat_name = $custom_field_name ? $custom_field_name : $cat->name;
 							$name = json_encode( $cat_name );
 
 							$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
 						}
 
-						if ( ! empty( $items ) ) {
+						if ( $items ) {
 
 							$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $post_id );
 
@@ -229,7 +229,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 			$parents = get_post_ancestors( $page_id );
 
-			if ( ! empty( $parents ) ) {
+			if ( $parents ) {
 
 				$context = json_encode( 'http://schema.org' );
 				$context_type = json_encode( 'BreadcrumbList' );
@@ -245,14 +245,14 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 					$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'id' => $parent_id ) ) );
 
 					$custom_field_name = $this->get_custom_field( '_genesis_title', $parent_id );
-					$parent_name = ! empty( $custom_field_name ) ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
+					$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
 
 					$name = json_encode( $parent_name );
 
 					$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
 				}
 
-				if ( ! empty( $items ) ) {
+				if ( $items ) {
 
 					$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $page_id );
 
@@ -281,31 +281,31 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		static $first_item = null;
 
-		if ( ! isset( $first_item ) ) {
+		if ( isset( $first_item ) )
+			return $first_item;
 
-			if ( ! isset( $item_type ) )
-				$item_type = json_encode( 'ListItem' );
+		if ( ! isset( $item_type ) )
+			$item_type = json_encode( 'ListItem' );
 
-			$id = json_encode( $this->the_home_url_from_cache() );
+		$id = json_encode( $this->the_home_url_from_cache() );
 
-			$home_title = $this->get_option( 'homepage_title' );
+		$home_title = $this->get_option( 'homepage_title' );
 
-			if ( $home_title ) {
-				$custom_name = $home_title;
-			} else if ( 'page' === get_option( 'show_on_front' ) ) {
-				$home_id = (int) get_option( 'page_on_front' );
+		if ( $home_title ) {
+			$custom_name = $home_title;
+		} else if ( 'page' === get_option( 'show_on_front' ) ) {
+			$home_id = (int) get_option( 'page_on_front' );
 
-				$custom_name = $this->get_custom_field( '_genesis_title', $home_id );
-				$custom_name = $custom_name ? $custom_name : $this->get_blogname();
-			} else {
-				$custom_name = $this->get_blogname();
-			}
-
-			$custom_name = json_encode( $custom_name );
-
-			//* Add trailing comma.
-			$first_item = sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, '1', $id, $custom_name );
+			$custom_name = $this->get_custom_field( '_genesis_title', $home_id );
+			$custom_name = $custom_name ? $custom_name : $this->get_blogname();
+		} else {
+			$custom_name = $this->get_blogname();
 		}
+
+		$custom_name = json_encode( $custom_name );
+
+		//* Add trailing comma.
+		$first_item = sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, '1', $id, $custom_name );
 
 		return $first_item;
 	}
@@ -385,7 +385,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		 * @since 2.4.3
 		 */
 		$knowledge_name = $this->get_option( 'knowledge_name' );
-		$knowledge_name = ! empty( $knowledge_name ) ? $knowledge_name : $this->get_blogname();
+		$knowledge_name = $knowledge_name ? $knowledge_name : $this->get_blogname();
 
 		$context = json_encode( 'http://schema.org' );
 		$type = json_encode( ucfirst( $knowledge_type ) );
@@ -397,7 +397,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		if ( $this->get_option( 'knowledge_logo' ) && 'organization' === $knowledge_type ) {
 			$icon = $this->site_icon();
 
-			if ( ! empty( $icon ) ) {
+			if ( $icon ) {
 				$logourl = esc_url_raw( $icon );
 
 				//* Add trailing comma
@@ -439,7 +439,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		$sameurls = rtrim( $sameurls, $comma );
 		$json = '';
 
-		if ( ! empty( $sameurls ) )
+		if ( $sameurls )
 			$json = sprintf( '{"@context":%s,"@type":%s,"name":%s,"url":%s,%s"sameAs":[%s]}', $context, $type, $name, $url, $logo, $sameurls );
 
 		return $json;

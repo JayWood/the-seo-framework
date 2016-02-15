@@ -86,9 +86,9 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 */
 		if ( ! is_array( $args ) ) {
 			//* Old style parameters are used. Doing it wrong.
-			_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', $this->the_seo_framework_version( '2.4.2' ) );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.4.2', __LINE__ );
 			$args = $default_args;
-		} else if ( ! empty( $args ) ) {
+		} else if ( $args ) {
 			$args = $this->parse_url_args( $args, $default_args );
 		} else {
 			$args = $default_args;
@@ -128,7 +128,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		//* Domain Mapping canonical URL
 		if ( empty( $url ) ) {
 			$wpmu_url = $this->the_url_wpmudev_domainmap( $path, true );
-			if ( ! empty( $wpmu_url ) && is_array( $wpmu_url ) ) {
+			if ( $wpmu_url && is_array( $wpmu_url ) ) {
 				$url = $wpmu_url[0];
 				$scheme = $wpmu_url[1];
 			}
@@ -137,7 +137,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		//* Domain Mapping canonical URL
 		if ( empty( $url ) ) {
 			$dm_url = $this->the_url_donncha_domainmap( $path, true );
-			if ( ! empty( $dm_url ) && is_array( $dm_url ) ) {
+			if ( $dm_url && is_array( $dm_url ) ) {
 				$url = $dm_url[0];
 				$scheme = $dm_url[1];
 			}
@@ -268,7 +268,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			$term = $args['term'];
 
 			//* Term or Taxonomy.
-			if ( false === isset( $term ) )
+			if ( ! isset( $term ) )
 				$term = get_queried_object();
 
 			if ( isset( $term->taxonomy ) ) {
@@ -290,7 +290,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			 * Fetch post object
 			 * @since 2.2.4
 			 */
-			if ( false === isset( $post ) )
+			if ( ! isset( $post ) )
 				$post = get_post( $args['id'], OBJECT );
 
 			/**
@@ -301,7 +301,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 				$post_id = isset( $post->ID ) ? $post->ID : $args['id'];
 
-				if ( false === empty( $post_id ) ) {
+				if ( $post_id ) {
 
 					if ( '' === $this->permalink_structure() ) {
 						$path = $this->the_url_path_default_permalink_structure( $post );
@@ -563,10 +563,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	public function get_relative_term_url( $term = null, $no_request = false ) {
 
 		// We can't fetch the Term object within sitemaps.
-		if ( $no_request && false === isset( $term ) )
+		if ( $no_request && is_null( $term ) )
 			return '';
 
-		if ( false === isset( $term ) ) {
+		if ( is_null( $term ) ) {
 			global $wp_query;
 			$term = $wp_query->get_queried_object();
 		}
@@ -730,8 +730,8 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 					$query = $wp_query->query;
 
 					$year = $query->year;
-					$month = ! empty( $query->monthnum ) ? '&monthnum=' . $query->monthnum : '';
-					$day = ! empty( $query->day ) ? '&day=' . $query->day : '';
+					$month = $query->monthnum ? '&monthnum=' . $query->monthnum : '';
+					$day = $query->day ? '&day=' . $query->day : '';
 
 					$path = '?year=' . $year . $month . $day;
 				} else if ( is_author() ) {
@@ -786,7 +786,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 				$this->object_cache_set( $mapped_key, $mapped_domain, 3600 );
 			}
 
-			if ( ! empty( $mapped_domain ) ) {
+			if ( $mapped_domain ) {
 
 				$scheme_key = 'wpmudev_mapped_scheme_' . $blog_id;
 
@@ -994,10 +994,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		}
 
-		if ( ! empty( $prev ) )
+		if ( $prev )
 			return esc_url_raw( $prev );
 
-		if ( ! empty( $next ) )
+		if ( $next )
 			return esc_url_raw( $next );
 
 		return '';

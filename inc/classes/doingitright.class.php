@@ -197,7 +197,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 * @since 2.1.9
 	 * @return string $content the post SEO status
 	 */
-	protected function post_status( $post_id = '', $type = 'inpost', $html = true ) {
+	public function post_status( $post_id = '', $type = 'inpost', $html = true ) {
 
 		$content = '';
 
@@ -223,7 +223,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			 * Static caching.
 			 * @since 2.3.8
 			 */
-			if ( false === isset( $post_i18n ) && false === isset( $is_term ) ) {
+			if ( ! isset( $post_i18n ) && ! isset( $is_term ) ) {
 
 				//* Setup i18n values for posts and pages.
 				if ( 'post' === $type ) {
@@ -295,7 +295,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *
 	 * @return string $content The SEO bar.
 	 */
-	public function the_seo_bar_term( $args ) {
+	protected function the_seo_bar_term( $args ) {
 
 		$post_id = $args['post_id'];
 		$term = $args['term'];
@@ -346,7 +346,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *
 	 * @return string $content The SEO bar.
 	 */
-	public function the_seo_bar_page( $args ) {
+	protected function the_seo_bar_page( $args ) {
 
 		$post_id = $args['post_id'];
 		$post = $args['post_i18n'];
@@ -354,7 +354,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$is_front_page = $this->is_static_frontpage( $post_id );
 
 		$redirect = $this->get_custom_field( 'redirect' );
-		$redirect = $this->is_empty_string( $redirect ) ? false : true;
+		$redirect = empty( $redirect ) ? false : true;
 
 		$noindex = $this->get_custom_field( '_genesis_noindex' );
 		$noindex = $this->is_checked( $noindex );
@@ -397,7 +397,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *	 'noarchive' => $noarchive
 	 * }
 	 */
-	public function the_seo_bar_data( $args ) {
+	protected function the_seo_bar_data( $args ) {
 
 		$post_id = $args['post_id'];
 
@@ -430,7 +430,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *	 'noarchive' => $noarchive
 	 * }
 	 */
-	public function the_seo_bar_term_data( $args ) {
+	protected function the_seo_bar_term_data( $args ) {
 
 		$term = $args['term'];
 		$post_id = $args['post_id'];
@@ -458,14 +458,14 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 				$noarchive = $term->meta['noarchive'];
 		}
 
-		$title_is_from_custom_field = $this->is_empty_string( $title_custom_field );
+		$title_is_from_custom_field = empty( $title_custom_field );
 		if ( $title_is_from_custom_field ) {
 			$title = $title_custom_field;
 		} else {
 			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'meta' => true ) );
 		}
 
-		$description_is_from_custom_field = $this->is_empty_string( $description_custom_field );
+		$description_is_from_custom_field = empty( $description_custom_field );
 		if ( $description_is_from_custom_field ) {
 			$description = $description_custom_field;
 		} else {
@@ -503,7 +503,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *	 'noarchive' => $noarchive
 	 * }
 	 */
-	public function the_seo_bar_post_data( $args ) {
+	protected function the_seo_bar_post_data( $args ) {
 
 		$post_id = $args['post_id'];
 		$page_on_front = $this->is_static_frontpage( $post_id );
@@ -520,14 +520,14 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			$noarchive = '' !== $this->get_option( 'homepage_noarchive' ) ? $this->get_option( 'homepage_noarchive' ) : $noarchive;
 		}
 
-		$title_is_from_custom_field = $this->is_empty_string( $title_custom_field );
+		$title_is_from_custom_field = empty( $title_custom_field );
 		if ( $title_is_from_custom_field ) {
 			$title = $title_custom_field;
 		} else {
 			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'meta' => true ) );
 		}
 
-		$description_is_from_custom_field = $this->is_empty_string( $description_custom_field );
+		$description_is_from_custom_field = empty( $description_custom_field );
 		if ( $description_is_from_custom_field ) {
 			$description = $description_custom_field;
 		} else {
@@ -548,7 +548,15 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		);
 	}
 
-	public function the_seo_bar_title_notice( $args ) {
+	/**
+	 * Render the SEO bar title block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Title Block
+	 */
+	protected function the_seo_bar_title_notice( $args ) {
 
 		$i18n = $this->get_the_seo_bar_i18n();
 		$data = $this->the_seo_bar_data( $args );
@@ -594,7 +602,15 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $title_notice;
 	}
 
-	public function the_seo_bar_description_notice( $args ) {
+	/**
+	 * Render the SEO bar description block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Description Block
+	 */
+	protected function the_seo_bar_description_notice( $args ) {
 
 		$data = $this->the_seo_bar_data( $args );
 		$description 						= $data['description'];
@@ -607,9 +623,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$generated 			= ' ' . $i18n['generated_short'];
 
 		$classes = $this->get_the_seo_bar_classes();
-		$bad	= $classes['bad'];
-		$okay	= $classes['okay'];
-		$good	= $classes['good'];
+		$class = $classes['good'];
 
 		$desc_parsed = trim( html_entity_decode( $description ) );
 		$desc_len = mb_strlen( $desc_parsed );
@@ -617,7 +631,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$gen_d = $description_is_from_custom_field ? '' : $generated;
 		$gen_d_notice = $description_is_from_custom_field ? '' : $generated_notice;
 
-		$desc_too_many = $this->get_the_seo_bar_description_words_warning( $description );
+		$desc_too_many = $this->get_the_seo_bar_description_words_warning( $description, $class );
 		$notice .= $desc_too_many['notice'];
 		$class = $desc_too_many['class'];
 
@@ -638,7 +652,15 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $description_notice;
 	}
 
-	public function the_seo_bar_index_notice( $args ) {
+	/**
+	 * Render the SEO bar index block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Index Block
+	 */
+	protected function the_seo_bar_index_notice( $args ) {
 
 		$is_term = $args['is_term'];
 		$term = $args['term'];
@@ -714,7 +736,15 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $index_notice;
 	}
 
-	public function the_seo_bar_follow_notice( $args ) {
+	/**
+	 * Render the SEO bar follow block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Follow Block
+	 */
+	protected function the_seo_bar_follow_notice( $args ) {
 
 		$post_i18n = $args['post_i18n'];
 
@@ -767,7 +797,15 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $follow_notice;
 	}
 
-	public function the_seo_bar_archive_notice( $args ) {
+	/**
+	 * Render the SEO bar archive block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Follow Block
+	 */
+	protected function the_seo_bar_archive_notice( $args ) {
 
 		$post_low = $args['post_low'];
 
@@ -821,7 +859,15 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $archive_notice;
 	}
 
-	public function the_seo_bar_redirect_notice( $args ) {
+	/**
+	 * Render the SEO bar redirect block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Redirect Block
+	 */
+	protected function the_seo_bar_redirect_notice( $args ) {
 
 		$is_term = $args['is_term'];
 
@@ -853,8 +899,6 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $redirect_notice;
 	}
 
-
-
 	/**
 	 * Render the SEO bar when the page/term is blocked.
 	 *
@@ -869,7 +913,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *
 	 * @return string The SEO Bar
 	 */
-	public function the_seo_bar_blocked( $args ) {
+	protected function the_seo_bar_blocked( $args ) {
 
 		$classes = $this->get_the_seo_bar_classes();
 		$i18n = $this->get_the_seo_bar_i18n();
@@ -936,25 +980,38 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $content;
 	}
 
-	public function wrap_the_seo_bar_block() {
+	/**
+	 * @TODO
+	 */
+	protected function wrap_the_seo_bar_block() {
 		$wrap 	= '<span class="ad-sec-wrap ' . $width . '">'
 				. '<a href="#" onclick="return false;" class="' . $class . '" data-desc="' . $notice . '">' . $indicator . '</a>'
 				. '<span class="screen-reader-text">' . $notice . '</span>'
 				. '</span>';
 	}
 
-	public function get_the_seo_bar_wrap() {
+	/**
+	 * @TODO
+	 */
+	protected function get_the_seo_bar_wrap() {
 
 	}
 
-	public function get_the_seo_bar_term_name( $term ) {
+	/**
+	 * Get the term labels.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string the Term name.
+	 */
+	protected function get_the_seo_bar_term_name( $term ) {
 
 		static $term_name = null;
 
 		if ( isset( $term_name ) )
 			return $term_name;
 
-		if ( false === empty( $term ) && is_object( $term ) ) {
+		if ( $term && is_object( $term ) ) {
 			$tax_type = $term->taxonomy;
 
 			/**
@@ -969,7 +1026,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		}
 
 		//* Fallback to Page as it is generic.
-		if ( false === isset( $term_name ) )
+		if ( ! isset( $term_name ) )
 			$term_name = __( 'Page', 'autodescription' );
 
 		return $term_name;
@@ -986,7 +1043,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 * 		class => The class,
 	 * }
 	 */
-	public function get_the_seo_bar_title_length_warning( $tit_len ) {
+	protected function get_the_seo_bar_title_length_warning( $tit_len ) {
 
 		$classes = $this->get_the_seo_bar_classes();
 		$bad	= $classes['bad'];
@@ -1004,7 +1061,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			$class = $okay;
 		} else if ( $tit_len >= 75 ) {
 			$notice = ' ' . __( 'far too long.', 'autodescription' );
-			$titlen_class = $bad;
+			$class = $bad;
 		} else {
 			$notice = ' ' . __( 'good.', 'autodescription' );
 			$class = $good;
@@ -1029,7 +1086,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 * 		class => The class,
 	 * }
 	 */
-	public function get_the_seo_bar_description_length_warning( $desc_len, $class ) {
+	protected function get_the_seo_bar_description_length_warning( $desc_len, $class ) {
 
 		$classes = $this->get_the_seo_bar_classes();
 		$bad	= $classes['bad'];
@@ -1043,12 +1100,12 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			$notice = ' ' . __( 'Length is too short.', 'autodescription' );
 
 			// Don't make it okay if it's already bad.
-			$class = $class === $bad ? $class : $okay;
+			$class = $bad === $class ? $class : $okay;
 		} else if ( $desc_len > 155 && $desc_len < 175 ) {
 			$notice = ' ' . __( 'Length is too long.', 'autodescription' );
 
 			// Don't make it okay if it's already bad.
-			$class = $class === $bad ? $class : $okay;
+			$class = $bad === $class ? $class : $okay;
 		} else if ( $desc_len >= 175 ) {
 			$notice = ' ' . __( 'Length is far too long.', 'autodescription' );
 			$class = $bad;
@@ -1070,15 +1127,16 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 * Only when count is over 3.
 	 *
 	 * @param string $description The Description with maybe words too many.
+	 * @param string $class The current color class.
+	 *
 	 * @since 2.6.0
 	 *
 	 * @return string The warning notice.
 	 */
-	public function get_the_seo_bar_description_words_warning( $description ) {
+	protected function get_the_seo_bar_description_words_warning( $description, $class ) {
 
 		$notice = '';
 		$desc_too_many = '';
-		$class = '';
 
 		//* Count the words.
 		$desc_words = str_word_count( strtolower( $description ), 2 );
@@ -1213,7 +1271,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 *
 	 * @return bool
 	 */
-	public function square_the_seo_bar() {
+	protected function square_the_seo_bar() {
 
 		$cache = null;
 

@@ -24,7 +24,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Init extends AutoDescription_Debug {
+class AutoDescription_Init extends AutoDescription_Query {
 
 	/**
 	 * Allow object caching through a filter.
@@ -67,7 +67,7 @@ class AutoDescription_Init extends AutoDescription_Debug {
 		 * Don't do anything on preview either.
 		 * @since 2.2.4
 		 */
-		if ( is_admin() || is_preview() )
+		if ( $this->is_admin() || $this->is_preview() )
 			return;
 
 		$this->init_actions();
@@ -156,7 +156,7 @@ class AutoDescription_Init extends AutoDescription_Debug {
 
 		$functions = wp_parse_args( $args, $filter );
 
-		if ( ! empty( $functions ) && is_array( $functions ) ) {
+		if ( $functions && is_array( $functions ) ) {
 			foreach ( $functions as $function ) {
 				$arguments = isset( $function['args'] ) ? $function['args'] : '';
 

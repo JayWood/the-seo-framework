@@ -201,7 +201,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 * Re-use the variable, eliminating database requests
 		 * @since 2.4.0
 		 */
-		$sitemap_content = get_transient( $this->sitemap_transient );
+		$sitemap_content = $this->get_transient( $this->sitemap_transient );
 
 		if ( false === $sitemap_content ) {
 			$cached_content = "\r\n<!-- " . __( 'Sitemap is generated for this view', 'autodescription' ) . " -->";
@@ -345,7 +345,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			}
 		}
 
-		if ( $total_cpt_posts_bool && ! empty( $cpt ) ) {
+		if ( $total_cpt_posts_bool && $cpt ) {
 			//* Descend by the date for CPTs. The latest posts get to the top of the list after pages.
 			$args = array(
 				'numberposts' => $total_cpt_posts,
@@ -573,7 +573,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 */
 		$custom_urls = (array) apply_filters( 'the_seo_framework_sitemap_additional_urls', array() );
 
-		if ( false === empty( $custom_urls ) ) {
+		if ( $custom_urls ) {
 			foreach ( $custom_urls as $url => $args ) {
 
 				if ( ! is_array( $args ) ) {
@@ -584,11 +584,11 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				//* No need to use static vars
 				$content .= '		<loc>' . esc_url_raw( $url ) . "</loc>\r\n";
 
-				if ( isset( $args['lastmod'] ) && ! empty( $args['lastmod'] ) ) {
+				if ( isset( $args['lastmod'] ) && $args['lastmod'] ) {
 					$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $args['lastmod'], false ) . "</lastmod>\r\n";
 				}
 
-				if ( isset( $args['priority'] ) && ! empty( $args['priority'] ) ) {
+				if ( isset( $args['priority'] ) && $args['priority'] ) {
 					$priority = $args['priority'];
 				} else {
 					$priority = 0.9;
@@ -631,7 +631,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$transient = 'tsf_throttle_ping_' . $blog_id;
 
-			if ( false === get_transient( $transient ) ) {
+			if ( false === $this->get_transient( $transient ) ) {
 				//* Transient doesn't exist yet.
 
 				if ( $this->get_option( 'ping_google' ) )
@@ -738,7 +738,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$home_url = $this->the_home_url_from_cache();
 			$parse_url = parse_url( $home_url );
-			$path = ! empty( $site_url['path'] ) ? $site_url['path'] : '';
+			$path = $site_url['path'] ? $site_url['path'] : '';
 
 			$output .= $pre;
 			//* Output defaults

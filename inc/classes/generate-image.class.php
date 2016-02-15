@@ -65,9 +65,9 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		 */
 		if ( ! is_array( $args ) ) {
 			//* Old style parameters are used. Doing it wrong.
-			_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', $this->the_seo_framework_version( '2.5.0' ) );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.5.0', __LINE__ );
 			$args = $default_args;
-		} else if ( ! empty( $args ) ) {
+		} else if ( $args ) {
 			$args = $this->parse_image_args( $args, $default_args );
 		} else {
 			$args = $default_args;
@@ -113,10 +113,10 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		 * Escape in Generation.
 		 * @since 2.5.2
 		 */
-		if ( ! empty( $image ) && $escape )
+		if ( $escape && $image )
 			return esc_url( $image );
 
-		return '';
+		return $image;
 	}
 
 	/**
@@ -294,7 +294,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 			$i_file_old_name	= basename( get_attached_file( $id ) );
 			$i_file_ext			= pathinfo( $i_file_path, PATHINFO_EXTENSION );
 
-			if ( false === empty( $i_file_ext ) ) {
+			if ( $i_file_ext ) {
 				$i_file_dir_name 	= pathinfo( $i_file_path, PATHINFO_DIRNAME );
 				// Add trailing slash
 				$i_file_dir_name	.= '/' === ( substr( $i_file_dir_name, -1 ) ? '' : '/' );
