@@ -42,11 +42,11 @@
 
 /**
  * CDN Cache buster. 3 point.
- * Not many caching plugins use CDN in dashboard. What a shame.
+ * Not many caching plugins use CDN in dashboard. What a shame. Firefox does cache.
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.5.2.1' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '2.5.2.2' );
 
 /**
  * Plugin options filter

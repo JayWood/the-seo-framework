@@ -77,6 +77,9 @@ require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'render.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'detect.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'postdata.class.php' );
 
+require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'postinfo.class.php' );
+require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'terminfo.class.php' );
+
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'generate.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'generate-description.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'generate-title.class.php' );

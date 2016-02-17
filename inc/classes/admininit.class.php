@@ -113,8 +113,12 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 * Removes the Genesis SEO meta boxes on the SEO Settings page
 	 *
 	 * @since 2.2.4
+	 * @param array $plugins, overwritten as this filter will fire the
+	 * detection, regardless of other SEO plugins.
+	 *
+	 * @return array Plugins to detect.
 	 */
-	public function no_more_genesis_seo() {
+	public function no_more_genesis_seo( $plugins ) {
 
 		$plugins = array(
 				// Classes to detect.
@@ -129,7 +133,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 				'constants' => array(),
 			);
 
-		return (array) $plugins;
+		return $plugins;
 	}
 
 	/**
@@ -199,7 +203,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		$tagline = (bool) $this->get_option( 'homepage_tagline' );
 		$home_tagline = $this->get_option( 'homepage_title_tagline' );
 		$title_location = $this->get_option( 'title_location' );
-		$title_rem_additions = (bool) $this->get_option( 'title_rem_additions' );
+		$title_add_additions = $this->add_title_additions();
 
 		$separator = $this->get_separator( 'title', true );
 
@@ -213,7 +217,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		 *
 		 * @since 2.2.4
 		 */
-		if ( '' !== $this->page_hook ) {
+		if ( isset( $this->page_hook ) && $this->page_hook ) {
 			// We're somewhere within default WordPress pages.
 			$post_id = $this->get_the_real_ID();
 
@@ -239,7 +243,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 				$title = $this->title( '', '', '', $generated_doctitle_args );
 
-				if ( false === $title_rem_additions || false === $this->can_manipulate_title() ) {
+				if ( $title_add_additions ) {
 					$additions = $blog_name;
 					$tagline = true;
 				} else {
@@ -264,19 +268,19 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 					);
 
 					$title = $this->title( '', '', '', $generated_doctitle_args );
-					$additions = $title_rem_additions ? '' : $blog_name;
+					$additions = $title_add_additions ? $blog_name : '';
 				}
 
 			} else {
 				//* We're in a special place.
 				// Can't fetch title.
 				$title = '';
-				$additions = $title_rem_additions ? '' : $blog_name;
+				$additions = $title_add_additions ? $blog_name : '';
 			}
 
 		} else {
 			// We're on our SEO settings pages.
-			if ( 'page' === get_option( 'show_on_front' ) ) {
+			if ( $this->has_page_on_front() ) {
 				// Home is a page.
 				$inpost_title = $this->get_custom_field( '_genesis_title', get_option( 'page_on_front' ) );
 			} else {

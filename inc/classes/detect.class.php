@@ -933,4 +933,22 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		return false;
 	}
 
+	/**
+	 * Whether a page or blog is on front.
+	 *
+	 * @staticvar bool $pof 
+	 * @since 2.6.0
+	 *
+	 * @return bool
+	 */
+	public function has_page_on_front() {
+
+		static $pof = null;
+
+		if ( isset( $pof ) )
+			return $pof;
+
+		return $pof = 'page' === get_option( 'show_on_front' ) ? true : false;
+	}
+
 }

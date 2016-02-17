@@ -23,13 +23,103 @@
  *
  * @since 2.6.0
  */
-class AutoDescription_TermInfo extends AutoDescription_Detect {
+class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 
 	/**
 	 * Constructor, load parent constructor
 	 */
 	public function __construct() {
 		parent::__construct();
+	}
+
+	/**
+	 * Fetch set Term data.
+	 *
+	 * @param object|null $term The TT object, if it isn't set, one is fetched.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return array $data The SEO Framework TT data.
+	 */
+	public function get_term_data( $term = null ) {
+
+		if ( is_null( $term ) ) {
+			if ( $this->is_author() ) {
+				//* Special handling.
+				return $this->get_author_settings();
+			}
+
+			$term = $this->fetch_the_term();
+		}
+
+		if ( isset( $term ) ) {
+			$data = array();
+
+			$data['title'] = isset( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : '';
+			$data['description'] = isset( $term->admeta['description'] ) ? $term->admeta['description'] : '';
+			$data['noindex'] = isset( $term->admeta['noindex'] ) ? $term->admeta['noindex'] : '';
+			$data['nofollow'] = isset( $term->admeta['nofollow'] ) ? $term->admeta['nofollow'] : '';
+			$data['noarchive'] = isset( $term->admeta['noarchive'] ) ? $term->admeta['noarchive'] : '';
+			$flag = isset( $term->admeta['saved_flag'] ) ? (bool) $term->admeta['saved_flag'] : false;
+
+			//* Genesis data fetch. This will override our options with Genesis options.
+			if ( false === $flag && isset( $term->meta ) ) {
+				$data['title'] = empty( $data['title'] ) && isset( $term->meta['doctitle'] ) 				? $term->meta['doctitle'] : $data['noindex'];
+				$data['description'] = empty( $data['description'] ) && isset( $term->meta['description'] )	? $term->meta['description'] : $data['description'];
+				$data['noindex'] = empty( $data['noindex'] ) && isset( $term->meta['noindex'] ) 			? $term->meta['noindex'] : $data['noindex'];
+				$data['nofollow'] = empty( $data['nofollow'] ) && isset( $term->meta['nofollow'] )			? $term->meta['nofollow'] : $data['nofollow'];
+				$data['noarchive'] = empty( $data['noarchive'] ) && isset( $term->meta['noarchive'] )		? $term->meta['noarchive'] : $data['noarchive'];
+			}
+
+			return $data;
+		}
+
+		//* Return null if no term can be set.
+		return null;
+	}
+
+	public function get_author_data( $id ) {
+		//* TODO
+		//* Return null if no term can be set.
+		return null;
+	}
+
+	/**
+	 * Try to fetch a term if none can be found.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 *
+	 * @return null|object The Term object.
+	 */
+	public function fetch_the_term() {
+		//* Return null if no term can be set.
+		if ( false === $this->is_category() )
+			return null;
+
+		if ( $this->is_admin() ) {
+			if ( 'term.php' === $this->page_hook ) {
+				global $current_screen;
+
+				if ( isset( $current_screen->taxonomy ) ) {
+					$term_id = abs( (int) $_REQUEST['term_id'] );
+					$term = get_term_by( 'id', $term_id, $current_screen->taxonomy );
+				}
+			}
+		} else {
+			if ( $this->is_category() || $this->is_tag() ) {
+				global $wp_query;
+
+				$term = $wp_query->get_queried_object();
+			} else if ( $this->is_tax() ) {
+				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
+			}
+		}
+
+		if ( isset( $term ) )
+			return $term;
+
+		return null;
 	}
 
 }

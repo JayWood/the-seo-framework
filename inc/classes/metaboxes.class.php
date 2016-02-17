@@ -463,7 +463,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<?php printf( __( 'Apply %s to the entire site?', 'autodescription' ), $this->code_wrap( 'noodp' ) ) ?>
 			</label>
 
-			<br />
+			<br>
 
 			<label for="<?php $this->field_id( 'noydir' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'noydir' ); ?>" id="<?php $this->field_id( 'noydir' ); ?>"  <?php $this->is_conditional_checked( 'noydir' ); ?> value="1" <?php checked( $this->get_field_value( 'noydir' ) ); ?> />
@@ -513,7 +513,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 						<input type="checkbox" name="<?php $this->field_name( $type . '_' . $ro_value ); ?>" <?php $this->is_conditional_checked( $type . '_' . $ro_value ); ?> id="<?php $this->field_id( $type . '_' . $ro_value ); ?>" value="1" <?php checked( $this->get_field_value( $type . '_' . $ro_value ) ); ?> />
 						<?php printf( __( 'Apply %s to %s?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n ); ?>
 					</label>
-					<br />
+					<br>
 					<?php
 				} else {
 					?>
@@ -521,7 +521,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 						<input type="checkbox" name="<?php $this->field_name( $type . '_' . $ro_value ); ?>" <?php $this->is_conditional_checked( $type . '_' . $ro_value ); ?> id="<?php $this->field_id( $type . '_' . $ro_value ); ?>" value="1" <?php checked( $this->get_field_value( $type . '_' . $ro_value ) ); ?> />
 						<?php printf( __( 'Apply %s to %s Archives?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n ); ?>
 					</label>
-					<br />
+					<br>
 					<?php
 				}
 			}
@@ -570,7 +570,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$home_page_i18n = __( 'Home Page', 'autodescription' );
 
 		//* Is the frontpage static or a blog?
-		if ( 'page' === get_option( 'show_on_front' ) ) {
+		if ( $this->has_page_on_front() ) {
 			$home_id = (int) get_option( 'page_on_front' );
 		} else {
 			$home_id = 0;
@@ -825,7 +825,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</div>
 			<?php
 			if ( $title_from_post_message ) {
-				echo '<br /><span class="description">' . $title_from_post_message . '</span>';
+				echo '<br><span class="description">' . $title_from_post_message . '</span>';
 			}
 			?>
 		</p>
@@ -841,11 +841,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 		<p>
 			<textarea name="<?php $this->field_name( 'homepage_description' ); ?>" class="large-text" id="<?php $this->field_id( 'homepage_description' ); ?>" rows="3" cols="70"  placeholder="<?php echo $description_placeholder ?>"><?php echo esc_textarea( $home_description ); ?></textarea>
-			<br />
+			<br>
 			<span class="description"><?php _e( 'The meta description can be used to determine the text used under the title on search engine results pages.', 'autodescription' ); ?></span>
 			<?php
 			if ( $description_from_post_message ) {
-				echo '<br /><span class="description">' . $description_from_post_message . '</span>';
+				echo '<br><span class="description">' . $description_from_post_message . '</span>';
 			}
 			?>
 
@@ -863,7 +863,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<?php echo $noindex_post ? $checked_home : ''; ?>
 			</label>
 
-			<br />
+			<br>
 
 			<label for="<?php $this->field_id( 'homepage_nofollow' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_nofollow' ); ?>" id="<?php $this->field_id( 'homepage_nofollow' ); ?>" <?php $this->is_conditional_checked( 'homepage_nofollow' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_nofollow' ) ); ?> />
@@ -872,7 +872,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<?php echo $nofollow_post ? $checked_home : ''; ?>
 			</label>
 
-			<br />
+			<br>
 
 			<label for="<?php $this->field_id( 'homepage_noarchive' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_noarchive' ); ?>" id="<?php $this->field_id( 'homepage_noarchive' ); ?>" <?php $this->is_conditional_checked( 'homepage_noarchive' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_noarchive' ) ); ?> />
@@ -1189,7 +1189,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<input type="checkbox" name="<?php $this->field_name( 'post_publish_time' ); ?>" id="<?php $this->field_id( 'post_publish_time' ); ?>" <?php $this->is_conditional_checked( 'post_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_publish_time' ) ); ?> />
 				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $posts_i18n ); ?>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'page_publish_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'page_publish_time' ); ?>" id="<?php $this->field_id( 'page_publish_time' ); ?>" <?php $this->is_conditional_checked( 'page_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'page_publish_time' ) ); ?> />
 				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $pages_i18n ); ?>
@@ -1200,7 +1200,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<input type="checkbox" name="<?php $this->field_name( 'post_modify_time' ); ?>" id="<?php $this->field_id( 'post_modify_time' ); ?>" <?php $this->is_conditional_checked( 'post_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_modify_time' ) ); ?> />
 				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $posts_i18n ); ?>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'page_modify_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'page_modify_time' ); ?>" id="<?php $this->field_id( 'page_modify_time' ); ?>" <?php $this->is_conditional_checked( 'page_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'page_modify_time' ) ); ?> />
 				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $pages_i18n ); ?>
@@ -1216,7 +1216,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<input type="checkbox" name="<?php $this->field_name( 'home_publish_time' ); ?>" id="<?php $this->field_id( 'home_publish_time' ); ?>" <?php $this->is_conditional_checked( 'home_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_publish_time' ) ); ?> />
 				<?php printf( __( 'Add %s to the %s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $home_i18n ); ?>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'home_modify_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'home_modify_time' ); ?>" id="<?php $this->field_id( 'home_modify_time' ); ?>" <?php $this->is_conditional_checked( 'home_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_modify_time' ) ); ?> />
 				<?php printf( __( 'Add %s to the %s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $home_i18n ); ?>
@@ -1244,7 +1244,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<input type="checkbox" name="<?php $this->field_name( 'prev_next_posts' ); ?>" id="<?php $this->field_id( 'prev_next_posts' ); ?>" <?php $this->is_conditional_checked( 'prev_next_posts' ); ?> value="1" <?php checked( $this->get_field_value( 'prev_next_posts' ) ); ?> />
 				<?php printf( __( 'Add %s link tags to Posts and Pages?', 'autodescription' ), $this->code_wrap( 'rel' ) ); ?>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'prev_next_archives' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'prev_next_archives' ); ?>" id="<?php $this->field_id( 'prev_next_archives' ); ?>" <?php $this->is_conditional_checked( 'prev_next_archives' ); ?> value="1" <?php checked( $this->get_field_value( 'prev_next_archives' ) ); ?> />
 				<?php printf( __( 'Add %s link tags to Archives?', 'autodescription' ), $this->code_wrap( 'rel' ) ); ?>
@@ -1806,12 +1806,12 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<input type="checkbox" name="<?php $this->field_name( 'ping_google' ); ?>" id="<?php $this->field_id( 'ping_google' ); ?>" <?php $this->is_conditional_checked( 'ping_google' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_google' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Google' ); ?>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'ping_bing' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'ping_bing' ); ?>" id="<?php $this->field_id( 'ping_bing' ); ?>" <?php $this->is_conditional_checked( 'ping_bing' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_bing' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Bing' ); ?>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'ping_yahoo' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'ping_yahoo' ); ?>" id="<?php $this->field_id( 'ping_yahoo' ); ?>" <?php $this->is_conditional_checked( 'ping_yahoo' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_yahoo' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Yahoo' ); ?>
@@ -1848,7 +1848,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<?php _e( 'Convert feed content into excerpts?', 'autodescription' ); ?>
 				<span title="<?php _e( "By default the excerpt will be at most 400 characters long", 'autodescription' ); ?>">[?]</span>
 			</label>
-			<br />
+			<br>
 			<label for="<?php $this->field_id( 'source_the_feed' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'source_the_feed' ); ?>" id="<?php $this->field_id( 'source_the_feed' ); ?>" <?php $this->is_conditional_checked( 'source_the_feed' ); ?> value="1" <?php checked( $this->get_field_value( 'source_the_feed' ) ); ?> />
 				<?php _e( 'Add backlinks below the feed content?', 'autodescription' ); ?>

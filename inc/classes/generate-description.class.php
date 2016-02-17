@@ -48,7 +48,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *
 	 * @return string The description
 	 */
-	 public function generate_description( $description = '', $args = array() ) {
+	public function generate_description( $description = '', $args = array() ) {
 
 		/**
 		 * Parse args.

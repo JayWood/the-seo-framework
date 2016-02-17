@@ -23,7 +23,7 @@
  *
  * @since 2.6.0
  */
-class AutoDescription_PostInfo extends AutoDescription_Detect {
+class AutoDescription_PostInfo extends AutoDescription_PostData {
 
 	/**
 	 * Constructor, load parent constructor

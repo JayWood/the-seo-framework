@@ -293,7 +293,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		if ( $home_title ) {
 			$custom_name = $home_title;
-		} else if ( 'page' === get_option( 'show_on_front' ) ) {
+		} else if ( $this->has_page_on_front() ) {
 			$home_id = (int) get_option( 'page_on_front' );
 
 			$custom_name = $this->get_custom_field( '_genesis_title', $home_id );

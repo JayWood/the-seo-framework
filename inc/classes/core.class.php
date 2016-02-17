@@ -123,7 +123,7 @@ class AutoDescription_Core {
 		if ( isset( $front_id ) )
 			return $front_id;
 
-		return $front_id = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : 0;
+		return $front_id = $this->has_page_on_front() ? (int) get_option( 'page_on_front' ) : 0;
 	}
 
 	/**

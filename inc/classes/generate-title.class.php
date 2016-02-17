@@ -68,27 +68,13 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( is_feed() )
 			return trim( $title );
 
-		$default_args = $this->parse_title_args( '', '', true );
-
-		/**
-		 * Parse args.
-		 * @since 2.4.0
-		 */
-		if ( ! is_array( $args ) ) {
-			//* Old style parameters are used. Doing it wrong.
-			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.4.0', __LINE__ );
-			$args = $default_args;
-		} else if ( $args ) {
-			$args = $this->parse_title_args( $args, $default_args );
-		} else {
-			$args = $default_args;
-		}
+		$args = $this->reparse_title_args( $args );
 
 		/**
 		 * Return early if the request is the Title only (without tagline/blogname).
 		 * Admin only.
 		 */
-		if ( $args['notagline'] && is_admin() )
+		if ( $args['notagline'] && $this->is_admin() )
 			return $this->build_title_notagline( $title, $args );
 
 		/**
@@ -97,7 +83,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 *
 		 * @since 2.2.5
 		 */
-		if ( ! $args['meta'] ) {
+		if ( false === $args['meta'] ) {
 			if ( false === $this->current_theme_supports_title_tag() && doing_filter( 'wp_title' ) ) {
 				if ( $seplocation ) {
 					//* Set doing it wrong parameters.
@@ -203,6 +189,34 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	}
 
 	/**
+	 * Reparse title args.
+	 *
+	 * @param array $args required The passed arguments.
+	 * @param int $line the line number the function is called.
+	 *
+	 * @since 2.6.0
+	 * @return array $args parsed args.
+	 */
+	public function reparse_title_args( $args = array(), $line = 0 ) {
+
+		$default_args = $this->parse_title_args( '', '', true );
+
+		if ( is_array( $args ) ) {
+			 if ( empty( $args ) ) {
+				$args = $default_args;
+			} else {
+				$args = $this->parse_title_args( $args, $default_args );
+			}
+		} else {
+			//* Old style parameters are used. Doing it wrong.
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.5.0', __LINE__ );
+			$args = $default_args;
+		}
+
+		return $args;
+	}
+
+	/**
 	 * Build the title based on input, without tagline.
 	 *
 	 * @param string $title The Title to return
@@ -218,8 +232,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function build_title_notagline( $title = '', $args = array() ) {
 
-		if ( empty( $args ) )
-			$args = $this->parse_title_args( '', '', true );
+		$args = $this->reparse_title_args( $args );
 
 		$title = $this->get_placeholder_title( $title, $args );
 
@@ -254,8 +267,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function get_placeholder_title( $title = '', $args = array() ) {
 
-		if ( empty( $args ) )
-			$args = $this->parse_title_args( '', '', true );
+		$args = $this->reparse_title_args( $args );
 
 		/**
 		 * Detect if placeholder is being generated.
@@ -315,8 +327,10 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Moved up and return early to reduce processing.
 		 * @since 2.3.8
 		 */
-		if ( is_front_page() )
+		if ( $this->is_front_page() )
 			return $title = '';
+
+		$args = $this->reparse_title_args( $args );
 
 		/**
 		 * When using an empty wp_title() function, outputs are unexpected.
@@ -492,17 +506,15 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function build_title( $title = '', $seplocation = '', $args = array() ) {
 
-		if ( empty( $args ) )
-			$args = $this->parse_title_args( '', '', true );
+		$args = $this->reparse_title_args( $args );
 
 		/**
 		 * Overwrite title here, prevents duplicate title issues, since we're working with a filter.
-		 *
 		 * @since 2.2.2
 		 */
 		$title = '';
 
-		$is_front_page = is_front_page() || $args['page_on_front'] ? true : false;
+		$is_front_page = $this->is_front_page() || $args['page_on_front'] ? true : false;
 		$blogname = $this->get_blogname();
 
 		/**
@@ -600,39 +612,22 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * @since 2.4.3
 			 * Adds page numbering within the title.
 			 */
-			if ( ! is_404() && ( $paged >= 2 || $page >= 2 ) )
+			if ( false === $this->is_404() && ( $paged >= 2 || $page >= 2 ) )
 				$title .= " $sep " . sprintf( __( 'Page %s', 'autodescription' ), max( $paged, $page ) );
 
 			//* Title for title (meta) tags.
-			if ( $is_front_page && ! $add_tagline ) {
+			if ( $is_front_page && false === $add_tagline ) {
 				//* Render frontpage output without tagline
 				$title = $blogname;
 			}
 
-			if ( $this->is_admin() && false === $this->can_manipulate_title() ) {
-				//* If theme is doing it wrong, add it anyway in the admin area.
-				$add_blogname_option = true;
-			} else {
-				/**
-				 * Get blogname additions from option, invert it and cast to bool.
-				 * @since 2.5.2
-				 */
-				$add_blogname_option = (bool) ! $this->get_option( 'title_rem_additions' );
-			}
-
-			/**
-			 * Applies filters the_seo_framework_add_blogname_to_title.
-			 * @since 2.4.3
-			 */
-			$add_blogname = (bool) apply_filters( 'the_seo_framework_add_blogname_to_title', $add_blogname_option );
-
 			/**
 			 * On frontpage: Add title if add_tagline is true.
-			 * On all other pages: Add tagline if filters $add_blogname is true.
+			 * On all other pages: Add tagline if title additions is true.
 			 *
 			 * @since 2.4.3
 			 */
-			if ( ( $add_blogname && false === $is_front_page ) || ( $is_front_page && $add_tagline ) ) {
+			if ( ( $this->add_title_additions() && false === $is_front_page ) || ( $is_front_page && $add_tagline ) ) {
 				$title = trim( $title );
 				$blogname = trim( $blogname );
 
@@ -699,15 +694,16 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Check for singular first, like WooCommerce shop.
 		 * @since 2.5.2
 		 */
-		if ( false === $this->is_singular( $term_id ) ) {
-			if ( is_category() || is_tag() || is_tax() || ( $term_id && $taxonomy ) ) {
+		//* @TODO function this
+		if ( $this->is_archive() ) {
+			if ( $this->is_category( $term_id ) || $this->is_tag( $term_id ) || $this->is_tax( $term_id ) || ( $term_id && $taxonomy ) ) {
 				$title = $this->title_for_terms( '', $term_id, $taxonomy );
-			} else if ( is_archive() ) {
+			} else {
 				/**
 				 * Get all other archive titles
 				 * @since 2.5.2
 				 */
-				$title = wp_strip_all_tags( $this->get_the_archive_title() );
+				$title = wp_strip_all_tags( $this->get_the_real_archive_title() );
 			}
 		}
 
@@ -715,10 +711,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Applies filters string the_seo_framework_404_title
 		 * @since 2.5.2
 		 */
-		if ( is_404() )
+		if ( $this->is_404() )
 			$title = (string) apply_filters( 'the_seo_framework_404_title', '404' );
 
-		if ( is_search() ) {
+		if ( $this->is_search() ) {
+			//* @TODO function this
 			/**
 			 * Applies filters string the_seo_framework_404_title
 			 * @since 2.5.2
@@ -730,6 +727,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		//* Generate admin placeholder for taxonomies
 		if ( empty( $title ) && $term_id && $taxonomy ) {
+			//* @TODO function this
 			$term = get_term_by( 'id', $term_id, $taxonomy, OBJECT );
 
 			if ( $term && is_object( $term ) ) {
@@ -746,6 +744,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 *
 			 * @since 2.3.1
 			 */
+			//* @TODO optionize this
+			//* @TODO Test if thsi is even run, at all?
 			$term_labels = $this->get_tax_labels( $tax_type );
 
 			if ( isset( $term_labels ) && isset( $term_labels->singular_name ) ) {
@@ -758,6 +758,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		//* Fetch the post title if no title is found.
 		if ( ! isset( $title ) || empty( $title ) ) {
+			//* @TODO function this
 
 			if ( empty( $term_id ) )
 				$term_id = $this->get_the_real_ID();
@@ -781,6 +782,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		//* You forgot to enter a title "anywhere"!
 		//* So it's untitled :D
 		if ( empty( $title ) ) {
+			//* @TODO function this
 			/* translators: Front-end output. */
 			$title = __( 'Untitled', 'autodescription' );
 		}
@@ -835,7 +837,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 *
 			 * @since 2.3.8
 			 */
-			$tagline = (string) $this->get_option( 'homepage_title_tagline' );
+			$tagline = $this->get_option( 'homepage_title_tagline' );
 			$title = $tagline ? $tagline : $this->get_blogdescription();
 		} else {
 			$title = '';
@@ -848,7 +850,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		$title_for_home = $this->title_for_home( '', $get_custom_field, false );
 		$blogname = $title_for_home ? $title_for_home : $this->get_blogname();
 
-		if ( empty( $seplocation_home ) || $seplocation_home !== 'left' || $seplocation_home !== 'right' ) {
+		if ( empty( $seplocation_home ) || 'left' !== $seplocation_home || 'right' !== $seplocation_home ) {
+			//* @TODO function this?
 			/**
 			 * Applies filters the_seo_framework_title_seplocation_front : string the home page title location.
 			 */
@@ -874,6 +877,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Gets the title for the static home page.
 	 *
 	 * @since 2.2.8
+	 * @see $this->generate_home_title()
 	 *
 	 * @param string $home_title The fallback title.
 	 * @param bool $get_custom_field Fetch Title from Custom Fields.
@@ -902,7 +906,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Add get custom Inpost field check
 		 * @since 2.3.4
 		 */
-		if ( $get_custom_field && 'page' === get_option( 'show_on_front' ) && empty( $home_title ) ) {
+		if ( $get_custom_field && empty( $home_title ) && $this->has_page_on_front() ) {
 			$custom_field = $this->get_custom_field( '_genesis_title' );
 			$home_title = $custom_field ? (string) $custom_field : $home_title;
 		}
@@ -1164,17 +1168,28 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	/**
 	 * Detemrmines wether to add or remove title additions.
 	 *
-	 * @since 2.5.2
+	 * @since 2.6.0
+	 * @staticvar bool $add
+	 *
 	 * @return bool True when additions are allowed.
 	 */
 	public function add_title_additions() {
 
-		$remove = $this->get_option( 'title_rem_additions' );
+		static $add = null;
 
-		if ( ! $remove )
-			return true;
+		if ( isset( $add ) )
+			return $add;
 
-		return false;
+		/**
+		 * Applies filters the_seo_framework_add_blogname_to_title.
+		 * @since 2.4.3
+		 */
+		$add_blogname = (bool) apply_filters( 'the_seo_framework_add_blogname_to_title', true );
+
+		if ( $this->can_manipulate_title() && ( $this->is_option_checked( 'title_rem_additions' ) || false === $add_blogname ) )
+			return $add = false;
+
+		return $add = true;
 	}
 
 }

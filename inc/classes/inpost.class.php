@@ -83,7 +83,8 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 * @since 2.1.8
 	 */
 	public function add_taxonomy_seo_box_init() {
-		// Add taxonomy meta boxes
+
+		//* Add taxonomy meta boxes
 		foreach ( get_taxonomies( array( 'public' => true ) ) as $tax_name )
 			add_action( $tax_name . '_edit_form', array( &$this, 'pre_seo_box' ), 10, 2 );
 
@@ -249,30 +250,13 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		//* Get the language the Google page should assume.
 		$language = $this->google_language();
 
-		$ad_doctitle = isset( $object->admeta['doctitle'] ) ? $object->admeta['doctitle'] : '';
-		$ad_description = isset( $object->admeta['description'] ) ? $object->admeta['description'] : '';
-		$ad_noindex = isset( $object->admeta['noindex'] ) ? $object->admeta['noindex'] : '';
-		$ad_nofollow = isset( $object->admeta['nofollow'] ) ? $object->admeta['nofollow'] : '';
-		$ad_noarchive = isset( $object->admeta['noarchive'] ) ? $object->admeta['noarchive'] : '';
-		$flag = isset( $object->admeta['saved_flag'] ) ? (bool) $object->admeta['saved_flag'] : false;
+		$data = $this->get_term_data( $object );
 
-		//* Genesis data fetch. This will override our options with Genesis options.
-		if ( ! $flag && isset( $object->meta ) ) {
-			if ( empty( $ad_doctitle ) && isset( $object->meta['doctitle'] ) )
-				$ad_doctitle = $object->meta['doctitle'];
-
-			if ( empty( $ad_description ) && isset( $object->meta['description'] ) )
-				$ad_description = $object->meta['description'];
-
-			if ( empty( $ad_noindex ) && isset( $object->meta['noindex'] ) )
-				$ad_noindex = $object->meta['noindex'];
-
-			if ( empty( $ad_nofollow ) && isset( $object->meta['nofollow'] ) )
-				$ad_nofollow = $object->meta['nofollow'];
-
-			if ( empty( $ad_noarchive ) && isset( $object->meta['noarchive'] ) )
-				$ad_noarchive = $object->meta['doctitle'];
-		}
+		$title = isset( $data['title'] ) ? $data['title'] : '';
+		$description = isset( $data['description'] ) ? $data['description'] : '';
+		$noindex = isset( $data['noindex'] ) ? $data['noindex'] : '';
+		$nofollow = isset( $data['nofollow'] ) ? $data['nofollow'] : '';
+		$noarchive = isset( $data['noarchive'] ) ? $data['noarchive'] : '';
 
 		//* Fetch Term ID and taxonomy.
 		$term_id = $object->term_id;
@@ -295,13 +279,8 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		$generated_doctitle = $this->title( '', '', '', $generated_doctitle_args );
 		$generated_description = $this->generate_description_from_id( $generated_description_args );
 
-		/**
-		 * Calculate true Title length
-		 *
-		 * @since 2.2.4
-		 */
 		$blog_name = $this->get_blogname();
-		$rem_title_additions = $this->get_option( 'title_rem_additions' );
+		$add_additions = $this->add_title_additions();
 
 		/**
 		 * Separator doesn't matter. Since html_entity_decode is used.
@@ -309,9 +288,9 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		 *
 		 * @since 2.3.4
 		 */
-		$doc_pre_rem = ! $rem_title_additions ? $ad_doctitle . " | " . $blog_name : $ad_doctitle;
-		$ad_doctitle_len	= $ad_doctitle 		? $doc_pre_rem : $generated_doctitle;
-		$ad_description_len = $ad_description	? $ad_description : $generated_description;
+		$doc_pre_rem = $add_additions ? $title . " | " . $blog_name : $title;
+		$title_len = $title ? $doc_pre_rem : $generated_doctitle;
+		$description_len = $description	? $description : $generated_description;
 
 		/**
 		 * Convert to what Google outputs.
@@ -319,15 +298,15 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		 * This will convert e.g. &raquo; to a single length character.
 		 * @since 2.3.4
 		 */
-		$tit_len_parsed = html_entity_decode( $ad_doctitle_len );
-		$desc_len_parsed = html_entity_decode( $ad_description_len );
+		$tit_len_parsed = html_entity_decode( $title_len );
+		$desc_len_parsed = html_entity_decode( $description_len );
 
 		/**
 		 * Generate static placeholder for when title or description is emptied
 		 *
 		 * @since 2.2.4
 		 */
-		$doctitle_placeholder = $generated_doctitle;
+		$title_placeholder = $generated_doctitle;
 		$description_placeholder = $generated_description;
 
 		?>
@@ -354,7 +333,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 					</th>
 					<td>
 						<div id="autodescription-title-wrap">
-							<input name="autodescription-meta[doctitle]" id="autodescription-meta[doctitle]" type="text" placeholder="<?php echo $doctitle_placeholder ?>" value="<?php echo esc_attr( $ad_doctitle ); ?>" size="40" />
+							<input name="autodescription-meta[doctitle]" id="autodescription-meta[doctitle]" type="text" placeholder="<?php echo $title_placeholder ?>" value="<?php echo esc_attr( $title ); ?>" size="40" />
 							<span id="autodescription-title-offset" class="hide-if-no-js"></span><span id="autodescription-title-placeholder" class="hide-if-no-js"></span>
 						</div>
 						<p class="description"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="autodescription-meta[doctitle]_chars">'. mb_strlen( $tit_len_parsed ) .'</span>' ); ?></p>
@@ -369,7 +348,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 						</label>
 					</th>
 					<td>
-						<textarea name="autodescription-meta[description]" id="autodescription-meta[description]" placeholder="<?php echo $description_placeholder ?>" rows="5" cols="50" class="large-text"><?php echo esc_html( $ad_description ); ?></textarea>
+						<textarea name="autodescription-meta[description]" id="autodescription-meta[description]" placeholder="<?php echo $description_placeholder ?>" rows="5" cols="50" class="large-text"><?php echo esc_html( $description ); ?></textarea>
 						<p class="description"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="autodescription-meta[description]_chars">'. mb_strlen( $desc_len_parsed ) .'</span>' ); ?></p>
 					</td>
 				</tr>
@@ -377,21 +356,21 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 				<tr>
 					<th scope="row" valign="top"><?php _e( 'Robots Meta Settings', 'autodescription' ); ?></th>
 					<td>
-						<label for="autodescription-meta[noindex]"><input name="autodescription-meta[noindex]" id="autodescription-meta[noindex]" type="checkbox" value="1" <?php checked( $ad_noindex ); ?> />
+						<label for="autodescription-meta[noindex]"><input name="autodescription-meta[noindex]" id="autodescription-meta[noindex]" type="checkbox" value="1" <?php checked( $noindex ); ?> />
 							<?php printf( __( 'Apply %s to this term', 'autodescription' ), $this->code_wrap( 'noindex' ) ); ?>
 							<a href="https://support.google.com/webmasters/answer/93710?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
 						</label>
 
-						<br />
+						<br>
 
-						<label for="autodescription-meta[nofollow]"><input name="autodescription-meta[nofollow]" id="autodescription-meta[nofollow]" type="checkbox" value="1" <?php checked( $ad_nofollow ); ?> />
+						<label for="autodescription-meta[nofollow]"><input name="autodescription-meta[nofollow]" id="autodescription-meta[nofollow]" type="checkbox" value="1" <?php checked( $nofollow ); ?> />
 							<?php printf( __( 'Apply %s to this term', 'autodescription' ), $this->code_wrap( 'nofollow' ) ); ?>
 							<a href="https://support.google.com/webmasters/answer/96569?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
 						</label>
 
-						<br />
+						<br>
 
-						<label for="autodescription-meta[noarchive]"><input name="autodescription-meta[noarchive]" id="autodescription-meta[noarchive]" type="checkbox" value="1" <?php checked( $ad_noarchive ); ?> />
+						<label for="autodescription-meta[noarchive]"><input name="autodescription-meta[noarchive]" id="autodescription-meta[noarchive]" type="checkbox" value="1" <?php checked( $noarchive ); ?> />
 							<?php printf( __( 'Apply %s to this term', 'autodescription' ), $this->code_wrap( 'noarchive' ) ); ?>
 							<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 						</label>
@@ -436,7 +415,6 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		$post_id = $this->get_the_real_ID();
 		$is_static_frontpage = $this->is_static_frontpage( $post_id );
 		$title = $this->get_custom_field( '_genesis_title', $post_id );
-		$add_additions = ! $this->get_option( 'title_rem_additions' );
 
 		$page_on_front_option = get_option( 'page_on_front' );
 
@@ -497,27 +475,20 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		 * @since 2.3.4
 		 */
 		if ( $is_static_frontpage ) {
-			if ( ! $this->get_option( 'homepage_tagline' ) ) {
-				$tit_len_pre = $title ? $title : $generated_doctitle;
+			if ( $this->get_option( 'homepage_tagline' ) ) {
+				$tit_len_pre = $title ? $title . " | " . $this->get_blogdescription() : $generated_doctitle;
 			} else {
-				$tit_len_pre =  $title ? $title . " | " . $this->get_blogdescription() : $generated_doctitle;
+				$tit_len_pre = $title ? $title : $generated_doctitle;
 			}
 		} else {
-			/**
-			 * Calculate true Title length
-			 *
-			 * @since 2.2.4
-			 */
-			$blog_name = $this->get_blogname();
-
 			/**
 			 * Separator doesn't matter. Since html_entity_decode is used.
 			 * Order doesn't matter either. Since it's just used for length calculation.
 			 *
 			 * @since 2.3.4
 			 */
-			if ( $add_additions ) {
-				$tit_len_pre = $title ? $title . " | " . $blog_name : $generated_doctitle;
+			if ( $this->add_title_additions() ) {
+				$tit_len_pre = $title ? $title . " | " . $this->get_blogname() : $generated_doctitle;
 			} else {
 				$tit_len_pre = $title ? $title : $generated_doctitle;
 			}
@@ -617,14 +588,14 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 				<a href="https://support.google.com/webmasters/answer/93710?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
 			</label>
 
-			<br />
+			<br>
 
 			<label for="autodescription_nofollow"><input type="checkbox" name="autodescription[_genesis_nofollow]" id="autodescription_nofollow" value="1" <?php checked( $this->get_custom_field( '_genesis_nofollow' ) ); ?> />
 				<?php printf( __( 'Apply %s to this page', 'autodescription' ), $this->code_wrap( 'nofollow' ) ); ?>
 				<a href="https://support.google.com/webmasters/answer/96569?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
 			</label>
 
-			<br />
+			<br>
 
 			<label for="autodescription_noarchive"><input type="checkbox" name="autodescription[_genesis_noarchive]" id="autodescription_noarchive" value="1" <?php checked( $this->get_custom_field( '_genesis_noarchive' ) ); ?> />
 				<?php printf( __( 'Apply %s to this page', 'autodescription' ), $this->code_wrap( 'noarchive' ) ); ?>

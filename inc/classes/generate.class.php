@@ -23,7 +23,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Generate extends AutoDescription_PostData {
+class AutoDescription_Generate extends AutoDescription_TermInfo {
 
 	/**
 	 * Constructor, load parent constructor
@@ -77,13 +77,13 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 			$meta['noindex'] = 'noindex';
 
 		//* Check home page SEO settings, set noindex, nofollow and noarchive
-		if ( is_front_page() ) {
+		if ( $this->is_front_page() ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'homepage_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'homepage_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'homepage_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
-		if ( ( is_category() || is_tag() ) && false === $this->is_singular() ) {
+		if ( $this->is_category() || $this->is_tag() ) {
 			$term = $wp_query->get_queried_object();
 
 			$meta['noindex']   = empty( $meta['noindex'] ) && $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
@@ -110,7 +110,7 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 		}
 
 		// Is custom Taxonomy page. But not a category or tag. Should've recieved specific term SEO settings.
-		if ( is_tax() ) {
+		if ( $this->is_tax() ) {
 			$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 
 			$meta['noindex']   = empty( $meta['noindex'] ) && $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
@@ -118,7 +118,7 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 		}
 
-		if ( is_author() ) {
+		if ( $this->is_author() ) {
 			$author_id = (int) get_query_var( 'author' );
 
 			$meta['noindex']   = empty( $meta['noindex'] ) && get_the_author_meta( 'noindex', $author_id ) ? 'noindex' : $meta['noindex'];
@@ -130,19 +130,19 @@ class AutoDescription_Generate extends AutoDescription_PostData {
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'author_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
-		if ( is_date() ) {
+		if ( $this->is_date() ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'date_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'date_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'date_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
-		if ( is_search() ) {
+		if ( $this->is_search() ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'search_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'search_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'search_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
-		if ( is_attachment() ) {
+		if ( $this->is_attachment() ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'attachment_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'attachment_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'attachment_noarchive' ) ? 'noarchive' : $meta['noarchive'];

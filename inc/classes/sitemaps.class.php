@@ -383,7 +383,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$page_on_front = (int) get_option( 'page_on_front' );
 			$page_for_posts_option = (int) get_option( 'page_for_posts' );
-			$page_show_on_front = 'page' === get_option( 'show_on_front' ) ? true : false;
+			$page_show_on_front = $this->has_page_on_front();
 
 			/**
 			 * This can be heavy.

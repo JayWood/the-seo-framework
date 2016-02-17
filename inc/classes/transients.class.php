@@ -193,6 +193,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 * @staticvar array $cached_id
 	 *
 	 * @global $blog_id;
+	 * @TODO refactor, is smelly. var_dump() @since 2.6.0
 	 *
 	 * @since 2.3.3
 	 *
@@ -232,10 +233,9 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 		} else {
 			//* All other pages, admin and front-end.
-
 			if ( false === $this->is_search() ) {
 				if ( ( false === $page_id || false === $this->is_front_page( $page_id ) ) && ( 'posts' === get_option( 'show_on_front' ) ) ) {
-					if ( is_404() ) {
+					if ( $this->is_404() ) {
 						$the_id = '_404_';
 					} else {
 						/**
@@ -245,8 +245,8 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 						 */
 						$the_id = 'hblog_' . (string) get_option( 'page_on_front' );
 					}
-				} else if ( ( false === $page_id || $this->is_front_page( $page_id ) || $page_id === get_option( 'page_on_front' ) ) && ( empty( $taxonomy ) && 'page' === get_option( 'show_on_front' ) ) ) {
-					if ( is_404() ) {
+				} else if ( ( false === $page_id || $this->is_front_page( $page_id ) || $page_id === get_option( 'page_on_front' ) ) && ( empty( $taxonomy ) && $this->has_page_on_front() ) ) {
+					if ( $this->is_404() ) {
 						$the_id = '_404_';
 					} else {
 						/**

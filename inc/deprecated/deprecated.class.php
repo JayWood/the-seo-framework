@@ -248,7 +248,7 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 	 * @since 2.6.0
 	 */
 	public function get_the_archive_title() {
-		$this->_deprecated_function( 'AutoDescription_Generate_Description::' . __FUNCTION__, '2.6.0', 'AutoDescription_Debug::get_the_real_archive_title()' );
+		$this->_deprecated_function( 'AutoDescription_Generate_Description::' . __FUNCTION__, '2.6.0', 'AutoDescription_Generate_Title::get_the_real_archive_title()' );
 
 		return $this->get_the_real_archive_title();
 	}

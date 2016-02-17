@@ -180,7 +180,6 @@ class AutoDescription_Query extends AutoDescription_Debug {
 	 * @since 2.3.4
 	 *
 	 * @staticvar bool $is_blog_page
-	 * @staticvar bool $pof
 	 *
 	 * @return bool true if is blog page. Always false if blog page is homepage.
 	 */
@@ -196,16 +195,9 @@ class AutoDescription_Query extends AutoDescription_Debug {
 
 		$pfp = (int) get_option( 'page_for_posts' );
 
-		if ( 0 !== $pfp ) {
-
-			static $pof = null;
-
-			if ( ! isset( $pof ) )
-				$pof = 'page' === get_option( 'show_on_front' ) ? true : false;
-
-			if ( $pof && false === $this->is_front_page() && false === is_archive() ) {
-				if ( $id === $pfp )
-					return $is_blog_page[$id] = true;
+		if ( 0 !== $pfp && $id === $pfp ) {
+			if ( $this->has_page_on_front() && false === $this->is_front_page() && false === is_archive() ) {
+				return $is_blog_page[$id] = true;
 			}
 		}
 

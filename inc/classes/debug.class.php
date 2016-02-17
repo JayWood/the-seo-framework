@@ -79,7 +79,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		 */
 		if ( WP_DEBUG && apply_filters( 'deprecated_function_trigger_error', true ) ) {
 
-			set_error_handler( array( $this, 'error_handler' ) );
+			set_error_handler( array( $this, 'error_handler_deprecated' ) );
 
 			if ( function_exists( '__' ) ) {
 				if ( isset( $replacement ) )
@@ -132,7 +132,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		*/
 		if ( WP_DEBUG && apply_filters( 'doing_it_wrong_trigger_error', true ) ) {
 
-			set_error_handler( array( $this, 'error_handler' ) );
+			set_error_handler( array( $this, 'error_handler_doing_it_wrong' ) );
 
 			if ( function_exists( '__' ) ) {
 				$version = is_null( $version ) ? '' : sprintf( __( '(This message was added in version %s of The SEO Framework.)' ), $version );
@@ -160,31 +160,80 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 * @access private
 	 * Please don't use this error handler.
 	 * Only handles notices.
+	 * @see E_USER_NOTICE
 	 *
 	 * @since 2.6.0
 	 *
 	 * @param int Error handling code.
 	 * @param string The error message.
-	 *
-	 * @return E_USER_NOTICE warning.
 	 */
-	protected function error_handler( $code, $message ) {
+	protected function error_handler_deprecated( $code, $message ) {
 
 		//* Only do so if E_USER_NOTICE is pased.
-		if ( $code >= 1024 ) {
-			$backtrace = debug_backtrace();
+		if ( $code >= 1024 && isset( $message ) ) {
 
+			$backtrace = debug_backtrace();
+			/**
+			 * 0 = This function. 1 = Debug function. 2 = Error trigger. 3 = Deprecated call.
+			 */
+			$error = $backtrace[3];
+
+			$this->error_handler( $error, $message );
+		}
+
+	}
+
+	/**
+	 * The SEO Framework error handler.
+	 *
+	 * @access private
+	 * Please don't use this error handler.
+	 * Only handles notices.
+	 * @see E_USER_NOTICE
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int Error handling code.
+	 * @param string The error message.
+	 */
+	protected function error_handler_doing_it_wrong( $code, $message ) {
+
+		//* Only do so if E_USER_NOTICE is pased.
+		if ( $code >= 1024 && isset( $message ) ) {
+
+			$backtrace = debug_backtrace();
 			/**
 			 * 0 = This function. 1 = Debug function. 2 = Error trigger.
 			 */
 			$error = $backtrace[2];
 
-			$file = $error['file'];
-			$line = $error['line'];
-
-			echo "\r\n" . '<strong>Notice:</strong> ' . $message . ' in ' . $file . ' on line ' . $line . ".\r\n";
+			$this->error_handler( $error, $message );
 		}
 
+	}
+
+	/**
+	 * Echo's error.
+	 *
+	 * @access private
+	 * Please don't use this error handler.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array $error The Error location and file.
+	 * @param string $message The error message.
+	 */
+	protected function error_handler( $error, $message ) {
+
+		$file = isset( $error['file'] ) ? $error['file'] : '';
+		$line = isset( $error['line'] ) ? $error['file'] : '';
+
+		if ( isset( $message ) ) {
+			echo "\r\n" . '<strong>Notice:</strong> ' . $message;
+			echo $file ? ' In ' . $file : '';
+			echo $line ? ' on line ' . $line : '';
+			echo ".<br>\r\n";
+		}
 	}
 
 	/**
@@ -239,7 +288,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 * @access private
 	 * @since 2.6.0
 	 */
-	public function get_debug_information( $values ) {
+	public function get_debug_information( $values = null ) {
 
 		$output = '';
 
@@ -248,7 +297,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 			$output .= "\r\n";
 			$output .=  $this->the_seo_framework_debug_hidden ? '' : '<span class="code highlight">';
 
-			if ( ! isset( $values ) ) {
+			if ( is_null( $values ) ) {
 				$output .= $this->debug_value_wrapper( "Debug message: Value isn't set." ) . "\r\n";
 				$output .= $this->the_seo_framework_debug_hidden ? '' : '</span>';
 
@@ -256,7 +305,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 			}
 
 			if ( is_object( $values ) ) {
-				// Turn objects into values.
+				// Turn objects into arrays.
 				$values = (array) $values;
 
 				foreach ( $values as $key => $value ) {
@@ -313,7 +362,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 								$output .= ',';
 								$output .= "\r\n";
 							}
-							$output .= $this->the_seo_framework_debug_hidden ? '' : '<br />';
+							$output .= $this->the_seo_framework_debug_hidden ? '' : '<br>';
 						}
 						$output .= $this->the_seo_framework_debug_hidden ? '' : '</p>';
 						$output .= "]";
@@ -322,7 +371,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 						$output .= $this->debug_value_wrapper( $value );
 						$output .= "\r\n";
 					}
-					$output .= $this->the_seo_framework_debug_hidden ? '' : '<br />';
+					$output .= $this->the_seo_framework_debug_hidden ? '' : '<br>';
 				}
 				$output .= $this->the_seo_framework_debug_hidden ? '' : '</div>';
 			} else if ( '' === $values ) {
@@ -448,51 +497,52 @@ class AutoDescription_Debug extends AutoDescription_Core {
 
 
 	/**
-	 * Count the timings and memory usage. Dev only.
+	 * Count the timings and memory usage.
 	 *
 	 * @since 2.6.0
 	 * @access private
 	 *
-	 * @param bool $echo Wether to echo the total plugin time.
-	 * @param bool $from_last Wether to echo the differences from the last timing.
+	 * @param bool $echo Whether to echo the total plugin time.
+	 * @param bool $from_last Whether to echo the differences from the last timing.
+	 * @param string $class_method From where the timing comes from. Requires $from_last to be false.
 	 *
 	 * @staticvar bool $debug
 	 *
 	 * @return float The timer in seconds.
 	 */
-	public function profile( $echo = false, $from_last = false ) {
+	public function profile( $echo = false, $from_last = false, $class_method = '' ) {
 
-		static $debug = null;
+		if ( $this->the_seo_framework_debug ) {
 
-		if ( false === isset( $debug ) )
-			$debug = defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG ? true : false;
-
-		if ( $debug ) {
+			static $timer_start = 0;
+			static $memory_start = 0;
+			static $plugin_time = 0;
+			static $plugin_memory = 0;
 
 			//* Get now.
 			$time_now = microtime( true );
 			$memory_usage_now = memory_get_usage();
 
 			//* Calculate difference.
-			$difference = $time_now - $this->timer_start;
-			$difference_memory = $memory_usage_now - $this->memory_start;
+			$difference = $time_now - $timer_start;
+			$difference_memory = $memory_usage_now - $memory_start;
 
 			//* Add difference to total.
-			$this->plugin_time = $this->plugin_time + $difference;
-			$this->pugin_memory = $this->memory_usage + $difference;
+			$plugin_time = $plugin_time + $difference;
+			$plugin_memory = $plugin_memory + $difference_memory;
 
 			//* Reset timer and memory
-			$this->timer_start = $time_now;
-			$this->memory_start = $memory_usage_now;
+			$timer_start = $time_now;
+			$memory_start = $memory_usage_now;
 
 			if ( false === $from_last ) {
 				//* Return early if not allowed to echo.
 				if ( false === $echo )
-					return $this->plugin_time;
+					return $plugin_time;
 
 				//* Convert to string and echo if not returned yet.
-				echo (string) "\r\n" . $this->plugin_time . "s\r\n";
-				echo (string) ( $this->memory_usage / 1024 ) . "kiB\r\n";
+				echo (string) "\r\n" . $plugin_time . "s\r\n";
+				echo (string) ( $plugin_memory / 1024 ) . "kiB\r\n";
 			} else {
 				//* Return early if not allowed to echo.
 				if ( false === $echo )
@@ -502,7 +552,24 @@ class AutoDescription_Debug extends AutoDescription_Core {
 				echo (string) "\r\n" . $difference . "s\r\n";
 				echo (string) ( $difference_memory / 1024 ) . "kiB\r\n";
 			}
+
+			//* Reflect.
+			/* Mockup, untested.
+			$class = new ReflectionClass( $this );
+			$methods = $class->getMethods();
+
+			$timer = 0;
+
+			foreach ( $methods as $method ) {
+				$start = microtime( start );
+				$a = @ (string) $this->call_function( array( &$method['class'], $method['name'] ) );
+				$timer = $timer + $start - microtime( true );
+			}
+
+			$this->debug_output .= '<p><br><br><strong>REFLECTION Timing:</strong> ' . $timer . ' seconds.<br><br></p>';
+			*/
 		}
+
 	}
 
 }
