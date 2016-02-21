@@ -1816,6 +1816,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<input type="checkbox" name="<?php $this->field_name( 'ping_yahoo' ); ?>" id="<?php $this->field_id( 'ping_yahoo' ); ?>" <?php $this->is_conditional_checked( 'ping_yahoo' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_yahoo' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Yahoo' ); ?>
 			</label>
+			<br>
+			<label for="<?php $this->field_id( 'ping_yandex' ); ?>">
+				<input type="checkbox" name="<?php $this->field_name( 'ping_yandex' ); ?>" id="<?php $this->field_id( 'ping_yandex' ); ?>" <?php $this->is_conditional_checked( 'ping_yandex' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_yandex' ) ); ?> />
+				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Yandex' ); ?>
+			</label>
 		</p>
 		<?php
 

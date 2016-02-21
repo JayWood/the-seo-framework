@@ -196,6 +196,7 @@ class AutoDescription_Query extends AutoDescription_Debug {
 		$pfp = (int) get_option( 'page_for_posts' );
 
 		if ( 0 !== $pfp && $id === $pfp ) {
+			//* Don't use $this->is_archive (will loop).
 			if ( $this->has_page_on_front() && false === $this->is_front_page() && false === is_archive() ) {
 				return $is_blog_page[$id] = true;
 			}

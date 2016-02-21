@@ -218,6 +218,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'ping_google'			=> 1,	// Ping Google
 			'ping_bing'				=> 1,	// Ping Bing
 			'ping_yahoo'			=> 1,	// Ping Yahoo
+			'ping_yandex'			=> 1,	// Ping Yandex
 
 			// Feed
 			'excerpt_the_feed'		=> 1,	// Generate feed Excerpts
@@ -301,6 +302,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'ping_google'			=> 0,	// Ping Google
 			'ping_bing'				=> 0,	// Ping Bing
 			'ping_yahoo'			=> 0,	// Ping Yahoo
+			'ping_yandex'			=> 0,	// Ping Yandex
 
 			// Feed
 			'excerpt_the_feed'		=> 0,	// Generate feed Excerpts

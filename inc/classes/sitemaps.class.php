@@ -83,6 +83,28 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	}
 
 	/**
+	 * Whether we can output sitemap or not based on options.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @return bool
+	 */
+	public function can_run_sitemap() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		/**
+		 * Don't do anything on a deleted or spam blog.
+		 * There's nothing to find anyway. Multisite Only.
+		 */
+		return $cache = $this->pretty_permalinks && $this->is_option_checked( 'sitemaps_output' ) && false === $this->current_blog_is_spam_or_deleted() ? true : false;
+	}
+
+	/**
 	 * Adds rewrite rule to WordPress
 	 * This rule defines the sitemap.xml output
 	 *
@@ -92,7 +114,8 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	public function rewrite_rule_sitemap( $run = false ) {
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) || $run ) {
+		//* Adding rewrite rules only has effect when permalink structures are active.
+		if ( $this->can_run_sitemap() || $run ) {
 
 			/**
 			 * Don't do anything if a sitemap plugin is active.
@@ -104,9 +127,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			if ( $this->has_sitemap_plugin() )
 				return;
 
-			//* Adding rewrite rules only has effect when permalink structures are active.
-			if ( $this->pretty_permalinks )
-				add_rewrite_rule( 'sitemap\.xml$', 'index.php?the_seo_framework_sitemap=xml', 'top' );
+			add_rewrite_rule( 'sitemap\.xml$', 'index.php?the_seo_framework_sitemap=xml', 'top' );
 
 			$this->wpmudev_domainmap_flush_fix( false );
 
@@ -122,7 +143,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	public function enqueue_sitemap_query_vars( $vars ) {
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) )
+		if ( $this->can_run_sitemap() )
 			$vars[] = 'the_seo_framework_sitemap';
 
 		return $vars;
@@ -137,16 +158,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	public function maybe_output_sitemap() {
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) && $this->pretty_permalinks ) {
-			/**
-			 * Don't do anything on a deleted or spam blog.
-			 * There's nothing to find anyway. Multisite Only.
-			 *
-			 * @since 2.2.9
-			 */
-			if ( $this->current_blog_is_spam_or_deleted() )
-				return;
-
+		if ( $this->can_run_sitemap() ) {
 			global $wp_query;
 
 			if ( isset( $wp_query->query_vars['the_seo_framework_sitemap'] ) && 'xml' === $wp_query->query_vars['the_seo_framework_sitemap'] ) {
@@ -363,9 +375,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 * Fetch the page/post modified options.
 		 * We can't get specific on the home page, unfortunately.
 		 */
-		$page_lastmod = $this->get_option( 'sitemaps_modified' ) || $this->get_option( 'page_modify_time' ) ? true : false;
-		$post_lastmod = $this->get_option( 'sitemaps_modified' ) || $this->get_option( 'post_modify_time' ) ? true : false;
-		$home_lastmod = $this->get_option( 'sitemaps_modified' ) || $this->get_option( 'home_modify_time' ) ? true : false;
+		$sitemaps_modified = $this->is_option_checked( 'sitemaps_modified' );
+		$page_lastmod = $sitemaps_modified || $this->get_option( 'page_modify_time' ) ? true : false;
+		$post_lastmod = $sitemaps_modified || $this->get_option( 'post_modify_time' ) ? true : false;
+		$home_lastmod = $sitemaps_modified || $this->get_option( 'home_modify_time' ) ? true : false;
 
 		/**
 		 * Generation time output
@@ -577,6 +590,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			foreach ( $custom_urls as $url => $args ) {
 
 				if ( ! is_array( $args ) ) {
+					//* If there are no args, it's assigned as URL (per example)
 					$url = $args;
 				}
 
@@ -631,17 +645,20 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$transient = 'tsf_throttle_ping_' . $blog_id;
 
-			if ( false === $this->get_transient( $transient ) ) {
+			if ( false === get_transient( $transient ) ) {
 				//* Transient doesn't exist yet.
 
-				if ( $this->get_option( 'ping_google' ) )
+				if ( $this->is_option_checked( 'ping_google' ) )
 					$this->ping_google();
 
-				if ( $this->get_option( 'ping_bing' ) )
+				if ( $this->is_option_checked( 'ping_bing' ) )
 					$this->ping_bing();
 
-				if ( $this->get_option( 'ping_yahoo' ) )
+				if ( $this->is_option_checked( 'ping_yahoo' ) )
 					$this->ping_yahoo();
+
+				if ( $this->is_option_checked( 'ping_yandex' ) )
+					$this->ping_yandex();
 
 				// Sorry I couldn't help myself.
 				$throttle = 'Bert and Ernie are weird.';
@@ -652,7 +669,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				 *
 				 * 60s * 60m
 				 *
-				 * Applies filters the_seo_framework_sitemap_throttle_seconds
+				 * Applies filters the_seo_framework_sitemap_throttle_s
 				 * @since 2.5.1
 				 */
 				$expiration = (int) apply_filters( 'the_seo_framework_sitemap_throttle_s', 60 * 60 );
@@ -669,9 +686,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @since 2.2.9
 	 */
 	public function ping_google() {
-		$pingurl = 'http://www.google.com/webmasters/sitemaps/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
 
-		wp_remote_get( $pingurl );
+		$pingurl = 'http://www.google.com/webmasters/sitemaps/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
 	}
 
 	/**
@@ -680,9 +698,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @since 2.2.9
 	 */
 	public function ping_bing() {
-		$pingurl = 'http://www.bing.com/webmaster/ping.aspx?siteMap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
 
-		wp_remote_get( $pingurl );
+		$pingurl = 'http://www.bing.com/webmaster/ping.aspx?siteMap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
 	}
 
 	/**
@@ -691,9 +710,22 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @since 2.2.9
 	 */
 	public function ping_yahoo() {
-		$pingurl = 'http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
 
-		wp_remote_get( $pingurl );
+		$pingurl = 'http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
+	}
+
+	/**
+	 * Ping Yandex
+	 *
+	 * @since 2.6.0
+	 */
+	public function ping_yandex() {
+
+		$pingurl = 'http://blogs.yandex.ru/pings/?status=success&url=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
 	}
 
 	/**
@@ -807,7 +839,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		$wp_rewrite->init();
 
-		// Works as intended.
 		unset( $wp_rewrite->extra_rules_top['sitemap\.xml$'] );
 
 		$wp_rewrite->flush_rules( true );

@@ -455,8 +455,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Author SEO can only be updated by Authors (self), Editors (self) and Admins (all).
 	* TODO Canonical SEO!
 	* TODO Canonical SEO scheme options, default "automated".
+	* TODO Archive title prefix options!
 	* TODO (Filter default true?) Description option to remove the blogname and title when excerpt is set (when excerpt is supported).
-	* TODO Article modified time can now be
+	* TODO Article modified time can now be ...?
 	* TODO Per page title additions options (reverse of global settings with doing it right listener).
 	* TODO Timing dropdown options for the sitemap. Now you can select how the time is output. Default Date + Time for new installations, data for old.
 	* TODO Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
@@ -464,12 +465,15 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Extra compatibility for when the theme is doing it wrong, yet the Title Fix plugin has been used.
 	* Article Modified Time now also works for WooCommerce. TODO test and compare
 	* TODO Headway compatibility. Done by removing of the SEO features and their output to prevent SEO conflict when filters are used.
-	* TODO Yandex pinging support.
+	* Yandex sitemap pinging support. TODO test and var_dump
+	* TODO Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s.
 	* TODO Double Title SEO Bar check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
 	* TODO The SEO Bar now also checks for global category and tag indexing options.
 	* Breaks in the SEO Bar description at various places, to impact behavior through glances.
+	* TODO Empty `index.php` files in folders which contain .txt files, to prevent indexing of such.
 * **Changed:**
 	/
+	* TODO New Logo!
 	* TODO(categories) To eliminate confusion, when your pages aren't globally indexed because of WordPress visibility settings, the color of the SEO Bar section is red now instead of blue.
 	* TODO Description "good" length range has been extended to 142 minimum instead of 150, to eliminate over-optimization.
 * **Updated:**
@@ -536,9 +540,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * **Reworked:**
 	/
 	* Class structure and order.
-	* TODO `AutoDescription_Generate_Url::the_url` function, by splitting it into multiple functions, again.
 	* `AutoDescription_DoingItRight` and all its contents.
 	* `AutoDescription_Generate_Description` and all its contents.
+	* TODO `AutoDescription_Generate_Url::the_url` function, by splitting it into multiple functions, again.
 	* `AutoDescription_Generate_Url` and all its contents.
 	* `AutoDescription_Generate_Title` and all its contents.
 	* Functions have been put in their respective aptly named classes where applicable.
@@ -596,7 +600,7 @@ TODO (string) the_seo_Framework_pro_add_title
 NOTE?
 /
 `
-THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS
+THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS // Note: Does not disable transients for pinging search engines
 THE_SEO_FRAMEWORK_PROFILE // Not used, yet.
 THE_SEO_FRAMEWORK_PROFILE_SPECIFIC // Not used, yet.
 `

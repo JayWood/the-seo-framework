@@ -180,6 +180,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				'ping_google',
 				'ping_bing',
 				'ping_yahoo',
+				'ping_yandex',
 
 				'excerpt_the_feed',
 				'source_the_feed',
