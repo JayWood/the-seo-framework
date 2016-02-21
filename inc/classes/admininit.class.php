@@ -55,11 +55,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		add_action( 'admin_init', array( $this, 'post_state' ) );
 		add_action( 'init', array( $this, 'post_type_support' ) );
 
-		/**
-		 * @since 2.2.4
-		 */
-		add_filter( 'genesis_detect_seo_plugins', array( $this, 'no_more_genesis_seo' ), 10 );
-
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 10, 1 );
 
 		$this->js_name = 'autodescription-js';
@@ -107,33 +102,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 			$states[] = __( 'No Search', 'autodescription' );
 
 		return $states;
-	}
-
-	/**
-	 * Removes the Genesis SEO meta boxes on the SEO Settings page
-	 *
-	 * @since 2.2.4
-	 * @param array $plugins, overwritten as this filter will fire the
-	 * detection, regardless of other SEO plugins.
-	 *
-	 * @return array Plugins to detect.
-	 */
-	public function no_more_genesis_seo( $plugins ) {
-
-		$plugins = array(
-				// Classes to detect.
-				'classes' => array(
-					'The_SEO_Framework_Load',
-				),
-
-				// Functions to detect.
-				'functions' => array(),
-
-				// Constants to detect.
-				'constants' => array(),
-			);
-
-		return $plugins;
 	}
 
 	/**

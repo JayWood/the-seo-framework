@@ -70,6 +70,7 @@ require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'optionsapi.php' );
 
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'core.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'debug.class.php' );
+require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'compat.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'query.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'init.class.php' );
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_CLASS . 'admininit.class.php' );

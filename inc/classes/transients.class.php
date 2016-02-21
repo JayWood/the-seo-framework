@@ -233,6 +233,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 		} else {
 			//* All other pages, admin and front-end.
+
 			if ( false === $this->is_search() ) {
 				if ( ( false === $page_id || false === $this->is_front_page( $page_id ) ) && ( 'posts' === get_option( 'show_on_front' ) ) ) {
 					if ( $this->is_404() ) {

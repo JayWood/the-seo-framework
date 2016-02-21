@@ -355,7 +355,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Preamble:**
 
-* This is a dot version bump update, which is done so as the core code has been changed drastically. **Twelve new classes** have been added to maintain structured code, including many more function to fetch data easily and consitently.
+* This is a dot version bump update, which is done so as the core code has been changed drastically. **Thirteen new classes** have been added to maintain structured code, including many more function to fetch data easily and consitently.
 * With hundreds of changes, I had to find a new way to present this update in an understandable manner. So here goes!
 
 **Summarized:**
@@ -402,6 +402,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * TODO This new setting influences which page Search Engines index. Default (and recommended) is Automatic.
 * TODO This new setting doesn't affect scheme redirection of pages and posts, which should be done using `.htaccess`.
 
+**For everyone - About Schema Markup:**
+/
+* TODO New schema markup has been added, this helps Search Engines better understand your website.
+* TODO Breadcrumbs scripts now also work on WooCommerce products!
+
 **For everyone - About translations:**
 /
 * Objective translations for grammatically gender noun types like "this post" (male in Dutch) and "this page" (genderless in Dutch) within sentences which are fetched dynamically (like "Product" and "ProductTag" for WooCommerce) couldn't be translated correctly.
@@ -422,7 +427,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **For developers - About the new functions:**
 /
-* In order to maintain a stable future, all dynamic generation output that depends on a setting are put in functions.
+* TODO In order to maintain a stable future, all dynamic generation output that depends on a setting are put in functions.
 * TODO This also counts for filters. To prevent and fix miscalculations.
 
 **For developers - Performance, improved:**
@@ -432,20 +437,30 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * What I found is that an if-statement looks passes if the value is a boolean. So converting any value to a boolean will improve its speed.
 * I also found that strict false checks are faster than using an exclamation mark. E.g. `false === $thing` is faster than `! $thing`, as the latter flips the boolean, which requires processing power.
 * These methodologic improvements have put into effect throughout the whole plugin, with this you will notice an extremely minor performance improvement. But every little bit matters in a framework.
+* Because this plugin has grown massively in size in this update, the memory use has been increased by a negligible 500kiB.
+* The netto outcome of this plugin's performance in this update is about 0%, this is because many more items are being rendered, even though overall performance has been improved.
 
-**For developers - Doing it Right:**
+**For developers - Refactoring classes:**
 
-* The class `AutoDescription_DoingItRight` has been greatly refactored to improve performance and maintainability.
-* This class affects and outputs the SEO Bar.
-* The SEO Bar initialization functions have maintained their handling.
+* The classes `AutoDescription_DoingItRight`, `AutoDescription_Generate_Description`, `AutoDescription_Generate_Url`, `AutoDescription_Generate_Ldjson`, and `AutoDescription_Generate_Title` have been greatly refactored to improve performance and maintainability.
+* All initialization functions have maintained their initial behaviour.
 
 **Detailed log:**
 
-**Many, many minor changes did not make it to the detailed log. For example, when a new function has been added to check for a state, the use of it goes throughout the plugin, effectively added many changes.**
-
 ***There are a lot more changes in this update which did not make it to this page. Please refer to [the detailed changelog](https://theseoframework.com/?p=xxx).***
 
+**Many, many other - both minor and major - changes did not make it to the detailed log. For example, when a new function has been added to check for a state, the use of it goes throughout the plugin, effectively added many changes.**
+
 *What do you think of this change? Let me know on [Slack](https://wordpress.slack.com/messages/@cybr/) (no support questions there, please)!*
+
+**About: Support and Social Requests**
+
+* I've noticed a great increase in both friend/connection requests and support questions through Facebook and LinkedIn.
+* I do not accept these friend requests, as my Facebook page is for friends only.
+* I do not accept these connection requests, as my LinkedIn page is for people I worked with only.
+* Please do not send me a mail through the contact form on `theseoframework.com` unless explicitely asked for or referred to. This form is for personal and/or data sensitive support only. I will reply, but it feels like wasted time, see next two points.
+* Please refer to the [Support Forums](https://wordpress.org/support/plugin/autodescription) for all your support questions, I'd be glad to help you out!
+* This way, everyone can benefit from these support questions.
 
 **For everyone:**
 /
@@ -456,6 +471,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Canonical SEO!
 	* TODO Canonical SEO scheme options, default "automated".
 	* TODO Archive title prefix options!
+	* TODO LD+Json Schema.org website name and location header markup. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
 	* TODO (Filter default true?) Description option to remove the blogname and title when excerpt is set (when excerpt is supported).
 	* TODO Article modified time can now be ...?
 	* TODO Per page title additions options (reverse of global settings with doing it right listener).
@@ -476,6 +492,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO New Logo!
 	* TODO(categories) To eliminate confusion, when your pages aren't globally indexed because of WordPress visibility settings, the color of the SEO Bar section is red now instead of blue.
 	* TODO Description "good" length range has been extended to 142 minimum instead of 150, to eliminate over-optimization.
+	* LD+Json markup now uses double quotes instead of single.
+	* LD+Json Sitelinks Search Box script now excludes the Alternative Name, as it's optional and non-configurable (yet).
 * **Updated:**
 	/
 	* Several sentences to have a better English structure to what they do.
@@ -494,7 +512,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Removed break (`<br />`) closing tag throughout the plugin as we're not using XHTML in WordPress.
 * **Fixed:**
 	/
-	* TODO Added back Genesis schema.org `<head>` markup indicator.
+	* Added back Genesis schema.org `<head>` markup indicator on the home page.
 	* Post type support check was run throughout the WordPress admin dashboard, now it only checks if there are actually posts to check.
 	* WPML query args canonical pagination links.
 	* Plausible description cache conflict when the home page has been switched from page to blog in the SEO settings page.
@@ -511,7 +529,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 /
 * **Added:**
 	/
+	* New filters!
+	* More than 150 new functions to make this plugin more maintainable.
 	* Two new simple filters for taxonomy and term titles. This way other plugin authors can modify their taxonomial titles if needed.
+	* TODO The complete LD+Json output can now be disabled through a single filter.
 	* `AutoDescription_Core` class, this class replaced `AutoDescription_Init` from being the latest class.
 	* `AutoDescription_Generate_Description` class.
 	* `AutoDescription_Generate_Title` class.
@@ -521,6 +542,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Generate_Author` class.
 	* TODO `AutoDescription_Author` class.
 	* TODO `AutoDescription_PostInfo` class.
+	* `AutoDescription_Compat` class.
 	* `AutoDescription_TermInfo` class.
 	* `AutoDescription_Debug` class.
 	* `AutoDescription_Query` class.
@@ -542,8 +564,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Class structure and order.
 	* `AutoDescription_DoingItRight` and all its contents.
 	* `AutoDescription_Generate_Description` and all its contents.
+	* TODO `AutoDescription_Transients::generate_cache_key()`, it's much faster now.
 	* TODO `AutoDescription_Generate_Url::the_url` function, by splitting it into multiple functions, again.
 	* `AutoDescription_Generate_Url` and all its contents.
+	* `AutoDescription_Generate_Ldjson` and all its contents.
 	* `AutoDescription_Generate_Title` and all its contents.
 	* Functions have been put in their respective aptly named classes where applicable.
 	* Debugging has been modified to clean up the code greatly.
@@ -560,6 +584,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `the_seo_framework_canonical_force_scheme` filter now works on all URL's generated by this plugin and has now an `$scheme` argument which passes the current used scheme.
 	* WordPress Query detection.
 	* Blog page and Home Page query detection.
+	* When the paged URL's filter is used, the then useless url's aren't rendered.
 * **Fixed:**
 	/
 	* `the_seo_framework_dot_version` now checks for four dot versions if applicable.
@@ -591,6 +616,8 @@ NOTE?
 (string) the_seo_framework_shortlink_output
 (string) the_seo_framework_robots_output
 (string) the_seo_framework_paged_url_output
+(string) the_seo_framework_ldjson_scripts
+(bool) the_seo_framework_json_name_output
 TODO (string) the_seo_framework_pre_add_title
 TODO (string) the_seo_Framework_pro_add_title
 `

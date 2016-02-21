@@ -24,7 +24,7 @@
  *
  * @since 2.6.0
  */
-class AutoDescription_Query extends AutoDescription_Debug {
+class AutoDescription_Query extends AutoDescription_Compat {
 
 	/**
 	 * Constructor. Load parent constructor.

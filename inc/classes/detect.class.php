@@ -936,7 +936,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	/**
 	 * Whether a page or blog is on front.
 	 *
-	 * @staticvar bool $pof 
+	 * @staticvar bool $pof
 	 * @since 2.6.0
 	 *
 	 * @return bool

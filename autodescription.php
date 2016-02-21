@@ -36,7 +36,7 @@
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
 //		define( 'THE_SEO_FRAMEWORK_PROFILE', true );
 //		define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
-//		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
+		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
 //	}
 //}
 

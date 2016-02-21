@@ -34,6 +34,175 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	}
 
 	/**
+	 * Render the LD+Json scripts.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The LD+Json scripts.
+	 */
+	public function render_ld_json_scripts() {
+
+		$this->setup_ld_json_transient( $this->get_the_real_ID() );
+
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
+
+		$output = $this->get_transient( $this->ld_json_transient );
+		if ( false === $output ) {
+
+			$output = '';
+
+			//* Only display search helper and knowledge graph on front page.
+			if ( $this->is_front_page() ) {
+
+				$sitelinks = $this->ld_json_search();
+				$knowledgegraph = $this->ld_json_knowledge();
+				$sitename = $this->ld_json_name();
+
+				if ( $sitelinks )
+					$output .= $sitelinks;
+
+				if ( $knowledgegraph )
+					$output .= $knowledgegraph;
+
+				if ( $sitename )
+					$output .= $sitename;
+			} else {
+				$breadcrumbhelper = $this->ld_json_breadcrumbs();
+
+				//* No wrapper, is done within script generator.
+				if ( $breadcrumbhelper )
+					$output .= $breadcrumbhelper;
+			}
+
+			/**
+			 * Transient expiration: 1 week.
+			 * Keep the description for at most 1 week.
+			 *
+			 * 60s * 60m * 24h * 7d
+			 */
+			$expiration = 60 * 60 * 24 * 7;
+
+			set_transient( $this->ld_json_transient, $output, $expiration );
+		}
+
+		/**
+		 * Debug output.
+		 * @since 2.4.2
+		 */
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient output' => $output ) );
+
+		return $output;
+	}
+
+	/**
+	 * Returns http://schema.org json encoded context URL.
+	 *
+	 * @staticvar string $context
+	 * @since 2.6.0
+	 *
+	 * @return string The json encoded context url.
+	 */
+	public function schema_context() {
+
+		static $context;
+
+		if ( isset( $context ) )
+			return $context;
+
+		return $context = json_encode( 'http://schema.org' );
+	}
+
+	/**
+	 * Returns 'WebSite' json encoded type name.
+	 *
+	 * @staticvar string $context
+	 * @since 2.6.0
+	 *
+	 * @return string The json encoded type name.
+	 */
+	public function schema_type() {
+
+		static $type;
+
+		if ( isset( $type ) )
+			return $type;
+
+		return $type = json_encode( 'WebSite' );
+	}
+
+	/**
+	 * Returns json encoded home url.
+	 *
+	 * @staticvar string $url
+	 * @since 2.6.0
+	 *
+	 * @return string The json encoded home url.
+	 */
+	public function schema_home_url() {
+
+		static $type;
+
+		if ( isset( $type ) )
+			return $type;
+
+		return $type = json_encode( $this->the_home_url_from_cache() );
+	}
+
+	/**
+	 * Returns json encoded blogname.
+	 *
+	 * @staticvar string $name
+	 * @since 2.6.0
+	 *
+	 * @return string The json encoded blogname.
+	 */
+	public function schema_blog_name() {
+
+		static $name;
+
+		if ( isset( $name ) )
+			return $name;
+
+		return $name = json_encode( $this->get_blogname() );
+	}
+
+	/**
+	 * Returns 'BreadcrumbList' json encoded type name.
+	 *
+	 * @staticvar string $crumblist
+	 * @since 2.6.0
+	 *
+	 * @return string The json encoded 'BreadcrumbList'.
+	 */
+	public function schema_breadcrumblist() {
+
+		static $crumblist;
+
+		if ( isset( $crumblist ) )
+			return $crumblist;
+
+		return $crumblist = json_encode( 'BreadcrumbList' );
+	}
+
+	/**
+	 * Returns 'ListItem' json encoded type name.
+	 *
+	 * @staticvar string $crumblist
+	 * @since 2.6.0
+	 *
+	 * @return string The json encoded 'ListItem'.
+	 */
+	public function schema_listitem() {
+
+		static $listitem;
+
+		if ( isset( $listitem ) )
+			return $listitem;
+
+		return $listitem = json_encode( 'ListItem' );
+	}
+
+	/**
 	 * Generate LD+Json search helper.
 	 *
 	 * @since 2.2.8
@@ -49,24 +218,27 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		 */
 		$output = (bool) apply_filters( 'the_seo_framework_json_search_output', true );
 
-		if ( true !== $output )
+		if ( false === $output )
 			return '';
 
-		$context = json_encode( 'http://schema.org' );
-		$webtype = json_encode( 'WebSite' );
-		$url = json_encode( esc_url( home_url( '/' ) ) );
-		$name = json_encode( $this->get_blogname() );
-		$alternatename = $name;
+		$context = $this->schema_context();
+		$webtype = $this->schema_type();
+		$url = $this->schema_home_url();
+		$name = $this->schema_blog_name();
 		$actiontype = json_encode( 'SearchAction' );
 
 		// Remove trailing quote and add it back.
-		$target = mb_substr( json_encode( esc_url( home_url( '/?s=' ) ) ), 0, -1 ) . '{search_term_string}"';
+		$target = mb_substr( json_encode( $this->the_home_url_from_cache( true ) . '?s=' ), 0, -1 ) . '{search_term_string}"';
 
 		$queryaction = json_encode( 'required name=search_term_string' );
 
-		$json = sprintf( '{"@context":%s,"@type":%s,"url":%s,"name":%s,"alternateName":%s,"potentialAction":{"@type":%s,"target":%s,"query-input":%s}}', $context, $webtype, $url, $name, $alternatename, $actiontype, $target, $queryaction );
+		$json = sprintf( '{"@context":%s,"@type":%s,"url":%s,"name":%s,"potentialAction":{"@type":%s,"target":%s,"query-input":%s}}', $context, $webtype, $url, $name, $actiontype, $target, $queryaction );
 
-		return $json;
+		$output = '';
+		if ( $json )
+			$output = '<script type="application/ld+json">' . $json . "</script>" . "\r\n";
+
+		return $output;
 	}
 
 	/**
@@ -85,7 +257,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		 */
 		$output = (bool) apply_filters( 'the_seo_framework_json_breadcrumb_output', true );
 
-		if ( true !== $output )
+		if ( false === $output )
 			return '';
 
 		//* Used to count ancestors and categories.
@@ -93,7 +265,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		$output = '';
 
-		if ( is_single() ) {
+		if ( $this->is_single() ) {
 			//* Get categories.
 
 			$post_id = $this->get_the_real_ID();
@@ -155,9 +327,9 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 				}
 			}
 
-			$context = json_encode( 'http://schema.org' );
-			$context_type = json_encode( 'BreadcrumbList' );
-			$item_type = json_encode( 'ListItem' );
+			$context = $this->schema_context();
+			$context_type = $this->schema_breadcrumblist();
+			$item_type = $this->schema_listitem();
 
 			$items = '';
 
@@ -186,7 +358,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 						//* Put it all together.
 						$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
-						$output .= "<script type='application/ld+json'>" . $breadcrumbhelper . "</script>" . "\r\n";
+						$output .= '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
 					}
 				}
 			}
@@ -218,12 +390,12 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 							//* Put it all together.
 							$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
-							$output .= "<script type='application/ld+json'>" . $breadcrumbhelper . "</script>" . "\r\n";
+							$output .= '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
 						}
 					}
 				}
 			}
-		} else if ( ! is_front_page() && is_page() ) {
+		} else if ( false === $this->is_front_page() && $this->is_page() ) {
 			//* Get ancestors.
 			$page_id = $this->get_the_real_ID();
 
@@ -231,9 +403,9 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 			if ( $parents ) {
 
-				$context = json_encode( 'http://schema.org' );
-				$context_type = json_encode( 'BreadcrumbList' );
-				$item_type = json_encode( 'ListItem' );
+				$context = $this->schema_context();
+				$context_type = $this->schema_breadcrumblist();
+				$item_type = $this->schema_listitem();
 
 				$items = '';
 
@@ -258,7 +430,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 					//* Put it all together.
 					$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
-					$output = "<script type='application/ld+json'>" . $breadcrumbhelper . "</script>" . "\r\n";
+					$output = '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
 				}
 			}
 		}
@@ -273,18 +445,18 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 *
 	 * @since 2.4.2
 	 *
-	 * @param string $item_type the breadcrumb item type.
+	 * @param string|null $item_type the breadcrumb item type.
 	 *
 	 * @return string Home Breadcrumb item
 	 */
-	public function ld_json_breadcrumb_first( $item_type ) {
+	public function ld_json_breadcrumb_first( $item_type = null ) {
 
 		static $first_item = null;
 
 		if ( isset( $first_item ) )
 			return $first_item;
 
-		if ( ! isset( $item_type ) )
+		if ( is_null( $item_type ) )
 			$item_type = json_encode( 'ListItem' );
 
 		$id = json_encode( $this->the_home_url_from_cache() );
@@ -327,13 +499,13 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 *
 	 * @return string Lat Breadcrumb item
 	 */
-	public function ld_json_breadcrumb_last( $item_type, $pos, $post_id ) {
+	public function ld_json_breadcrumb_last( $item_type = null, $pos = null, $post_id = null ) {
 
 		// 2 (becomes 3) holds mostly true for single term items. This shouldn't run anyway. Pos should always be provided.
-		if ( ! isset( $pos ) )
+		if ( is_null( $pos ) )
 			$pos = '2';
 
-		if ( ! isset( $item_type ) ) {
+		if ( is_null( $item_type ) ) {
 			static $type = null;
 
 			if ( ! isset( $type ) )
@@ -342,7 +514,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			$item_type = $type;
 		}
 
-		if ( ! isset( $post_id ) || empty( $post_id ) )
+		if ( is_null( $post_id ) || empty( $post_id ) )
 			$post_id = $this->get_the_real_ID();
 
 		//* Add current page.
@@ -370,12 +542,11 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 *
 	 * @since 2.2.8
 	 *
-	 * @return null|escaped LD+json Knowledge Graph helper string.
-	 * @todo transient cache this.
+	 * @return string LD+json Knowledge Graph helper.
 	 */
 	public function ld_json_knowledge() {
 
-		if ( ! $this->get_option( 'knowledge_output' ) )
+		if ( false === $this->is_option_checked( 'knowledge_output' ) )
 			return '';
 
 		$knowledge_type = $this->get_option( 'knowledge_type' );
@@ -387,7 +558,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		$knowledge_name = $this->get_option( 'knowledge_name' );
 		$knowledge_name = $knowledge_name ? $knowledge_name : $this->get_blogname();
 
-		$context = json_encode( 'http://schema.org' );
+		$context = $this->schema_context();
 		$type = json_encode( ucfirst( $knowledge_type ) );
 		$name = json_encode( $knowledge_name );
 		$url = json_encode( esc_url( home_url( '/' ) ) );
@@ -442,7 +613,42 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		if ( $sameurls )
 			$json = sprintf( '{"@context":%s,"@type":%s,"name":%s,"url":%s,%s"sameAs":[%s]}', $context, $type, $name, $url, $logo, $sameurls );
 
-		return $json;
+		$output = '';
+		if ( $json )
+			$output = '<script type="application/ld+json">' . $json . '</script>' . "\r\n";
+
+		return $output;
+	}
+
+	/**
+	 * Generate Site Name LD+Json script.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The LD+JSon Site Name script.
+	 */
+	public function ld_json_name() {
+
+		/**
+		 * Applies filters 'the_seo_framework_json_name_output' : bool
+		 */
+		$output = (bool) apply_filters( 'the_seo_framework_json_name_output', true );
+
+		if ( false === $output )
+			return '';
+
+		$context = $this->schema_context();
+		$webtype = $this->schema_type();
+		$url = $this->schema_home_url();
+		$name = $this->schema_blog_name();
+
+		$json = sprintf( '{"@context":%s,"@type":%s,"name":%s,"url":%s}', $context, $webtype, $name, $url );
+
+		$output = '';
+		if ( $json )
+			$output = '<script type="application/ld+json">' . $json . '</script>' . "\r\n";
+
+		return $output;
 	}
 
 }

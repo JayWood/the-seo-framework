@@ -58,9 +58,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( isset( $description_cache[$social] ) )
 			return $description_cache[$social];
 
-		$description_cache[$social] = $this->generate_description( '', array( 'social' => $social ) );
-
-		return $description_cache[$social];
+		return $description_cache[$social] = $this->generate_description( '', array( 'social' => $social ) );
 	}
 
 	/**
@@ -84,9 +82,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( isset( $url_cache[$url][$page_id][$paged][$from_option] ) )
 			return $url_cache[$url][$page_id][$paged][$from_option];
 
-		$url_cache[$url][$page_id][$paged][$from_option] = $this->the_url( $url, array( 'paged' => $paged, 'get_custom_field' => $from_option, 'id' => $page_id ) );
-
-		return $url_cache[$url][$page_id][$paged][$from_option];
+		return $url_cache[$url][$page_id][$paged][$from_option] = $this->the_url( $url, array( 'paged' => $paged, 'get_custom_field' => $from_option, 'id' => $page_id ) );
 	}
 
 	/**
@@ -106,9 +102,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( isset( $url_cache[$force_slash] ) )
 			return $url_cache[$force_slash];
 
-		$url_cache[$force_slash] = $this->the_url( '', array( 'home' => true, 'forceslash' => $force_slash ) );
-
-		return $url_cache[$force_slash];
+		return $url_cache[$force_slash] = $this->the_url( '', array( 'home' => true, 'forceslash' => $force_slash ) );
 	}
 
 	/**
@@ -187,7 +181,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		$post_id = $this->get_the_real_ID();
 
 		//* End this madness if there's no ID found (search/404/etc.)
-		if ( ! $post_id )
+		if ( empty( $post_id ) )
 			return '';
 
 		$image_cache = $this->get_image( $post_id );
@@ -230,7 +224,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function og_description() {
 
-		if ( $this->has_og_plugin() !== false )
+		if ( $this->has_og_plugin() )
 			return;
 
 		/**
@@ -238,7 +232,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.2.2
 		 */
-		if ( ! $this->get_option( 'og_tags' ) )
+		if ( false === $this->is_option_checked( 'og_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -259,7 +253,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function og_locale() {
 
-		if ( $this->has_og_plugin() !== false )
+		if ( $this->has_og_plugin() )
 			return;
 
 		/**
@@ -267,7 +261,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.2.2
 		 */
-		if ( ! $this->get_option( 'og_tags' ) )
+		if ( false === $this->is_option_checked( 'og_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -289,7 +283,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function og_title() {
 
-		if ( $this->has_og_plugin() !== false )
+		if ( $this->has_og_plugin() )
 			return;
 
 		/**
@@ -297,7 +291,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.2.2
 		 */
-		if ( ! $this->get_option( 'og_tags' ) )
+		if ( false === $this->is_option_checked( 'og_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -318,7 +312,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function og_type() {
 
-		if ( $this->has_og_plugin() !== false )
+		if ( $this->has_og_plugin() )
 			return;
 
 		/**
@@ -326,7 +320,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.2.2
 		 */
-		if ( ! $this->get_option( 'og_tags' ) )
+		if ( false === $this->is_option_checked( 'og_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -361,7 +355,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.2.2
 		 */
-		if ( ! $this->get_option( 'og_tags' ) )
+		if ( false === $this->is_option_checked( 'og_tags' ) )
 			return;
 
 		/**
@@ -420,7 +414,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function og_sitename() {
 
 		//* if WPSEO is active
-		if ( $this->has_og_plugin() !== false )
+		if ( $this->has_og_plugin() )
 			return;
 
 		/**
@@ -428,7 +422,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 *
 		 * @since 2.2.2
 		 */
-		if ( ! $this->get_option( 'og_tags' ) )
+		if ( false === $this->is_option_checked( 'og_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -452,7 +446,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function og_url() {
 
 		//* if WPSEO is active
-		if ( $this->has_og_plugin() !== false )
+		if ( $this->has_og_plugin() )
 			return;
 
 		/**
@@ -475,7 +469,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function twitter_card() {
 
-		if ( ! $this->get_option( 'twitter_tags' ) )
+		if ( false === $this->is_option_checked( 'twitter_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -499,7 +493,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function twitter_site() {
 
-		if ( ! $this->get_option( 'twitter_tags' ) )
+		if ( false === $this->is_option_checked( 'twitter_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -525,7 +519,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function twitter_creator() {
 
-		if ( ! $this->get_option( 'twitter_tags' ) )
+		if ( false === $this->is_option_checked( 'twitter_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -559,7 +553,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function twitter_title() {
 
-		if ( ! $this->get_option( 'twitter_tags' ) )
+		if ( false === $this->is_option_checked( 'twitter_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -580,7 +574,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function twitter_description() {
 
-		if ( ! $this->get_option( 'twitter_tags' ) )
+		if ( false === $this->is_option_checked( 'twitter_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -603,7 +597,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function twitter_image() {
 
-		if ( ! $this->get_option( 'twitter_tags' ) )
+		if ( false === $this->is_option_checked( 'twitter_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -629,7 +623,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function facebook_author() {
 
-		if ( ! $this->get_option( 'facebook_tags' ) )
+		if ( false === $this->is_option_checked( 'facebook_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -653,7 +647,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function facebook_publisher() {
 
-		if ( ! $this->get_option( 'facebook_tags' ) )
+		if ( false === $this->is_option_checked( 'facebook_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -677,7 +671,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function facebook_app_id() {
 
-		if ( ! $this->get_option( 'facebook_tags' ) )
+		if ( false === $this->is_option_checked( 'facebook_tags' ) )
 			return;
 
 		//* @since 2.3.0
@@ -702,17 +696,17 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function article_published_time() {
 
 		// Don't do anything if it's not a page or post.
-		if ( ! is_singular() )
+		if ( false === $this->is_singular() )
 			return;
 
 		$front_page = (bool) is_front_page();
 
 		// If it's a post, but the option is disabled, don't do anyhting.
-		if ( ! $front_page && is_single() && ! $this->get_option( 'post_publish_time' ) )
+		if ( ! $front_page && $this->is_single() && ! $this->get_option( 'post_publish_time' ) )
 			return;
 
 		// If it's a page, but the option is disabled, don't do anything.
-		if ( ! $front_page && is_page() && ! $this->get_option( 'page_publish_time' ) )
+		if ( ! $front_page && $this->is_page() && ! $this->get_option( 'page_publish_time' ) )
 			return;
 
 		// If it's  the home page, but the option is disabled, don't do anything.
@@ -794,7 +788,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( false === (bool) apply_filters( 'the_seo_framework_output_canonical', true ) )
 			return;
 
-		if ( '' === $this->permalink_structure() || is_404() )
+		if ( '' === $this->permalink_structure() || $this->is_404() )
 			return;
 
 		$url = $this->the_url_from_cache();
@@ -810,65 +804,21 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 * @uses $this->ld_json_knowledge()
 	 *
 	 * @since 1.2.0
-	 * @return string $output LD+json helpers in header on front page.
+	 * @return string $json LD+json helpers in header on front page.
 	 */
 	public function ld_json() {
 
-		//* Check for WPSEO LD+JSON
-		if ( false !== $this->has_json_ld_plugin() || is_search() || is_404() )
+		//* Check for LD+JSON compat
+		if ( $this->has_json_ld_plugin() || $this->is_search() || $this->is_404() )
 			return;
 
-		$this->setup_ld_json_transient( $this->get_the_real_ID() );
-
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
-
-		$output = $this->get_transient( $this->ld_json_transient );
-		if ( false === $output ) {
-
-			$output = '';
-
-			//* Only display search helper and knowledge graph on front page.
-			if ( is_front_page() ) {
-
-				/**
-				 * Add multiple scripts
-				 *
-				 * @since 2.2.8
-				 */
-				$searchhelper = $this->ld_json_search();
-				$knowledgegraph = $this->ld_json_knowledge();
-
-				if ( $searchhelper )
-					$output .= "<script type='application/ld+json'>" . $searchhelper . "</script>" . "\r\n";
-
-				if ( $knowledgegraph )
-					$output .= "<script type='application/ld+json'>" . $knowledgegraph . "</script>" . "\r\n";
-			} else {
-				$breadcrumbhelper = $this->ld_json_breadcrumbs();
-
-				//* No wrapper, is done within script generator.
-				if ( $breadcrumbhelper )
-					$output .= $breadcrumbhelper;
-			}
-
-			/**
-			 * Transient expiration: 1 week.
-			 * Keep the description for at most 1 week.
-			 *
-			 * 60s * 60m * 24h * 7d
-			 */
-			$expiration = 60 * 60 * 24 * 7;
-
-			set_transient( $this->ld_json_transient, $output, $expiration );
-		}
-
 		/**
-		 * Debug output.
-		 * @since 2.4.2
+		 * Applies filters 'the_seo_framework_ldjson_scripts' : string
+		 * @since 2.6.0
 		 */
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient output' => $output ) );
+		$json = (string) apply_filters( 'the_seo_framework_ldjson_scripts', $this->render_ld_json_scripts() );
 
-		return $output;
+		return $json;
 	}
 
 	/**
@@ -1006,16 +956,18 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function paged_urls() {
 
-		$next = $this->get_paged_url( 'next' );
-		$prev = $this->get_paged_url( 'prev' );
-
 		$output = (string) apply_filters( 'the_seo_framework_paged_url_output', '' );
 
 		if ( empty( $output ) ) {
+
+			$next = $this->get_paged_url( 'next' );
+			$prev = $this->get_paged_url( 'prev' );
+
 			if ( $prev )
 				$output .= sprintf( '<link rel="prev" href="%s" />' . "\r\n", $prev );
 			if ( $next )
 				$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
+
 		}
 
 		return $output;
