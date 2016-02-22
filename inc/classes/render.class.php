@@ -203,7 +203,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$description = (string) apply_filters( 'the_seo_framework_description_output', '' );
+		$description = (string) apply_filters( 'the_seo_framework_description_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $description ) )
 			$description = $this->description_from_cache();
@@ -236,7 +236,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$description = (string) apply_filters( 'the_seo_framework_ogdescription_output', '' );
+		$description = (string) apply_filters( 'the_seo_framework_ogdescription_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $description ) )
 			$description = $this->description_from_cache( true );
@@ -265,7 +265,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$locale = (string) apply_filters( 'the_seo_framework_oglocale_output', '' );
+		$locale = (string) apply_filters( 'the_seo_framework_oglocale_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $locale ) )
 			$locale = $this->fetch_locale();
@@ -295,7 +295,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$title = (string) apply_filters( 'the_seo_framework_ogtitle_output', '' );
+		$title = (string) apply_filters( 'the_seo_framework_ogtitle_output', '', $this->get_the_real_ID()  );
 
 		if ( empty( $title ) )
 			$title = $this->title_from_cache( '', '', '', true );
@@ -324,7 +324,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$type = (string) apply_filters( 'the_seo_framework_ogtype_output', '' );
+		$type = (string) apply_filters( 'the_seo_framework_ogtype_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $type ) ) {
 			if ( is_single() && '' !== $this->get_image_from_cache() ) {
@@ -364,7 +364,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 * @NOTE: Use of this might cause incorrect meta since other functions
 		 * depend on the image from cache.
 		 */
-		$image = (string) apply_filters( 'the_seo_framework_ogimage_output', '' );
+		$image = (string) apply_filters( 'the_seo_framework_ogimage_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $image ) )
 			$image = $this->get_image_from_cache();
@@ -426,7 +426,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$sitename = (string) apply_filters( 'the_seo_framework_ogsitename_output', '' );
+		$sitename = (string) apply_filters( 'the_seo_framework_ogsitename_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $sitename ) )
 			$sitename = get_bloginfo('name');
@@ -473,7 +473,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$card = (string) apply_filters( 'the_seo_framework_twittercard_output', '' );
+		$card = (string) apply_filters( 'the_seo_framework_twittercard_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $card ) ) {
 			/**
@@ -497,7 +497,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$site = (string) apply_filters( 'the_seo_framework_twittersite_output', '' );
+		$site = (string) apply_filters( 'the_seo_framework_twittersite_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $site ) ) {
 			$site = $this->get_option( 'twitter_site' );
@@ -523,7 +523,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$creator = (string) apply_filters( 'the_seo_framework_twittercreator_output', '' );
+		$creator = (string) apply_filters( 'the_seo_framework_twittercreator_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $creator ) ) {
 			$site = $this->get_option( 'twitter_site' );
@@ -557,7 +557,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$title = (string) apply_filters( 'the_seo_framework_twittertitle_output', '' );
+		$title = (string) apply_filters( 'the_seo_framework_twittertitle_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $title ) )
 			$title = $this->title_from_cache( '', '', '', true );
@@ -578,7 +578,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$description = (string) apply_filters( 'the_seo_framework_twitterdescription_output', '' );
+		$description = (string) apply_filters( 'the_seo_framework_twitterdescription_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $description ) )
 			$description = $this->description_from_cache( true );
@@ -601,7 +601,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$image = (string) apply_filters( 'the_seo_framework_twitterimage_output', '' );
+		$image = (string) apply_filters( 'the_seo_framework_twitterimage_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $image ) )
 			$image = $this->get_image_from_cache();
@@ -627,7 +627,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$author = (string) apply_filters( 'the_seo_framework_facebookauthor_output', '' );
+		$author = (string) apply_filters( 'the_seo_framework_facebookauthor_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $author ) )
 			$author = $this->get_option( 'facebook_author' );
@@ -651,7 +651,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$publisher = (string) apply_filters( 'the_seo_framework_facebookpublisher_output', '' );
+		$publisher = (string) apply_filters( 'the_seo_framework_facebookpublisher_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $publisher ) )
 			$publisher = $this->get_option( 'facebook_publisher' );
@@ -675,7 +675,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$app_id = (string) apply_filters( 'the_seo_framework_facebookappid_output', '' );
+		$app_id = (string) apply_filters( 'the_seo_framework_facebookappid_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $app_id ) )
 			$app_id = $this->get_option( 'facebook_appid' );
@@ -714,7 +714,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$time = (string) apply_filters( 'the_seo_framework_publishedtime_output', '' );
+		$time = (string) apply_filters( 'the_seo_framework_publishedtime_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $time ) )
 			$time = get_the_date( 'Y-m-d', '' );
@@ -753,7 +753,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$time = (string) apply_filters( 'the_seo_framework_modifiedtime_output', '' );
+		$time = (string) apply_filters( 'the_seo_framework_modifiedtime_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $time ) )
 			$time = the_modified_date( 'Y-m-d', '', '', false );
@@ -785,7 +785,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 * Applies filters the_seo_framework_output_canonical : Don't output canonical if false.
 		 * @since 2.4.2
 		 */
-		if ( false === (bool) apply_filters( 'the_seo_framework_output_canonical', true ) )
+		if ( false === (bool) apply_filters( 'the_seo_framework_output_canonical', true, $this->get_the_real_ID() ) )
 			return;
 
 		if ( '' === $this->permalink_structure() || $this->is_404() )
@@ -816,7 +816,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 * Applies filters 'the_seo_framework_ldjson_scripts' : string
 		 * @since 2.6.0
 		 */
-		$json = (string) apply_filters( 'the_seo_framework_ldjson_scripts', $this->render_ld_json_scripts() );
+		$json = (string) apply_filters( 'the_seo_framework_ldjson_scripts', $this->render_ld_json_scripts(), $this->get_the_real_ID() );
 
 		return $json;
 	}
@@ -831,7 +831,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function google_site_output() {
 
 		//* @since 2.3.0
-		$code = (string) apply_filters( 'the_seo_framework_googlesite_output', $this->get_option( 'google_verification' ) );
+		$code = (string) apply_filters( 'the_seo_framework_googlesite_output', $this->get_option( 'google_verification' ), $this->get_the_real_ID() );
 
 		if ( empty( $code ) )
 			return '';
@@ -849,7 +849,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function bing_site_output() {
 
 		//* @since 2.3.0
-		$code = (string) apply_filters( 'the_seo_framework_bingsite_output', $this->get_option( 'bing_verification' ) );
+		$code = (string) apply_filters( 'the_seo_framework_bingsite_output', $this->get_option( 'bing_verification' ), $this->get_the_real_ID() );
 
 		if ( empty( $code ) )
 			return '';
@@ -867,7 +867,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	public function pint_site_output() {
 
 		//* @since 2.3.0
-		$code = (string) apply_filters( 'the_seo_framework_pintsite_output', $this->get_option( 'pint_verification' ) );
+		$code = (string) apply_filters( 'the_seo_framework_pintsite_output', $this->get_option( 'pint_verification' ), $this->get_the_real_ID() );
 
 		if ( empty( $code ) )
 			return '';
@@ -892,7 +892,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		 * Applies filters 'the_seo_framework_robots_meta' : array
 		 * @since 2.6.0
 		 */
-		$meta = (array) apply_filters( 'the_seo_framework_robots_meta', $this->robots_meta() );
+		$meta = (array) apply_filters( 'the_seo_framework_robots_meta', $this->robots_meta(), $this->get_the_real_ID() );
 
 		//* Add meta if any exist
 		if ( $meta )
@@ -911,6 +911,8 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 * @return string icon links.
 	 * @TODO Make this work for older wp versions. i.e. add upload area for wp 4.2.99999 and lower
 	 * @TODO Make this work in the first place
+	 * @ignore
+	 * @access private
 	 */
 	public function favicon() {
 
@@ -937,7 +939,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function shortlink() {
 
-		$url = (string) apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink() );
+		$url = (string) apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink(), $this->get_the_real_ID() );
 
 		if ( $url )
 			return sprintf( '<link rel="shortlink" href="%s" />' . "\r\n", $url );
@@ -956,7 +958,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function paged_urls() {
 
-		$output = (string) apply_filters( 'the_seo_framework_paged_url_output', '' );
+		$output = (string) apply_filters( 'the_seo_framework_paged_url_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $output ) ) {
 

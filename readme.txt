@@ -490,6 +490,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * **Changed:**
 	/
 	* TODO New Logo!
+	* TODO New Banner, now this one can be shared peacefully through Facebook (which crops and centers the image).
 	* TODO(categories) To eliminate confusion, when your pages aren't globally indexed because of WordPress visibility settings, the color of the SEO Bar section is red now instead of blue.
 	* TODO Description "good" length range has been extended to 142 minimum instead of 150, to eliminate over-optimization.
 	* LD+Json markup now uses double quotes instead of single.
@@ -503,6 +504,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* URL generation.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
+	* Massively improved LD-json script generation time.
 * **Improved:**
 	/
 	* SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
@@ -521,6 +523,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The removal of title additions now correctly reflect on the title counter length when JavaScript is disabled.
 	* The removal of title additions are now also reflecting its setting on the placeholders within categories and tags.
 	* Some deprecated functions gave a fatal error or warning, this has been resolved.
+	* TODO When Reading Settings' Feed Options are set to summary, the backlink is still shown when enabled.
+	* TODO When Reading Settings' Feed Options are set to summary, the excerpt generation is disabled.
 * **Removed:**
 	* Shortlink URL from home page, as it's quite useless there.
 	* Page navigation confirmation warning when deleting post.
@@ -529,9 +533,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 /
 * **Added:**
 	/
-	* New filters!
+	* New filters! See **Filter Notes** below.
 	* More than 150 new functions to make this plugin more maintainable.
-	* Two new simple filters for taxonomy and term titles. This way other plugin authors can modify their taxonomial titles if needed.
 	* TODO The complete LD+Json output can now be disabled through a single filter.
 	* `AutoDescription_Core` class, this class replaced `AutoDescription_Init` from being the latest class.
 	* `AutoDescription_Generate_Description` class.
@@ -551,6 +554,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Detect::current_theme_supports_title_tag()` function, returns cached true if theme supports title tag.
 	* Customized error handlers.
 	* `THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS` boolean constant listener to disable transients.
+	* Extra `$post_id` arguments, see **Filter notes** for more information below.
+	* TODO `AutoDescription_Core::get_the_real_ID()` now always returns 0 on Archives instead of the Archive ID. Use `AutoDescription_Core::get_the_real_archive_ID()` instead.
 * **Changed:**
 	/
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
@@ -592,9 +597,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Generate_Image::get_image()` now returns something when the third parameter is set to false.
 * **Deprecated:**
 	/
-	* `AutoDescription_Detect::current_theme_supports`, use core `current_theme_supports` instead.
-	* Second argument for `AutoDescription_Generate_Url::the_url`, use $args['id'] instead.
-	* `AutoDescription_Debug::echo_debug_information` function, replaced by get `AutoDescription_Debug::get_debug_information`.
+	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
+	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use $args['id'] instead.
+	* `AutoDescription_Debug::echo_debug_information()` function, replaced by get `AutoDescription_Debug::get_debug_information()`.
 * **Removed:**
 	/
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
@@ -602,35 +607,63 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Transient for title doing it right is now not anymore set if the theme is doing it right to reduce extra database calls. This caused the transient sometimes to be true regardless.
 * **Other:**
 	* Cleaned up code, massively.
+* **Filter Notes:**
+	/
+	* **New:**
+		/
+		* `(string) the_seo_framework_shortlink_output`
+		* `(string) the_seo_framework_robots_output`
+		* `(string) the_seo_framework_paged_url_output`
+		* `(string) the_seo_framework_ldjson_scripts`
+		* `(bool) the_seo_framework_json_name_output`
+		* TODO `(string) the_seo_framework_pre_add_title`
+		* TODO `(string) the_seo_Framework_pro_add_title`
+	* **Altered:**
+		/
+		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
+		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
+		* `(string) the_seo_framework_description_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogdescription_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_oglocale_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogtitle_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogtype_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogimage_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogsitename_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittercard_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittersite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittercreator_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittertitle_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twitterdescription_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twitterimage_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_facebookauthor_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_facebookpublisher_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_facebookappid_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_publishedtime_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_modifiedtime_output`, added `$post_id` parameter.
+		* `(bool) the_seo_framework_output_canonical`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ldjson_scripts`, added `$post_id` parameter.
+		* `(string) the_seo_framework_googlesite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_bingsite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_pintsite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_robots_meta`, added `$post_id` parameter.
+		* `(string) the_seo_framework_shortlink_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_paged_url_output`, added `$post_id` parameter.
+		* `(array) the_seo_framework_robots_settings_tabs`, added `$args` parameter.
+		* `(array) the_seo_framework_social_settings_tabs`, added `$args` parameter.
+		* `(array) the_seo_framework_knowledgegraph_settings_tabs`, added `$args` parameter.
+		* `(array) the_seo_framework_sitemaps_settings_tabs`, added `$args` parameter.
+* **Constant Notes:**
+	/
+	* **New:**
+		/
+		* `(bool) THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS`. Note: Does not disable transients for pinging search engines
+		* `(bool) THE_SEO_FRAMEWORK_PROFILE`. Profiles the plugin (in the future, maybe).
+		* `(bool) THE_SEO_FRAMEWORK_PROFILE_SPECIFIC`. Profiles the plugin more specifically (in the future, maybe).
 * **Notes:**
 	/
 	* I marked a few functions with `@access private`. These functions can change behaviour at any time and should never be used in extension plugins, even though publically accessible.
 	* TODO Next improvement also counts "for everyone"?, split it?
 	* TODO Improved: When settings are hidden because of theme or plugin (in)compatibilities, or because a settings box is removed through a filter or action, the previous value is maintained on save.
-
-**For developers: New filters:**
-/
-NOTE?
-/
-`
-(string) the_seo_framework_shortlink_output
-(string) the_seo_framework_robots_output
-(string) the_seo_framework_paged_url_output
-(string) the_seo_framework_ldjson_scripts
-(bool) the_seo_framework_json_name_output
-TODO (string) the_seo_framework_pre_add_title
-TODO (string) the_seo_Framework_pro_add_title
-`
-
-**For developers: New constants**
-/
-NOTE?
-/
-`
-THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS // Note: Does not disable transients for pinging search engines
-THE_SEO_FRAMEWORK_PROFILE // Not used, yet.
-THE_SEO_FRAMEWORK_PROFILE_SPECIFIC // Not used, yet.
-`
 
 = Full changelog =
 

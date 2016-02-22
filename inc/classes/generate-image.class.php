@@ -91,15 +91,15 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 
 		//* 2. Fetch image from fallback filter 1
 		if ( empty( $image ) )
-			$image = (string) apply_filters( 'the_seo_framework_og_image_after_featured', '' );
+			$image = (string) apply_filters( 'the_seo_framework_og_image_after_featured', '', $args['post_id'] );
 
 		//* 3. Fallback: Get header image if exists
 		if ( empty( $image ) && ( $check || ! in_array( 'header', $args['disallowed'] ) ) )
 			$image = get_header_image();
 
-		//* 4. Fetch image from fallback filter 1
+		//* 4. Fetch image from fallback filter 2
 		if ( empty( $image ) )
-			$image = (string) apply_filters( 'the_seo_framework_og_image_after_header', '' );
+			$image = (string) apply_filters( 'the_seo_framework_og_image_after_header', '', $args['post_id'] );
 
 		//* 5. Get the WP 4.3.0 Site Icon
 		if ( empty( $image ) && ( $check || ! in_array( 'icon', $args['disallowed'] ) ) )
