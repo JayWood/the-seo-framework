@@ -89,7 +89,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	}
 
 	/**
-	 * Get the value of the transient..
+	 * Get the value of the transient.
 	 *
 	 * If the transient does not exists, does not have a value or has expired,
 	 * or transients have been disabled through a constant, then the transient
@@ -107,6 +107,27 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 			return false;
 
 		return get_transient( $transient );
+	}
+
+	/**
+	 * Set the value of the transient..
+	 *
+	 * Prevents setting of transients when they're disabled.
+	 * @see $this->the_seo_framework_use_transients
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param string $transient Transient name. Expected to not be SQL-escaped.
+	 * @param string $value Transient value. Expected to not be SQL-escaped.
+	 * @param int $expiration Optional Transient expiration date, optional. Expected to not be SQL-escaped.
+	 * @return mixed Value of the transient.
+	 */
+	public function set_transient( $transient, $value, $expiration = '' ) {
+
+		if ( false === $this->the_seo_framework_use_transients )
+			return;
+
+		set_transient( $transient, $value, $expiration );
 	}
 
 	/**
@@ -532,7 +553,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 			 */
 			$expiration = 60 * 60 * 24 * 3;
 
-			set_transient( $this->theme_doing_it_right_transient, $dir, $expiration );
+			$this->set_transient( $this->theme_doing_it_right_transient, $dir, $expiration );
 		}
 
 	}

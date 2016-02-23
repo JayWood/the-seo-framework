@@ -409,7 +409,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 /
 * New schema markup has been added, this helps Search Engines better understand your website.
 * Breadcrumbs have been expanded, to support nested categories and multiple categories. Now you can see multiple breadcrumb scripts to help Search Engines better understand your website's structure.
-* Breadcrumbs scripts now also work on WooCommerce products!
+* Breadcrumbs scripts now also work on WooCommerce products, enjoy!
 * Note: If you use PHP 5.3 or later, the nested scripts provide a more consitent (yet negligible) structure.
 
 **For everyone - About translations:**

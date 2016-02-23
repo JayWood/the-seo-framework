@@ -442,7 +442,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			 */
 			$expiration = 60 * 60 * 24 * 7;
 
-			set_transient( $this->auto_description_transient, $excerpt, $expiration );
+			$this->set_transient( $this->auto_description_transient, $excerpt, $expiration );
 		}
 
 		/**

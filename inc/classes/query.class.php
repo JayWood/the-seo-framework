@@ -34,6 +34,85 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	}
 
 	/**
+	 * Get the real page ID, also depending on CPT.
+	 *
+	 * @param bool $use_cache Wether to use the cache or not.
+	 *
+	 * @staticvar int $id the ID.
+	 *
+	 * @since 2.5.0
+	 *
+	 * @return int|false The ID.
+	 */
+	public function get_the_real_ID( $use_cache = true ) {
+
+		$is_admin = $this->is_admin();
+
+		//* Never use cache in admin. Only causes bugs.
+		$use_cache = $is_admin ? false : $use_cache;
+
+		if ( $use_cache ) {
+			static $id = null;
+
+			if ( isset( $id ) )
+				return $id;
+		}
+
+		if ( false === $is_admin )
+			$id = $this->check_the_real_ID();
+
+		if ( ! isset( $id ) || empty( $id ) ) {
+			//* Does not always return false.
+			$id = get_queried_object_id();
+
+			if ( empty( $id ) && false === $this->is_archive() )
+				$id = get_the_ID();
+		}
+
+		//* Turn ID into 0 if empty.
+		$id = empty( $id ) ? 0 : $id;
+
+		return $id;
+	}
+
+	/**
+	 * Get the real ID from plugins.
+	 *
+	 * Only works in front-end as there's no need to check for inconsistent
+	 * functions for the current ID in the admin.
+	 *
+	 * @since 2.5.0
+	 *
+	 * Applies filters the_seo_framework_real_id : The Real ID for plugins on front-end.
+	 *
+	 * @staticvar int $cached_id The cached ID.
+	 *
+	 * @return int|empty the ID.
+	 */
+	public function check_the_real_ID() {
+
+		static $cached_id = null;
+
+		if ( isset( $cached_id ) )
+			return $cached_id;
+
+		$id = '';
+
+		if ( $this->is_wc_shop() ) {
+			//* WooCommerce Shop
+			$id = get_option( 'woocommerce_shop_page_id' );
+		} else if ( function_exists( 'is_anspress' ) && is_anspress() ) {
+			//* Get AnsPress Question ID.
+			if ( function_exists( 'get_question_id' ) )
+				$id = get_question_id();
+		}
+
+		$cached_id = (int) apply_filters( 'the_seo_framework_real_id', $id );
+
+		return $cached_id;
+	}
+
+	/**
 	 * Detects 404.
 	 *
 	 * @staticvar bool $cache

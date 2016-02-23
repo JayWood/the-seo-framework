@@ -82,7 +82,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			 */
 			$expiration = 60 * 60 * 24 * 7;
 
-			set_transient( $this->ld_json_transient, $output, $expiration );
+			$this->set_transient( $this->ld_json_transient, $output, $expiration );
 		}
 
 		/**

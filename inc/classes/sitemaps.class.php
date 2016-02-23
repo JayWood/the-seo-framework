@@ -262,7 +262,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 */
 			$expiration = 60 * 60 * 24 * 7;
 
-			set_transient( $this->sitemap_transient, $sitemap_content, $expiration );
+			$this->set_transient( $this->sitemap_transient, $sitemap_content, $expiration );
 		}
 
 		return $sitemap_content;
@@ -645,6 +645,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$transient = 'tsf_throttle_ping_' . $blog_id;
 
+			//* NOTE: Use legacy get_transient to prevent ping spam.
 			if ( false === get_transient( $transient ) ) {
 				//* Transient doesn't exist yet.
 
@@ -674,6 +675,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				 */
 				$expiration = (int) apply_filters( 'the_seo_framework_sitemap_throttle_s', 60 * 60 );
 
+				//* NOTE: Use legacy set_transient to prevent ping spam.
 				set_transient( $transient, $throttle, $expiration );
 			}
 		}
