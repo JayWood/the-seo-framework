@@ -381,7 +381,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 		$available_filters = $this->get_available_filters();
 
-		if ( ! $this->in_array( $filter, array_keys( $available_filters ) ) )
+		if ( ! in_array( $filter, array_keys( $available_filters ) ) )
 			return $new_value;
 
 		return call_user_func( $available_filters[$filter], $new_value, $old_value );

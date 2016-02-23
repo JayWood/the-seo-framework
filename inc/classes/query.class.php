@@ -627,7 +627,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	}
 
 	/**
-	 * Check for shop page.
+	 * Check for WooCommerce shop page.
 	 *
 	 * @staticvar bool $cache
 	 *
@@ -642,6 +642,27 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		//* Can't check in admin.
 		if ( false === $this->is_admin() && function_exists( 'is_shop' ) && is_shop() )
+			return $cache = true;
+
+		return $cache = false;
+	}
+
+	/**
+	 * Check for WooCommerce product page.
+	 *
+	 * @staticvar bool $cache
+	 *
+	 * @since 2.5.2
+	 */
+	public function is_wc_product() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		//* Can't check in admin.
+		if ( false === $this->is_admin() && function_exists( 'is_product' ) && is_product() )
 			return $cache = true;
 
 		return $cache = false;

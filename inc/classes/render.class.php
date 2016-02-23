@@ -369,7 +369,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $image ) )
 			$image = $this->get_image_from_cache();
 
-		if ( function_exists( 'is_product' ) && is_product() ) {
+		if ( $this->is_wc_product() ) {
 
 			$output = '';
 

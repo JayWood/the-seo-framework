@@ -261,95 +261,165 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			return '';
 
 		//* Used to count ancestors and categories.
-		$count = 0;
+		$output = '';
+
+		if ( $this->is_single() || $this->is_wc_product() ) {
+			$output = $this->ld_json_breadcrumbs_post();
+		} else if ( false === $this->is_front_page() && $this->is_page() ) {
+			$output = $this->ld_json_breadcrumbs_page();
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Generate post breadcrumb.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string $output The breadcrumb script.
+	 */
+	public function ld_json_breadcrumbs_post() {
 
 		$output = '';
 
-		if ( $this->is_single() ) {
-			//* Get categories.
+		$post_id = $this->get_the_real_ID();
 
-			$post_id = $this->get_the_real_ID();
+		$cat_type = 'category';
 
-			$r = is_object_in_term( $post_id, 'category', '' );
+		//* WooCommerce support.
+		if ( $this->is_wc_product() )
+			$cat_type = 'product_cat';
 
-			if ( is_wp_error( $r ) || ! $r )
-				return '';
+		//* Get categories.
+		$r = is_object_in_term( $post_id, $cat_type, '' );
 
-			$cats = wp_get_object_terms( $post_id, 'category', array( 'fields' => 'all_with_object_id', 'orderby' => 'parent' ) );
+		if ( is_wp_error( $r ) || ! $r )
+			return '';
 
-			if ( is_wp_error( $cats ) || empty( $cats ) )
-				return '';
+		$cats = wp_get_object_terms( $post_id, $cat_type, array( 'fields' => 'all_with_object_id', 'orderby' => 'parent' ) );
 
-			$cat_ids = array();
-			$kittens = array();
+		//* @TODO delete all categories, including default, and try again to see if it fails. var_dump()
+		if ( is_wp_error( $cats ) || empty( $cats ) )
+			return '';
 
-			//* Fetch cats children id's, if any.
-			foreach ( $cats as $cat ) {
-				//* The category objects. The cats.
-				$cat_id = $cat->term_id;
+		$assigned_ids = array();
+		$kittens = array();
 
-				// Check if they have kittens.
-				$children = get_term_children( $cat_id, $cat->taxonomy );
+		$trees = array();
 
-				//* No need to fetch them again, save object in the array.
-				$cat_obj[$cat_id] = $cat;
+		//* Fetch cats children id's, if any.
+		foreach ( $cats as $cat ) {
+			//* The category objects. The cats.
+			$cat_id = $cat->term_id;
 
-				//* Save children id's as kittens.
-				$kittens[$cat_id] = $children;
+			//* Store to filter unused Cat ID's from the post.
+			$assigned_ids[] = $cat_id;
+
+			// Check if they have kittens.
+			$children = get_term_children( $cat_id, $cat->taxonomy );
+
+			//* No need to fetch them again, save object in the array.
+			$cat_obj[$cat_id] = $cat;
+
+			//* Save children id's as kittens.
+			$kittens[$cat_id] = $children;
+		}
+
+		/**
+		 * Seed out children that aren't assigned.
+		 * (from levels too deep as get_term_children gets them all).
+		 */
+		foreach ( $kittens as $kit_id => $child_id ) {
+			foreach ( $child_id as $ckey => $cid ) {
+				if ( false === in_array( $cid, $assigned_ids ) )
+					unset( $kittens[$kit_id][$ckey] );
 			}
+		}
 
-			$todo = array();
-			$trees = array();
-
-			/**
-			 * Build category ID tree.
-			 * Sort by parents with children ($trees). These are recursive, 3+ item scripts.
-			 * Sort by parents without children ($todo). These are singular 2 item scripts.
-			 */
-			foreach ( $kittens as $parent => $kitten ) {
-				if ( empty( $kitten ) ) {
-					$todo[] = $parent;
+		/**
+		 * Build category ID trees.
+		 */
+		foreach ( $kittens as $parent => $kitten ) {
+			if ( empty( $kitten ) ) {
+				//* Final cat.
+				$trees[] = $parent;
+			} else {
+				if ( 1 === count( $kitten ) ) {
+					//* Single tree.
+					$trees[] = array( reset( $kitten ), $parent );
 				} else {
-					if ( 1 === count( $kitten ) ) {
-						$trees[] = array( $kitten[0], $parent );
-					} else {
-						//* @TODO, this is very, very complicated. Requires multiple loops.
-						$trees[] = array();
+					//* Nested categories.
+					$add = array();
+
+					foreach ( $kitten as $kit => $kat ) {
+						//* Only add if non-existent in $trees.
+						if ( ! in_array( $kat, $trees ) )
+							$add[] = $kat;
 					}
+
+					//* Put children in right order.
+					$add = array_reverse( $add );
+
+					$trees[] = array_merge( $add, array( $parent ) );
 				}
 			}
+		}
 
-			//* Remove Duplicates from $todo by comparing to $tree
-			foreach ( $todo as $key => $value ) {
-				foreach ( $trees as $tree ) {
-					if ( $this->in_array( $value, $tree ) )
-						unset( $todo[$key] );
-				}
-			}
+		/**
+		 * Sort by number of id's. Provides a cleaner layout, better Search Engine understanding and more consitent cache.
+		 * Requires PHP 5.3.0+
+		 *
+		 * @todo drop PHP 5.2.x support as this version compare requires 0.00005s :(
+		 */
+		if ( version_compare( PHP_VERSION, '5.3.0', '>=' ) >= 0 )
+			array_multisort( array_map( 'count', $trees ), SORT_DESC, $trees );
 
-			$context = $this->schema_context();
-			$context_type = $this->schema_breadcrumblist();
-			$item_type = $this->schema_listitem();
+		$context = $this->schema_context();
+		$context_type = $this->schema_breadcrumblist();
+		$item_type = $this->schema_listitem();
 
-			$items = '';
+		//* For each of the tree items, create a separated script.
+		if ( $trees ) {
+			foreach ( $trees as $tree_ids ) {
 
-			foreach ( $trees as $tree ) {
-				if ( $tree ) {
+				if ( is_array( $tree_ids ) ) {
+					//* Term has assigned children.
 
-					$tree = array_reverse( $tree );
+					/**
+					 * @staticvar int $item_cache : Used to prevent duplicated item re-generation.
+					 */
+					static $item_cache = array();
 
-					foreach ( $tree as $position => $parent_id ) {
-						$pos = $position + 2;
+					$items = '';
 
-						$cat = isset( $cat_obj[$parent_id] ) ? $cat_obj[$parent_id] : get_term_by( 'id', $parent_id, 'category', OBJECT, 'raw' );
+					//* Put the children in the right order.
+					$tree_ids = array_reverse( $tree_ids );
 
-						$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'is_term' => true, 'term' => $cat ) ) );
+					foreach ( $tree_ids as $position => $child_id ) {
+						if ( in_array( $child_id, $assigned_ids ) ) {
+							//* Cat has been assigned, continue.
 
-						$custom_field_name = isset( $cat->admeta['doctitle'] ) ? $cat->admeta['doctitle'] : '';
-						$cat_name = $custom_field_name ? $custom_field_name : $cat->name;
-						$name = json_encode( $cat_name );
+							//* Fetch item from cache if available.
+							if ( isset( $item_cache[$child_id] ) ) {
+								$items .= $item_cache[$child_id];
+							} else {
+								$pos = $position + 2;
 
-						$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
+								$cat = get_term_by( 'id', $child_id, $cat_type, OBJECT, 'raw' );
+
+								$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'is_term' => true, 'term' => $cat ) ) );
+
+								$custom_field_name = isset( $cat->admeta['doctitle'] ) ? $cat->admeta['doctitle'] : '';
+								$cat_name = $custom_field_name ? $custom_field_name : $cat->name;
+								$name = json_encode( $cat_name );
+
+								//* Store in cache.
+								$item_cache[$child_id] = sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
+
+								$items .= $item_cache[$child_id];
+							}
+						}
 					}
 
 					if ( $items ) {
@@ -360,78 +430,89 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 						$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
 						$output .= '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
 					}
-				}
-			}
-
-			//* For each of the todo items, create a separated script.
-			if ( $todo ) {
-				foreach ( $todo as $tid ) {
+				} else {
+					//* No assigned children, single term item.
 
 					$items = '';
-					$cat = get_term_by( 'id', $tid, 'category', OBJECT, 'raw' );
 
-					if ( '1' !== $cat->admeta['noindex'] ) {
+					//* The position of the current item is always static here.
+					$pos = '2';
 
-						if ( empty( $children ) ) {
-							// The position of the current item is always static here.
-							$pos = '2';
-							$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'is_term' => true, 'term' => $cat ) ) ); // Why not external???
+					//* $tree_ids is a single ID here.
+					$cat = get_term_by( 'id', $tree_ids, $cat_type, OBJECT, 'raw' );
 
-							$custom_field_name = isset( $cat->admeta['doctitle'] ) ? $cat->admeta['doctitle'] : '';
-							$cat_name = $custom_field_name ? $custom_field_name : $cat->name;
-							$name = json_encode( $cat_name );
+					$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'is_term' => true, 'external' => true, 'term' => $cat ) ) );
 
-							$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
-						}
-
-						if ( $items ) {
-
-							$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $post_id );
-
-							//* Put it all together.
-							$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
-							$output .= '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
-						}
-					}
-				}
-			}
-		} else if ( false === $this->is_front_page() && $this->is_page() ) {
-			//* Get ancestors.
-			$page_id = $this->get_the_real_ID();
-
-			$parents = get_post_ancestors( $page_id );
-
-			if ( $parents ) {
-
-				$context = $this->schema_context();
-				$context_type = $this->schema_breadcrumblist();
-				$item_type = $this->schema_listitem();
-
-				$items = '';
-
-				$parents = array_reverse( $parents );
-
-				foreach ( $parents as $position => $parent_id ) {
-					$pos = $position + 2;
-
-					$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'id' => $parent_id ) ) );
-
-					$custom_field_name = $this->get_custom_field( '_genesis_title', $parent_id );
-					$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
-
-					$name = json_encode( $parent_name );
+					$custom_field_name = isset( $cat->admeta['doctitle'] ) ? $cat->admeta['doctitle'] : '';
+					$cat_name = $custom_field_name ? $custom_field_name : $cat->name;
+					$name = json_encode( $cat_name );
 
 					$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
+
+					if ( $items ) {
+
+						$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $post_id );
+
+						//* Put it all together.
+						$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
+						$output .= '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
+					}
 				}
 
-				if ( $items ) {
+			}
+		}
 
-					$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $page_id );
+		return $output;
+	}
 
-					//* Put it all together.
-					$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
-					$output = '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
-				}
+	/**
+	 * Generate page breadcrumb.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string $output The breadcrumb script.
+	 */
+	public function ld_json_breadcrumbs_page() {
+
+		$output = '';
+
+		$page_id = $this->get_the_real_ID();
+
+		//* Get ancestors.
+		$parents = get_post_ancestors( $page_id );
+
+		if ( $parents ) {
+
+			$context = $this->schema_context();
+			$context_type = $this->schema_breadcrumblist();
+			$item_type = $this->schema_listitem();
+
+			$items = '';
+
+			var_dump( $parents );
+			$parents = array_reverse( $parents );
+			var_dump( $parents );
+
+			foreach ( $parents as $position => $parent_id ) {
+				$pos = $position + 2;
+
+				$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'id' => $parent_id ) ) );
+
+				$custom_field_name = $this->get_custom_field( '_genesis_title', $parent_id );
+				$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
+
+				$name = json_encode( $parent_name );
+
+				$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
+			}
+
+			if ( $items ) {
+
+				$items = $this->ld_json_breadcrumb_first( $item_type ) . $items . $this->ld_json_breadcrumb_last( $item_type, $pos, $page_id );
+
+				//* Put it all together.
+				$breadcrumbhelper = sprintf( '{"@context":%s,"@type":%s,"itemListElement":[%s]}', $context, $context_type, $items );
+				$output = '<script type="application/ld+json">' . $breadcrumbhelper . '</script>' . "\r\n";
 			}
 		}
 

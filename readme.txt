@@ -72,9 +72,10 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 * Special Open Graph description, which organically integrates with the Facebook and Twitter snippets
 * Extended Open Graph Images support, including image manipulation.
 * Canonical, with full WPMUdev Domain Mapping, subdomain and HTTPS support to prevent duplicated content.
-* LD+Json script that adds extended search support for Google Search and Chrome.
-* LD+Json script for Knowledge Graph (Personal/Business site relations, name and logo).
-* LD+Json script for Breadcrumbs (just like the visual one) which extends page relation support in Google Search.
+* Schema.org LD+Json script that adds extended search support for Google Search and Chrome.
+* Schema.org LD+Json script for Knowledge Graph (Personal/Business site relations, name and logo).
+* Advanced Schema.org LD+Json script for Breadcrumbs (just like the visual one) which extends page relation support in Google Search.
+* Schema.org LD+Json script to show the correct site name in Google Breadcrumbs.
 * Publishing and editing dates, accurate to the day.
 * Link relationships, with full WPMUdev Domain Mapping and HTTPS support.
 * Various Facebook and Twitter Meta tags.
@@ -169,7 +170,7 @@ The output will be stored for each page, if you've edited a page the page output
 **Plugins:**
 
 * W3 Total Cache, WP Super Cache, Batcache, etc.
-* WooCommerce: Shop Page, Products, Product Galleries, Product Categories and Product Tags.
+* WooCommerce: Shop Page, Products, Product Breadcrumbs, Product Galleries, Product Categories and Product Tags.
 * Custom Post Types, (all kinds of plugins) with automatic integration.
 * WPMUdev and Donncha's Domain Mapping with full HTTPS support.
 * WPMUdev Avatars for og:image and twitter:image if no other image is found.
@@ -363,6 +364,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * At long last, something that was planned for almost half a year, **Author SEO** has finally been included, this affects all posts, yet no pages.
 * As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
 * Also, many minor **translation improvements** have been put in place on many places. And **WPML compatibility** has received a rework, now all canonical URL's in the sitemap and front-end are always correct.
+* A new script has been added on the front-page. This will make sure the Breadcrumb homepage name will be correct in the Search Engine Results Page.
+* The breadcrumb script has been expanded to work on posts with multiple and nested categories. These scripts now also work on WooCommerce products. So don't be surprised if you suddenly have all kinds of scripts in the header! These scripts help Google better understand your website.
 * And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes** including major refactorization.
 
 **SEO Tip of the Update:**
@@ -404,8 +407,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **For everyone - About Schema Markup:**
 /
-* TODO New schema markup has been added, this helps Search Engines better understand your website.
-* TODO Breadcrumbs scripts now also work on WooCommerce products!
+* New schema markup has been added, this helps Search Engines better understand your website.
+* Breadcrumbs have been expanded, to support nested categories and multiple categories. Now you can see multiple breadcrumb scripts to help Search Engines better understand your website's structure.
+* Breadcrumbs scripts now also work on WooCommerce products!
+* Note: If you use PHP 5.3 or later, the nested scripts provide a more consitent (yet negligible) structure.
 
 **For everyone - About translations:**
 /
@@ -487,6 +492,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO The SEO Bar now also checks for global category and tag indexing options.
 	* Breaks in the SEO Bar description at various places, to impact behavior through glances.
 	* TODO Empty `index.php` files in folders which contain .txt files, to prevent indexing of such.
+	* WooCommerce breadcrumb support! TODO test nested
+	* Nested post categories now also have a breadcrumb script. Multiple even, when applicable.
 * **Changed:**
 	/
 	* TODO New Logo!
@@ -590,6 +597,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* WordPress Query detection.
 	* Blog page and Home Page query detection.
 	* When the paged URL's filter is used, the then useless url's aren't rendered.
+	* Benchmarks have shown that an array flip to use an isset match only benefits huge arrays very little and only when you're certain the result is at the end of the array. Otherwise, it's a drastic performance decrease. Therefore `$this->is_array()` calls have been set back to the default PHP behaviour.
 * **Fixed:**
 	/
 	* `the_seo_framework_dot_version` now checks for four dot versions if applicable.

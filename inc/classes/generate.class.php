@@ -267,7 +267,7 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 			//* Full locale is used.
 
 			//* Return the match if found.
-			if ( $this->in_array( $match, $valid_locales ) )
+			if ( in_array( $match, $valid_locales ) )
 				return $match;
 
 			//* Convert to only language portion.
