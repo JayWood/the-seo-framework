@@ -511,7 +511,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					?>
 					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>">
 						<input type="checkbox" name="<?php $this->field_name( $type . '_' . $ro_value ); ?>" <?php $this->is_conditional_checked( $type . '_' . $ro_value ); ?> id="<?php $this->field_id( $type . '_' . $ro_value ); ?>" value="1" <?php checked( $this->get_field_value( $type . '_' . $ro_value ) ); ?> />
-						<?php printf( __( 'Apply %s to %s?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n ); ?>
+						<?php
+							/* translators: 1: Option, 2: Post Type */
+							printf( __( 'Apply %1$s to %2$s?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n );
+						?>
 					</label>
 					<br>
 					<?php
@@ -519,7 +522,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					?>
 					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>">
 						<input type="checkbox" name="<?php $this->field_name( $type . '_' . $ro_value ); ?>" <?php $this->is_conditional_checked( $type . '_' . $ro_value ); ?> id="<?php $this->field_id( $type . '_' . $ro_value ); ?>" value="1" <?php checked( $this->get_field_value( $type . '_' . $ro_value ) ); ?> />
-						<?php printf( __( 'Apply %s to %s Archives?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n ); ?>
+						<?php
+							/* translators: 1: Option, 2: Post Type */
+							printf( __( 'Apply %1$s to %2$s Archives?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n );
+						?>
 					</label>
 					<br>
 					<?php
@@ -649,8 +655,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 *
 		 * Nesting often used translations
 		 */
-		if ( $home_title_frompost )
-			$title_from_post_message = __( 'Note:', 'autodescription' ) . ' ' . sprintf( __( 'The %s is fetched from the %s on the %s.', 'autodescription' ), $title_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
+		if ( $home_title_frompost ) {
+			/* translators: 1: Option, 2: Page SEO Settings, 3: Home Page */
+			$title_from_post_message = __( 'Note:', 'autodescription' ) . ' ' . sprintf( __( 'The %1$s is fetched from the %2$s on the %3$s.', 'autodescription' ), $title_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
+		}
 
 		/**
 		 * Generate example for Title Additions Location
@@ -727,8 +735,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * Removed notify that homepage is a blog.
 		 * @since 2.2.5
 		 */
-		if ( $home_description_frompost )
-			$description_from_post_message = __( 'Note:', 'autodescription' ) . ' ' . sprintf( __( 'The %s is fetched from the %s on the %s.', 'autodescription' ), $description_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
+		if ( $home_description_frompost ) {
+			/* translators: 1: Option, 2: Page SEO Settings, 3: Home Page */
+			$description_from_post_message = __( 'Note:', 'autodescription' ) . ' ' . sprintf( __( 'The %1$s is fetched from the %2$s on the %3$s.', 'autodescription' ), $description_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
+		}
 
 		$desc_len_pre = $home_description ? $home_description : $description_placeholder;
 
@@ -858,7 +868,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'homepage_noindex' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_noindex' ); ?>" id="<?php $this->field_id( 'homepage_noindex' ); ?>" <?php $this->is_conditional_checked( 'homepage_noindex' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_noindex' ) ); ?> />
-				<?php printf( __( 'Apply %s to the %s?', 'autodescription' ), $this->code_wrap( 'noindex' ), $home_page_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Location */
+					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noindex' ), $home_page_i18n );
+				?>
 				<a href="https://support.google.com/webmasters/answer/93710?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noindex_post ? $checked_home : ''; ?>
 			</label>
@@ -867,7 +880,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 			<label for="<?php $this->field_id( 'homepage_nofollow' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_nofollow' ); ?>" id="<?php $this->field_id( 'homepage_nofollow' ); ?>" <?php $this->is_conditional_checked( 'homepage_nofollow' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_nofollow' ) ); ?> />
-				<?php printf( __( 'Apply %s to the %s?', 'autodescription' ), $this->code_wrap( 'nofollow' ), $home_page_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Location */
+					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'nofollow' ), $home_page_i18n );
+				?>
 				<a href="https://support.google.com/webmasters/answer/96569?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $nofollow_post ? $checked_home : ''; ?>
 			</label>
@@ -876,7 +892,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 			<label for="<?php $this->field_id( 'homepage_noarchive' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_noarchive' ); ?>" id="<?php $this->field_id( 'homepage_noarchive' ); ?>" <?php $this->is_conditional_checked( 'homepage_noarchive' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_noarchive' ) ); ?> />
-				<?php printf( __( 'Apply %s to the %s?', 'autodescription' ), $this->code_wrap( 'noarchive' ), $home_page_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Location */
+					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noarchive' ), $home_page_i18n );
+				?>
 				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noarchive_post ? $checked_home : ''; ?>
 			</label>
@@ -1187,23 +1206,35 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'post_publish_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'post_publish_time' ); ?>" id="<?php $this->field_id( 'post_publish_time' ); ?>" <?php $this->is_conditional_checked( 'post_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_publish_time' ) ); ?> />
-				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $posts_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Post Type */
+					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $posts_i18n );
+				?>
 			</label>
 			<br>
 			<label for="<?php $this->field_id( 'page_publish_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'page_publish_time' ); ?>" id="<?php $this->field_id( 'page_publish_time' ); ?>" <?php $this->is_conditional_checked( 'page_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'page_publish_time' ) ); ?> />
-				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $pages_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Post Type */
+					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $pages_i18n );
+				?>
 			</label>
 		</p>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'post_modify_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'post_modify_time' ); ?>" id="<?php $this->field_id( 'post_modify_time' ); ?>" <?php $this->is_conditional_checked( 'post_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_modify_time' ) ); ?> />
-				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $posts_i18n ); ?>
+				<<?php
+					/* translators: 1: Option, 2: Post Type */
+					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $posts_i18n );
+				?>
 			</label>
 			<br>
 			<label for="<?php $this->field_id( 'page_modify_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'page_modify_time' ); ?>" id="<?php $this->field_id( 'page_modify_time' ); ?>" <?php $this->is_conditional_checked( 'page_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'page_modify_time' ) ); ?> />
-				<?php printf( __( 'Add %s to %s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $pages_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Post Type */
+					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $pages_i18n );
+				?>
 			</label>
 		</p>
 
@@ -1214,12 +1245,18 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'home_publish_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'home_publish_time' ); ?>" id="<?php $this->field_id( 'home_publish_time' ); ?>" <?php $this->is_conditional_checked( 'home_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_publish_time' ) ); ?> />
-				<?php printf( __( 'Add %s to the %s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $home_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Post Type */
+					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $home_i18n );
+				?>
 			</label>
 			<br>
 			<label for="<?php $this->field_id( 'home_modify_time' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'home_modify_time' ); ?>" id="<?php $this->field_id( 'home_modify_time' ); ?>" <?php $this->is_conditional_checked( 'home_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_modify_time' ) ); ?> />
-				<?php printf( __( 'Add %s to the %s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $home_i18n ); ?>
+				<?php
+					/* translators: 1: Option, 2: Post Type */
+					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $home_i18n );
+				?>
 			</label>
 		</p>
 		<?php

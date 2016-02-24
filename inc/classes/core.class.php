@@ -402,4 +402,47 @@ class AutoDescription_Core {
 		return $lowercase[$noun] = $this->is_locale( 'de' ) ? $noun : strtolower( $noun );
 	}
 
+	/**
+	 * Get the term labels.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param object $term The Taxonomy Term object.
+	 * @param bool $singular Whether to fetch a singular or plural name.
+	 *
+	 * @return string the Term name.
+	 */
+	protected function get_the_term_name( $term, $singular = true ) {
+
+		static $term_name = array();
+
+		if ( isset( $term_name[$singular] ) )
+			return $term_name[$singular];
+
+		if ( $term && is_object( $term ) ) {
+			$tax_type = $term->taxonomy;
+
+			/**
+			 * Dynamically fetch the term name.
+			 *
+			 * @since 2.3.1
+			 */
+			$term_labels = $this->get_tax_labels( $tax_type );
+
+			if ( $singular ) {
+				if ( isset( $term_labels->singular_name ) )
+					return $term_name[$singular] = $term_labels->singular_name;
+			} else {
+				if ( isset( $term_labels->name ) )
+					return $term_name[$singular] = $term_labels->name;
+			}
+		}
+
+		//* Fallback to Page as it is generic.
+		if ( $singular )
+			return $term_name[$singular] = __( 'Page', 'autodescription' );
+
+		return $term_name[$singular] = __( 'Pages', 'autodescription' );
+	}
+
 }

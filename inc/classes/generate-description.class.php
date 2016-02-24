@@ -55,6 +55,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		$args = $this->reparse_description_args( $args );
+		$args = $this->get_term_for_args( $args, $args['id'], $args['taxonomy'] );
 
 		if ( $args['get_custom_field'] && empty( $description ) ) {
 			//* Fetch from options, if any.
@@ -181,10 +182,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		$description = $this->get_custom_homepage_description( $args );
 
 		//* Singular Description.
-		$description = empty( $description ) ? $this->get_custom_singular_description( $args['id'] ) : $description;
+		$description = empty( $description ) && empty( $args['taxonomy'] ) ? $this->get_custom_singular_description( $args['id'] ) : $description;
 
 		//* Archive Description.
-		$description = empty( $description ) ? $this->get_custom_archive_description() : $description;
+		$description = empty( $description ) ? $this->get_custom_archive_description( $args ) : $description;
 
 		if ( $escape && '' !== $description ) {
 			$description = wptexturize( $description );
@@ -251,42 +252,47 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * @access protected
 	 * Use $this->description_from_custom_field() instead.
 	 *
+	 * @param array $args
+	 *
 	 * @since 2.6.0
 	 *
 	 * @return string The Description
 	 */
-	protected function get_custom_archive_description() {
+	protected function get_custom_archive_description( $args ) {
 
 		$description = '';
 
-		if ( $this->is_category() || $this->is_tag() ) {
-			global $wp_query;
+		if ( $this->is_archive() ) {
+			if ( $this->is_category() || $this->is_tag() ) {
 
-			$term = $wp_query->get_queried_object();
+				$args = $this->reparse_description_args( $args );
+				$term = $args['term'];
 
-			$description = empty( $term->admeta['description'] ) ? $description : $term->admeta['description'];
+				$description = empty( $term->admeta['description'] ) ? $description : $term->admeta['description'];
 
-			$flag = $this->is_checked( $term->admeta['saved_flag'] );
+				$flag = $this->is_checked( $term->admeta['saved_flag'] );
 
-			if ( false === $flag && empty( $description ) && isset( $term->meta['description'] ) )
-				$description = empty( $term->meta['description'] ) ? $description : $term->meta['description'];
+				if ( false === $flag && empty( $description ) && isset( $term->meta['description'] ) )
+					$description = empty( $term->meta['description'] ) ? $description : $term->meta['description'];
+			}
+
+			if ( $this->is_tax() ) {
+				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
+				$description = empty( $term->admeta['description'] ) ? $description : wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['description'] ) );
+
+				$flag = $this->is_checked( $term->admeta['saved_flag'] );
+
+				if ( false === $flag && empty( $description ) && isset( $term->meta['description'] ) )
+					$description = empty( $term->meta['description'] ) ? $description : $term->meta['description'];
+			}
+
+			if ( $this->is_author() ) {
+				$user_description = get_the_author_meta( 'meta_description', (int) get_query_var( 'author' ) );
+
+				$description = $user_description ? $user_description : $description;
+			}
 		}
 
-		if ( $this->is_tax() ) {
-			$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
-			$description = empty( $term->admeta['description'] ) ? $description : wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['description'] ) );
-
-			$flag = $this->is_checked( $term->admeta['saved_flag'] );
-
-			if ( false === $flag && empty( $description ) && isset( $term->meta['description'] ) )
-				$description = empty( $term->meta['description'] ) ? $description : $term->meta['description'];
-		}
-
-		if ( $this->is_author() ) {
-			$user_description = get_the_author_meta( 'meta_description', (int) get_query_var( 'author' ) );
-
-			$description = $user_description ? $user_description : $description;
-		}
 
 		return $description;
 	}
@@ -364,29 +370,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( $this->is_front_page() || $args['is_home'] || $this->is_static_frontpage( $args['id'] ) )
 			return $this->generate_home_page_description( $args['get_custom_field'] );
 
-		$term = '';
-		if ( is_admin() && 0 !== $args['id'] ) {
-			//* Fetch taxonomy from args.
-			//* This only runs in admin, because we provide these arg values there.
-			if ( empty( $args['taxonomy'] ) ) {
-				//* Test other admin screens.
-				global $current_screen;
-
-				if ( isset( $current_screen->taxonomy ) && $current_screen->taxonomy ) {
-					//* Fetch taxonomy in admin.
-					$args['taxonomy'] = $current_screen->taxonomy;
-					$term = get_term_by( 'id', $args['id'], $args['taxonomy'], OBJECT );
-				}
-			} else {
-				$term = get_term_by( 'id', $args['id'], $args['taxonomy'], OBJECT );
-			}
-		} else if ( $this->is_archive() && false === $this->is_front_page() && ! $this->is_singular( $args['id'] ) ) {
-			//* Fetch Taxonomy through wp_query on front-end
-			global $wp_query;
-
-			$term = $wp_query->get_queried_object();
-			$args['taxonomy'] = isset( $term->taxonomy ) ? $term->taxonomy : '';
-		}
+		$args = $this->get_term_for_args( $args, $args['id'], $args['taxonomy'] );
+		$term = $args['term'];
 
 		$title_on_blogname = $this->generate_description_additions( $args['id'], $term, false );
 		$title = $title_on_blogname['title'];
@@ -718,25 +703,34 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		//* Fetch the length from cache.
 		$excerptlength = $excerptlength_cache[$page_id][$term_id];
 
-		// Trunculate if the excerpt is longer than the max char length
+		//* Trunculate if the excerpt is longer than the max char length
 		if ( $excerptlength > $max_char_length ) {
 
-			// Cut string to fit $max_char_length.
+			//* Cut string to fit $max_char_length.
 			$subex = mb_substr( $excerpt, 0, $max_char_length );
-			// Split words in array. Boom.
+			//* Split words in array. Boom.
 			$exwords = explode( ' ', $subex );
-			// Calculate if last word exceeds.
+			//* Calculate if last word exceeds.
 			$excut = - ( mb_strlen( $exwords[ count( $exwords ) - (int) 1 ] ) );
 
 			if ( $excut < (int) 0 ) {
 				//* Cut out exceeding word.
 				$excerpt = mb_substr( $subex, 0, $excut );
 			} else {
-				// We're all good here, continue.
+				//* We're all good here, continue.
 				$excerpt = $subex;
 			}
 
-			$excerpt = rtrim( $excerpt ) . '...';
+			//* Remove comma's and spaces.
+			$excerpt = trim( $excerpt, ' ,' );
+
+			//* Fetch last character.
+			$last_char = substr( $excerpt, -1 );
+
+			$stops = array( '.', '?', '!' );
+			//* Add three dots if there's no full stop at the end of the excerpt.
+			if ( ! in_array( $last_char, $stops ) )
+				$excerpt .= '...';
 		}
 
 		return (string) $excerpt;

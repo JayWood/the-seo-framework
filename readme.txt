@@ -354,6 +354,21 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 = 2.6.0 - Pragmatic Foundation =
 
+/
+** TODO TESTING CHECKLIST **
+/
+* Custom Post Type Archives.
+* Descriptions are what they said to be.
+* AutoDescriptions ending with '.', ',', '!' and '?'.
+* Breadcrumb validation on posts and products with multiple categories.
+* Schema sitename
+* Hundreds of filters... ugh :).
+* The SEO Bar colors, in many situations.
+* Title lengths.
+* Description lengths.
+* Post Author SEO settings.
+* Pre-"The SEO Framework" Genesis data.
+
 **Preamble:**
 
 * This is a dot version bump update, which is done so as the core code has been changed drastically. **Thirteen new classes** have been added to maintain structured code, including many more function to fetch data easily and consitently.
@@ -361,12 +376,33 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Summarized:**
 /
-* At long last, something that was planned for almost half a year, **Author SEO** has finally been included, this affects all posts, yet no pages.
+* With over 160 notable changes, I bring you a new Pragmatic Foundation.
+* At long last, something that was planned for almost half a year, **Author SEO** has finally been included, this affects all posts when set up.
 * As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
 * Also, many minor **translation improvements** have been put in place on many places. And **WPML compatibility** has received a rework, now all canonical URL's in the sitemap and front-end are always correct.
 * A new script has been added on the front-page. This will make sure the Breadcrumb homepage name will be correct in the Search Engine Results Page.
+* Most importantly, this update allows you to be better informed about your website's index status, through the much improved SEO bar.
 * The breadcrumb script has been expanded to work on posts with multiple and nested categories. These scripts now also work on WooCommerce products. So don't be surprised if you suddenly have all kinds of scripts in the header! These scripts help Google better understand your website.
 * And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes** including major refactorization.
+
+**Feature highlights:**
+/
+* Author Twitter and Facebook connections for posts.
+* WooCommerce schema.org breadcrumbs.
+* Intelligently nested schema.org breadcrumbs.
+* Definite schema.org website name.
+* Better Automated Description sentence endings.
+* TODO New Archive title prefix options.
+* Yandex Sitemap pinging support.
+* Extended Title Fix extension support.
+* Improved performance, TODO more efficient cache key generation.
+* TODO New Date output options.
+* TODO Canonical scheme protocol options.
+* Many linguistic improvements, with more flow in the SEO Bar.
+* Improved editorial translations.
+* TODO Smarter and a more vibrant SEO bar, with many more conditional checks.
+* Personalized error handling for developers.
+* More than 150 new functions for developers.
 
 **SEO Tip of the Update:**
 /
@@ -377,7 +413,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * I'm announcing a new plugin extension for The SEO Framework! [Title Fix - The SEO Framework](https://wordpress.org/plugins/the-seo-framework-title-fix/).
 * This update ensures extra compatiblity with the Title Fix plugin, this will add back removed title features for if the theme is doing it wrong and when the Title Fix plugin is active.
 
-**About: Plugin progression & help required:**
+**About: Plugin progression & help wanted:**
 
 * This dear project has taken me over 2500 hours to perfectionize and maintain. This update alone has cost me over 160 hours to complete.
 * I really want to keep this project free. In fact, Author SEO was actually planned to be a premium extension.
@@ -415,7 +451,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 **For everyone - About translations:**
 /
 * Objective translations for grammatically gender noun types like "this post" (male in Dutch) and "this page" (genderless in Dutch) within sentences which are fetched dynamically (like "Product" and "ProductTag" for WooCommerce) couldn't be translated correctly.
-* Therefore, I've exchanged these types of sentences without losing understanding of those.
+* Therefore, I've exchanged these types of sentences without losing understanding of those. TODO by adding plural forms of such.
 * Small changes within translations happen over time and I try to reduce it when to only when nessecary, as this is an ongoing project you can expect continous improvements wherever possible. Translating WordPress and its plugins are a team effort :).
 * Other small changes include conversion of WordPress slang to real English. Like "Paged" to "Paginated".
 * Over time, inconsitencies have been created with the language used within this plugin. If you still find any, please notify me through the support forums and I'll address them.
@@ -460,10 +496,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **About: Support and Social Requests**
 
-* I've noticed a great increase in both friend/connection requests and support questions through Facebook and LinkedIn.
-* I do not accept these friend requests, as my Facebook page is for friends only.
-* I do not accept these connection requests, as my LinkedIn page is for people I worked with only.
-* Please do not send me a mail through the contact form on `theseoframework.com` unless explicitely asked for or referred to. This form is for personal and/or data sensitive support only. I will reply, but it feels like wasted time, see next two points.
+* I've noticed a great increase in both friend/connection requests and support questions through Facebook and LinkedIn. Please note that these pages are for friends and (past-)colleagues only.
+* Please do not send me a mail through the contact form on `theseoframework.com` unless explicitely asked for or referred to. This form is for personal and/or data sensitive support only. I will reply, but my time is better spent otherwise, see next two points.
 * Please refer to the [Support Forums](https://wordpress.org/support/plugin/autodescription) for all your support questions, I'd be glad to help you out!
 * This way, everyone can benefit from these support questions.
 
@@ -476,32 +510,39 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Canonical SEO!
 	* TODO Canonical SEO scheme options, default "automated".
 	* TODO Archive title prefix options!
-	* TODO LD+Json Schema.org website name and location header markup. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
-	* TODO (Filter default true?) Description option to remove the blogname and title when excerpt is set (when excerpt is supported).
-	* TODO Article modified time can now be ...?
-	* TODO Per page title additions options (reverse of global settings with doing it right listener).
+	* LD+Json Schema.org website name and URL header markup on the front-page. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
+	* TODO (Filter default true?) Description option to remove the Blogname and title when excerpt is set (when excerpt is supported).
 	* TODO Timing dropdown options for the sitemap. Now you can select how the time is output. Default Date + Time for new installations, data for old.
-	* TODO Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
-	* TODO Removal commas if the excerpt ends with one in the description.
-	* TODO Extra compatibility for when the theme is doing it wrong, yet the Title Fix plugin has been used.
-	* Article Modified Time now also works for WooCommerce. TODO test and compare
+	* TODO Article modified time output can now be adjusted, just like the sitemap timing options.
+	* TODO Per page title additions options (reverse of global settings with doing it right listener).
+	* Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
+	* Removal commas if the excerpt ends with one in the automated description.
+	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
+	* Article Modified Time now also works for WooCommerce products. TODO test and compare
 	* TODO Headway compatibility. Done by removing of the SEO features and their output to prevent SEO conflict when filters are used.
 	* Yandex sitemap pinging support. TODO test and var_dump
-	* TODO Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s.
-	* TODO Double Title SEO Bar check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
-	* TODO The SEO Bar now also checks for global category and tag indexing options.
-	* Breaks in the SEO Bar description at various places, to impact behavior through glances.
-	* TODO Empty `index.php` files in folders which contain .txt files, to prevent indexing of such.
+	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s.
+	* The SEO Bar now has a Double Title check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
+	* The SEO Bar now also checks for global category and tag indexing, following and archiving options on the applicable pages.
+	* The SEO Bar now has breaks in the description at various places, to impact behavior through glances.
+	* The SEO Bar Indexing notice turns red if Indexing has been enabled, yet the blog isn't set to public.
+	* The SEO Bar Following notice turns yellow if Following has been disabled, yet the blog isn't set to public.
+	* The SEO Bar Archiving notice turns yellow if Archiving has been enabled, yet the blog isn't set to public.
+	* The SEO Bar Categories and Tags Robots options now reflect in the SEO bar.
+	* TODO The SEO Bar and the character counters have received an extra sub-green color, for when the lengths are between falling between okay and good.
+	* Non-executive `index.php` files in folders which contain readable files, to prevent indexing of such.
 	* WooCommerce breadcrumb support! TODO test nested
 	* Nested post categories now also have a breadcrumb script. Multiple even, when applicable.
+	* TODO Twitter card plugin detection and subtle notification of such.
+	* TODO Neatly styled sitemaps, I hope you like it!
 * **Changed:**
 	/
-	* TODO New Logo!
-	* TODO New Banner, now this one can be shared peacefully through Facebook (which crops and centers the image).
-	* TODO(categories) To eliminate confusion, when your pages aren't globally indexed because of WordPress visibility settings, the color of the SEO Bar section is red now instead of blue.
-	* TODO Description "good" length range has been extended to 142 minimum instead of 150, to eliminate over-optimization.
+	* TODO New Plugin Logo!
+	* TODO New Plugin Banner, now this one can be shared peacefully through Facebook (which crops and centers the image).
+	* Description "good" detection length range has been extended to 137 minimum instead of 145, to eliminate over-optimization.
 	* LD+Json markup now uses double quotes instead of single.
 	* LD+Json Sitelinks Search Box script now excludes the Alternative Name, as it's optional and non-configurable (yet).
+	* The SEO Bar T/D and G letters have a space removed between them to make it a little more appealing on smaller screens.
 * **Updated:**
 	/
 	* Several sentences to have a better English structure to what they do.
@@ -515,6 +556,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * **Improved:**
 	/
 	* SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
+	* Translations with multiple variable strings can now safely be translated and switched around.
 	* TODO The canonical URL now also allows page pagination.
 	* LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
 	* Robots tag generation time.

@@ -940,7 +940,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( '' !== $term_id && '' !== $taxonomy )
 			$term = get_term( $term_id, $taxonomy, OBJECT, 'raw' );
 
-		if ( isset( $term ) || $this->is_category() || $this->is_tag() ) {
+		if ( isset( $term ) || ( ! $this->is_admin() && ( $this->is_category() || $this->is_tag() ) ) ) {
 
 			if ( ! isset( $term ) ) {
 				global $wp_query;
@@ -958,7 +958,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			if ( empty( $title ) )
 				$title = $this->get_the_real_archive_title( $term );
 
-		} else if ( is_tax() ) {
+		} else if ( $this->is_tax() ) {
 
 			if ( ! isset( $term ) )
 				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );

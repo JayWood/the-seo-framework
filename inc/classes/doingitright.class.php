@@ -246,7 +246,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			if ( $is_term ) {
 				//* We're on a term or taxonomy. Try fetching names. Default back to "Page".
 				$term = get_term_by( 'id', $post_id, $type, OBJECT );
-				$post_i18n = $this->get_the_seo_bar_term_name( $term );
+				$post_i18n = $this->get_the_term_name( $term );
 
 				/**
 				 * Check if current post type is a page or taxonomy.
@@ -280,6 +280,54 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	}
 
 	/**
+	 * Outputs a part of the SEO Bar based on parameters.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array $args : {
+	 *		string $indicator
+	 *		string $notice
+	 *		string $width
+	 *		string $class
+	 * }
+	 *
+	 * @return string The SEO Bar block part.
+	 */
+	protected function wrap_the_seo_bar_block( $args ) {
+
+		$wrap 	= '<span class="ad-sec-wrap ' . $args['width'] . '">'
+				. '<a href="#" onclick="return false;" class="' . $args['class'] . '" data-desc="' . $args['notice'] . '">' . $args['indicator'] . '</a>'
+				. '<span class="screen-reader-text">' . $args['notice'] . '</span>'
+				. '</span>';
+
+		return $wrap;
+	}
+
+	/**
+	 * Wrap the SEO bar.
+	 *
+	 * @staticvar string $class
+	 *
+	 * @param string $content The SEO Bar content.
+	 * @param bool $term Whether the bar is for a term.
+	 */
+	protected function get_the_seo_bar_wrap( $content, $term ) {
+
+		static $class = null;
+
+		if ( ! isset( $class ) ) {
+			$classes = $this->get_the_seo_bar_classes();
+
+			$termwidth = $term ? ' ' . $classes['100%'] : '';
+			$square = $this->square_the_seo_bar() ? ' ' . $classes['square'] : '';
+
+			$class = 'ad-seo clearfix' . $termwidth . $square;
+		}
+
+		return sprintf( '<span class="%s"><span class="ad-bar-wrap">%s</span></span>', $class, $content );
+	}
+
+	/**
 	 * Output the SEO bar for Terms and Taxonomies.
 	 *
 	 * @since 2.6.0
@@ -302,22 +350,19 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$post = $args['post_i18n'];
 		$is_term = true;
 
-		$noindex = isset( $term->admeta['noindex'] ) && '0' !== $term->admeta['noindex'] ? true : false;
+		$noindex = isset( $term->admeta['noindex'] ) && $this->is_checked( $term->admeta['noindex'] ) ? true : false;
 		$redirect = false; // We don't apply redirect on taxonomies (yet)
 
-		$ad_savedflag = isset( $term->admeta['saved_flag'] ) && '0' !== $term->admeta['saved_flag'] ? true : false;
+		$ad_savedflag = isset( $term->admeta['saved_flag'] ) && $this->is_checked( $term->admeta['saved_flag'] ) ? true : false;
 		$flag = $ad_savedflag;
 
 		//* Genesis data fetch
 		if ( false === $noindex && false === $flag && isset( $term->meta['noindex'] ) )
-			$noindex = '' !== $term->meta['noindex'] ? true : false;
+			$noindex = $this->is_checked( $term->meta['noindex'] ) ? true : false;
 
+		//* Blocked SEO, return simple bar.
 		if ( $redirect || $noindex )
 			return $this->the_seo_bar_blocked( array( 'is_term' => $is_term, 'redirect' => $redirect, 'noindex' => $noindex, 'post_i18n' => $post ) );
-
-		$classes = $this->get_the_seo_bar_classes();
-		$square = $this->square_the_seo_bar() ? ' ' . $classes['square'] : '';
-		$ad_100 = $classes['100%'];
 
 		$title_notice		= $this->the_seo_bar_title_notice( $args );
 		$description_notice	= $this->the_seo_bar_description_notice( $args );
@@ -325,9 +370,9 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$follow_notice		= $this->the_seo_bar_follow_notice( $args );
 		$archive_notice		= $this->the_seo_bar_archive_notice( $args );
 
-		$content = sprintf( '<span class="ad-seo clearfix ' . $ad_100 . $square . '"><span class="ad-bar-wrap">%s %s %s %s %s</span></span>', $title_notice, $description_notice, $index_notice, $follow_notice, $archive_notice );
+		$content = $title_notice . $description_notice . $index_notice . $follow_notice . $archive_notice;
 
-		return $content;
+		return $this->get_the_seo_bar_wrap( $content, $is_term );
 	}
 
 	/**
@@ -365,9 +410,6 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( $redirect || $noindex )
 			return $this->the_seo_bar_blocked( array( 'is_term' => $is_term, 'redirect' => $redirect, 'noindex' => $noindex, 'post_i18n' => $post ) );
 
-		$classes = $this->get_the_seo_bar_classes();
-		$square = $this->square_the_seo_bar() ? ' ' . $classes['square'] : '';
-
 		$title_notice		= $this->the_seo_bar_title_notice( $args );
 		$description_notice	= $this->the_seo_bar_description_notice( $args );
 		$index_notice 		= $this->the_seo_bar_index_notice( $args );
@@ -375,9 +417,9 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$archive_notice		= $this->the_seo_bar_archive_notice( $args );
 		$redirect_notice	= $this->the_seo_bar_redirect_notice( $args );
 
-		$content = sprintf( '<span class="ad-seo clearfix ' . $square . '"><span class="ad-bar-wrap">%s %s %s %s %s %s</span></span>', $title_notice, $description_notice, $index_notice, $follow_notice, $archive_notice, $redirect_notice );
+		$content = $title_notice . $description_notice . $index_notice . $follow_notice . $archive_notice . $redirect_notice;
 
-		return $content;
+		return $this->get_the_seo_bar_wrap( $content, $is_term );
 	}
 
 	/**
@@ -436,7 +478,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$post_id = $args['post_id'];
 		$taxonomy = $args['type'];
 
-		$flag = isset( $term->admeta['saved_flag'] ) && '1' === $term->admeta['saved_flag'] ? true : false;
+		$flag = isset( $term->admeta['saved_flag'] ) && $this->is_checked( $term->admeta['saved_flag'] ) ? true : false;
 
 		$title_custom_field = isset( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : '';
 		$description_custom_field = isset( $term->admeta['description'] ) ? $term->admeta['description'] : '';
@@ -460,14 +502,17 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 		$title_is_from_custom_field = (bool) $title_custom_field;
 		if ( $title_is_from_custom_field ) {
-			$title = $title_custom_field;
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'meta' => true, 'get_custom_field' => true ) );
 		} else {
-			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'meta' => true ) );
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'meta' => true, 'get_custom_field' => false ) );
 		}
 
 		$description_is_from_custom_field = (bool) $description_custom_field;
 		if ( $description_is_from_custom_field ) {
-			$description = $description_custom_field;
+			$taxonomy = isset( $term->taxonomy ) && $term->taxonomy ? $term->taxonomy : false;
+			$description_args = $taxonomy ? array( 'id' => $post_id, 'taxonomy' => $term->taxonomy, 'get_custom_field' => true ) : array( 'get_custom_field' => true );
+
+			$description = $this->generate_description( '', $description_args );
 		} else {
 			$taxonomy = isset( $term->taxonomy ) && $term->taxonomy ? $term->taxonomy : false;
 			$description_args = $taxonomy ? array( 'id' => $post_id, 'taxonomy' => $term->taxonomy, 'get_custom_field' => false ) : array( 'get_custom_field' => false );
@@ -475,8 +520,8 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			$description = $this->generate_description( '', $description_args );
 		}
 
-		$nofollow = $this->is_checked( $nofollow ) ? false : true;
-		$noarchive = $this->is_checked( $noarchive ) ? false : true;
+		$nofollow = $this->is_checked( $nofollow );
+		$noarchive = $this->is_checked( $noarchive );
 
 		return array(
 			'title' => $title,
@@ -524,21 +569,20 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 		$title_is_from_custom_field = (bool) $title_custom_field;
 		if ( $title_is_from_custom_field ) {
-			$title = $title_custom_field;
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'meta' => true, 'get_custom_field' => true ) );
 		} else {
-			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'meta' => true ) );
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'meta' => true, 'get_custom_field' => false ) );
 		}
 
 		$description_is_from_custom_field = (bool) $description_custom_field;
 		if ( $description_is_from_custom_field ) {
-			$description = $description_custom_field;
+			$description = $this->generate_description( '', array( 'id' => $post_id, 'get_custom_field' => true ) );
 		} else {
-			$description_args = array( 'id' => $post_id, 'get_custom_field' => false );
-			$description = $this->generate_description( '', $description_args );
+			$description = $this->generate_description( '', array( 'id' => $post_id, 'get_custom_field' => false ) );
 		}
 
-		$nofollow = $this->is_checked( $nofollow ) ? false : true;
-		$noarchive = $this->is_checked( $noarchive ) ? false : true;
+		$nofollow = $this->is_checked( $nofollow );
+		$noarchive = $this->is_checked( $noarchive );
 
 		return array(
 			'title' => $title,
@@ -560,41 +604,74 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 */
 	protected function the_seo_bar_title_notice( $args ) {
 
-		$i18n = $this->get_the_seo_bar_i18n();
+		//* Fetch data
 		$data = $this->the_seo_bar_data( $args );
+		$title 						= $data['title'];
+		$title_is_from_custom_field	= $data['title_is_from_custom_field'];
 
-		$title = $data['title'];
-		$title_is_from_custom_field = $data['title_is_from_custom_field'];
+		//* Fetch CSS classes.
+		$classes = $this->get_the_seo_bar_classes();
+		$ad25 = $classes['25%'];
 
+		//* Fetch i18n and put in vars
+		$i18n = $this->get_the_seo_bar_i18n();
+		$title_short	= $i18n['title_short'];
+		$generated		= $i18n['generated_short'];
+		$and_i18n		= $i18n['and'];
+		$but_i18n		= $i18n['but'];
+
+		//* Initialize notice.
+		$notice = $i18n['title'];
+		$class = $classes['good'];
+
+		//* Generated notice.
 		$generated_notice = '<br>' . $i18n['generated'];
-		$generated = ' ' . $i18n['generated_short'];
 		$gen_t = $title_is_from_custom_field ? '' : $generated;
 		$gen_t_notice = $title_is_from_custom_field ? '' : $generated_notice;
 
-		$title_i18n = $i18n['title'];
-		$title_short = $i18n['title_short'];
+		//* Title length. Convert &#8230; to a single character as well.
+		$tit_len = mb_strlen( html_entity_decode( $title ) );
 
-		//* Convert to what Google outputs. This will convert e.g. &raquo; to a single length character.
-		$title = trim( html_entity_decode( $title ) );
+		//* Length notice.
+		$title_length_warning = $this->get_the_seo_bar_title_length_warning( $tit_len, $class );
+		$notice .= $title_length_warning ? ' ' . $title_length_warning['notice'] : '';
+		$class = $title_length_warning['class'];
 
-		//* Calculate length.
-		$tit_len = mb_strlen( $title );
+		$title_duplicated = false;
+		//* Check if title is duplicated from blogname.
+		if ( $this->add_title_additions() ) {
+			//* We are using blognames in titles.
 
-		$titlen_notice = $title_i18n;
+			$blogname = $this->get_blogname();
 
-		$title_length_warning = $this->get_the_seo_bar_title_length_warning( $tit_len );
-		$titlen_notice .= '' !== $title_length_warning ? ' ' . $title_length_warning['notice'] : '';
-		$titlen_class = $title_length_warning['class'];
+			$first = stripos( $title, $this->get_blogname() );
+			$last = strripos( $title, $this->get_blogname() );
 
-		if ( '' !== $titlen_notice ) {
-			$title_notice		= '<span class="ad-sec-wrap ad-25">'
-								. '<a href="#" onclick="return false;" class="' . $titlen_class . '"  data-desc="' . $titlen_notice . $gen_t_notice . '">' . $title_short . $gen_t . '</a>'
-								. '<span class="screen-reader-text">' . $titlen_notice . $gen_t_notice . '</span>'
-								. '</span>'
-								;
-		} else {
-			$title_notice = '';
+			if ( $first !== $last )
+				$title_duplicated = true;
 		}
+
+		if ( $title_duplicated ) {
+			//* If the title is good, we should use And. Otherwise 'But'.
+			$but_and = $title_length_warning['but'] ? $but_i18n : $and_i18n;
+
+			/* translators: %s = But or And */
+			$notice .= '<br>' . sprintf( __( '%s the Title contains the Blogname multiple times.', 'autodescription' ), $but_and );
+			$class = $classes['bad'];
+		}
+
+		//* Put everything together.
+		$notice = $notice . $gen_t_notice;
+		$title_short = $title_short . $gen_t;
+
+		$tit_wrap_args = array(
+			'indicator' => $title_short,
+			'notice' => $notice,
+			'width' => $ad25,
+			'class' => $class,
+		);
+
+		$title_notice = $this->wrap_the_seo_bar_block( $tit_wrap_args );
 
 		return $title_notice;
 	}
@@ -619,12 +696,12 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$description_short 	= $i18n['description_short'];
 		$generated_short 	= $i18n['generated_short'];
 
-		//* Description length.
-		$desc_parsed = trim( html_entity_decode( $description ) );
-		$desc_len = mb_strlen( $desc_parsed );
+		//* Description length. Convert &#8230; to a single character as well.
+		$desc_len = mb_strlen( html_entity_decode( $description ) );
 
 		//* Fetch CSS classes.
 		$classes = $this->get_the_seo_bar_classes();
+		$ad25 = $classes['25%'];
 
 		//* Initialize notice.
 		$notice = $i18n['description'];
@@ -641,440 +718,24 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$class = $desc_too_many['class'];
 
 		//* Generation notice.
-		$generated_notice 	= $i18n['generated'] . ' ';
+		$generated_notice = $i18n['generated'] . ' ';
 		$gen_d = $description_is_from_custom_field ? '' : $generated_short;
 		$gen_d_notice = $description_is_from_custom_field ? '' : $generated_notice;
 
-		if ( '' !== $notice ) {
-			$description_notice	= '<span class="ad-sec-wrap ad-25">'
-								. '<a href="#" onclick="return false;" class="' . $class . '" data-desc="' . $notice . $gen_d_notice . '">' . $description_short . $gen_d . '</a>'
-								. '<span class="screen-reader-text">' . $notice . $gen_d_notice . '</span>'
-								. '</span>'
-								;
-		} else {
-			$description_notice = '';
-		}
+		//* Put everything together.
+		$notice = $notice . $gen_d_notice;
+		$description_short = $description_short . $gen_d;
+
+		$desc_wrap_args = array(
+			'indicator' => $description_short,
+			'notice' => $notice,
+			'width' => $ad25,
+			'class' => $class,
+		);
+
+		$description_notice = $this->wrap_the_seo_bar_block( $desc_wrap_args );
 
 		return $description_notice;
-	}
-
-	/**
-	 * Render the SEO bar index block and notice.
-	 *
-	 * @param array $args
-	 * @since 2.6.0
-	 *
-	 * @return string The SEO Bar Index Block
-	 */
-	protected function the_seo_bar_index_notice( $args ) {
-
-		$term = $args['term'];
-		$is_term = $args['is_term'];
-		$post_i18n = $args['post_i18n'];
-
-		$data = $this->the_seo_bar_data( $args );
-
-		$classes = $this->get_the_seo_bar_classes();
-		$unknown	= $classes['unknown'];
-		$bad		= $classes['bad'];
-		$okay		= $classes['okay'];
-		$good		= $classes['good'];
-		$ad_125		= $classes['12.5%'];
-
-		$i18n = $this->get_the_seo_bar_i18n();
-		$index_short	= $i18n['index_short'];
-		$but_i18n		= $i18n['but'];
-		$and_i18n		= $i18n['and'];
-		$ind_notice		= $i18n['index'];
-
-		$ind_notice .= ' ' . sprintf( __( "%s is being indexed.", 'autodescription' ), $post_i18n );
-		$ind_class = $good;
-
-		/**
-		 * Get noindex site option
-		 *
-		 * @since 2.2.2
-		 */
-		if ( $this->is_option_checked( 'site_noindex' ) ) {
-			$ind_notice .= '<br>' . __( "But you've disabled indexing for the whole site.", 'autodescription' );
-			$ind_class = $unknown;
-			$ind_but = true;
-		}
-
-		/**
-		 * Get taxonomy and term indexing options.
-		 *
-		 * @since 2.6.0
-		 */
-		if ( false && term_type() ) {
-			var_dump(); // ADD CATEGORY AND TAG INDEXING OPTIONS
-			// category_noindex
-			// tag_noindex
-		}
-
-		if ( false === $this->is_blog_public() ) {
-			$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
-			/* translators: %s = But or And */
-			$ind_notice .= '<br>' . sprintf( __( "%s the blog isn't set to public. This means WordPress discourages indexing.", 'autodescription' ), $but_and );
-			$ind_class = $bad;
-			$ind_but = true;
-		}
-
-		/**
-		 * Check if archive is empty, and therefore has set noindex for those.
-		 *
-		 * @since 2.2.8
-		 */
-		if ( $is_term && isset( $term->count ) && 0 === $term->count ) {
-			$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
-
-			/* translators: %s = But or And */
-			$ind_notice .= '<br>' . sprintf( __( "%s there are no posts in this term. Therefore, indexing has been disabled.", 'autodescription' ), $but_and );
-			//* Don't make it unknown if it's not good.
-			$ind_class = $ind_class !== $good ? $ind_class : $unknown;
-		}
-
-		$index_notice	= '<span class="ad-sec-wrap ' . $ad_125 . '">'
-						. '<a href="#" onclick="return false;" class="' . $ind_class . '" data-desc="' . $ind_notice . '">' . $index_short . '</a>'
-						. '<span class="screen-reader-text">' . $ind_notice . '</span>'
-						. '</span>'
-						;
-
-		return $index_notice;
-	}
-
-	/**
-	 * Render the SEO bar follow block and notice.
-	 *
-	 * @param array $args
-	 * @since 2.6.0
-	 *
-	 * @return string The SEO Bar Follow Block
-	 */
-	protected function the_seo_bar_follow_notice( $args ) {
-
-		$post_i18n = $args['post_i18n'];
-
-		$data = $this->the_seo_bar_data( $args );
-		$nofollow = $data['nofollow'];
-
-		$classes = $this->get_the_seo_bar_classes();
-		$unknown	= $classes['unknown'];
-		$bad		= $classes['bad'];
-		$okay		= $classes['okay'];
-		$good		= $classes['good'];
-		$ad_125		= $classes['12.5%'];
-
-		$i18n = $this->get_the_seo_bar_i18n();
-		$follow_i18n	= $i18n['follow'];
-		$follow_short	= $i18n['follow_short'];
-
-		if ( $nofollow ) {
-			$fol_notice = $follow_i18n . ' ' . sprintf( __( '%s links are being followed.', 'autodescription' ), $post_i18n );
-			$fol_class = $good;
-
-			/**
-			 * Get nofolow site option
-			 *
-			 * @since 2.2.2
-			 */
-			if ( $this->is_option_checked( 'site_nofollow' ) ) {
-				$fol_notice .= '<br>' . __( "But you've disabled following of links for the whole site.", 'autodescription' );
-				$fol_class = $unknown;
-			}
-		} else {
-			$fol_notice = $follow_i18n . ' ' . sprintf( __( "%s links aren't being followed.", 'autodescription' ), $post_i18n );
-			$fol_class = $unknown;
-
-			if ( false === $this->is_blog_public() ) {
-				$fol_notice .= '<br>' . __( "But the blog isn't set to public. This means WordPress allows the links to be followed regardless.", 'autodescription' );
-			}
-		}
-
-		if ( $fol_notice ) {
-			$follow_notice	= '<span class="ad-sec-wrap ' . $ad_125 . '">'
-							. '<a href="#" onclick="return false;" class="' . $fol_class . '" data-desc="' . $fol_notice . '">' . $follow_short . '</a>'
-							. '<span class="screen-reader-text">' . $fol_notice . '</span>'
-							. '</span>'
-							;
-		} else {
-			$follow_notice = '';
-		}
-
-		return $follow_notice;
-	}
-
-	/**
-	 * Render the SEO bar archive block and notice.
-	 *
-	 * @param array $args
-	 * @since 2.6.0
-	 *
-	 * @return string The SEO Bar Follow Block
-	 */
-	protected function the_seo_bar_archive_notice( $args ) {
-
-		$post_low = $args['post_low'];
-
-		$data = $this->the_seo_bar_data( $args );
-		$noarchive	= $data['noarchive'];
-
-		$classes = $this->get_the_seo_bar_classes();
-		$unknown	= $classes['unknown'];
-		$bad		= $classes['bad'];
-		$okay		= $classes['okay'];
-		$good		= $classes['good'];
-		$ad_125		= $classes['12.5%'];
-
-		$i18n = $this->get_the_seo_bar_i18n();
-		$archive_i18n	= $i18n['archive'];
-		$archive_short	= $i18n['archive_short'];
-
-		if ( $noarchive ) {
-			$arc_notice = $archive_i18n . ' ' . sprintf( __( 'Search Engine are allowed to archive this %s.', 'autodescription' ), $post_low );
-			$arc_class = $good;
-
-			/**
-			 * Get noarchive site option
-			 *
-			 * @since 2.2.2
-			 */
-			if ( $this->is_option_checked( 'site_noarchive' ) ) {
-				$arc_notice .= '<br>' . __( "But you've disabled archiving for the whole site.", 'autodescription' );
-				$arc_class = $unknown;
-			}
-
-		} else {
-			$arc_notice = $archive_i18n . ' ' . sprintf( __( "Search Engine aren't allowed to archive this %s.", 'autodescription' ), $post_low );
-			$arc_class = $unknown;
-
-			if ( false === $this->is_blog_public() ) {
-				$arc_notice .= '<br>' . __( "But the blog isn't set to public. This means WordPress allows the blog to be archived regardless.", 'autodescription' );
-			}
-		}
-
-		if ( $arc_notice ) {
-			$archive_notice	= '<span class="ad-sec-wrap ' . $ad_125 . '">'
-							. '<a href="#" onclick="return false;" class="' . $arc_class . '" data-desc="' . $arc_notice . '">' . $archive_short . '</a>'
-							. '<span class="screen-reader-text">' . $arc_notice . '</span>'
-							. '</span>'
-							;
-		} else {
-			$archive_notice = '';
-		}
-
-		return $archive_notice;
-	}
-
-	/**
-	 * Render the SEO bar redirect block and notice.
-	 *
-	 * @param array $args
-	 * @since 2.6.0
-	 *
-	 * @return string The SEO Bar Redirect Block
-	 */
-	protected function the_seo_bar_redirect_notice( $args ) {
-
-		//* No redirection on taxonomies (yet).
-		$is_term = $args['is_term'];
-
-		if ( false === $is_term ) {
-			//* Pretty much outputs that it's not being redirected.
-
-			$post = $args['post_i18n'];
-
-			$classes = $this->get_the_seo_bar_classes();
-			$ad_125 = $classes['12.5%'];
-
-			$i18n = $this->get_the_seo_bar_i18n();
-			$redirect_i18n = $i18n['redirect'];
-			$redirect_short = $i18n['redirect_short'];
-
-			$red_notice = $redirect_i18n . ' ' . sprintf( __( "%s isn't being redirected.", 'autodescription' ), $post );
-			$red_class = $classes['good'];
-
-			$redirect_notice	= '<span class="ad-sec-wrap ' . $ad_125 . '">'
-								. '<a href="#" onclick="return false;" class="' . $red_class . '" data-desc="' . $red_notice . '">' . $redirect_short . '</a>'
-								. '<span class="screen-reader-text">' . $red_notice . '</span>'
-								. '</span>'
-								;
-		} else {
-			$redirect_notice = '';
-		}
-
-		return $redirect_notice;
-	}
-
-	/**
-	 * Render the SEO bar when the page/term is blocked.
-	 *
-	 * @param array $args {
-	 *		$is_term => bool,
-	 *		$redirect => bool,
-	 *		$noindex => bool,
-	 *		$post_i18n => string
-	 * }
-	 *
-	 * @since 2.6.0
-	 *
-	 * @return string The SEO Bar
-	 */
-	protected function the_seo_bar_blocked( $args ) {
-
-		$classes = $this->get_the_seo_bar_classes();
-		$i18n = $this->get_the_seo_bar_i18n();
-
-		$square = $this->square_the_seo_bar() ? ' ' . $classes['square'] : '';
-		$ad_100 = $args['is_term'] ? ' ' . $classes['100%'] : '';
-
-		$redirect = $args['redirect'];
-		$noindex = $args['noindex'];
-		$post = $args['post_i18n'];
-
-		if ( $redirect && $noindex ) {
-			//* Redirect and noindex found, why bother showing SEO.
-
-			$red_notice = $i18n['redirect'] . ' ' . sprintf( __( "%s is being redirected. This means no SEO values have to be set.", 'autodescription' ), $post );
-			$red_class = $classes['unknown'];
-
-			$redirect_notice	= '<span class="ad-sec-wrap ad-50">'
-								. '<a href="#" onclick="return false;" class="' . $red_class . '" data-desc="' . $red_notice . '">' . $i18n['redirect_short'] . '</a>'
-								. '<span class="screen-reader-text">' . $red_notice . '</span>'
-								. '</span>'
-								;
-
-			$noi_notice = $i18n['index'] . ' ' . sprintf( __( "%s is not being indexed. This means no SEO values have to be set.", 'autodescription' ), $post );
-			$noi_class = $classes['unknown'];
-
-			$noindex_notice		= '<span class="ad-sec-wrap ad-50">'
-								. '<a href="#" onclick="return false;" class="' . $noi_class . '" data-desc="' . $noi_notice . '">' . $i18n['index_short'] . '</a>'
-								. '<span class="screen-reader-text">' . $noi_notice . '</span>'
-								. '</span>'
-								;
-
-			$content = sprintf( '<span class="ad-seo clearfix' . $ad_100 . $square . '"><span class="ad-bar-wrap">%s %s</span></span>', $redirect_notice, $noindex_notice );
-
-		} else if ( $redirect && false === $noindex ) {
-			//* Redirect found, why bother showing SEO info?
-
-			$red_notice = $i18n['redirect'] . ' ' . sprintf( __( "%s is being redirected. This means no SEO values have to be set.", 'autodescription' ), $post );
-			$red_class = $classes['unknown'];
-
-			$redirect_notice	= '<span class="ad-sec-wrap ad-100">'
-								. '<a href="#" onclick="return false;" class="' . $red_class . '" data-desc="' . $red_notice . '">' . $i18n['redirect_short'] . '</a>'
-								. '<span class="screen-reader-text">' . $red_notice . '</span>'
-								. '</span>'
-								;
-
-			$content = sprintf( '<span class="ad-seo clearfix' . $ad_100 . $square . '"><span class="ad-bar-wrap">%s</span></span>', $redirect_notice );
-
-		} else if ( false === $redirect && $noindex ) {
-			//* Noindex found, why bother showing SEO info?
-
-			$noi_notice = $i18n['index'] . ' ' . sprintf( __( "%s is not being indexed. This means no SEO values have to be set.", 'autodescription' ), $post );
-			$noi_class = $classes['unknown'];
-
-			$noindex_notice	= '<span class="ad-sec-wrap ad-100">'
-							. '<a href="#" onclick="return false;" class="' . $noi_class . '" data-desc="' . $noi_notice . '">' . $i18n['index_short'] . '</a>'
-							. '<span class="screen-reader-text">' . $noi_notice . '</span>'
-							. '</span>'
-							;
-
-			$content = sprintf( '<span class="ad-seo clearfix' . $ad_100 . $square . '"><span class="ad-bar-wrap">%s</span></span>', $noindex_notice );
-		}
-
-		return $content;
-	}
-
-	/**
-	 * @TODO
-	 */
-	protected function wrap_the_seo_bar_block() {
-		$wrap 	= '<span class="ad-sec-wrap ' . $width . '">'
-				. '<a href="#" onclick="return false;" class="' . $class . '" data-desc="' . $notice . '">' . $indicator . '</a>'
-				. '<span class="screen-reader-text">' . $notice . '</span>'
-				. '</span>';
-	}
-
-	/**
-	 * @TODO
-	 */
-	protected function get_the_seo_bar_wrap() {
-
-	}
-
-	/**
-	 * Get the term labels.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @return string the Term name.
-	 */
-	protected function get_the_seo_bar_term_name( $term ) {
-
-		static $term_name = null;
-
-		if ( isset( $term_name ) )
-			return $term_name;
-
-		if ( $term && is_object( $term ) ) {
-			$tax_type = $term->taxonomy;
-
-			/**
-			 * Dynamically fetch the term name.
-			 *
-			 * @since 2.3.1
-			 */
-			$term_labels = $this->get_tax_labels( $tax_type );
-
-			if ( isset( $term_labels->singular_name ) )
-				return $term_name = $term_labels->singular_name;
-		}
-
-		//* Fallback to Page as it is generic.
-		return $term_name = __( 'Page', 'autodescription' );
-	}
-
-	/**
-	 * Title Length notices.
-	 *
-	 * @param int $tit_len The Title length
-	 * @since 2.6.0
-	 *
-	 * @return array {
-	 * 		notice => The notice,
-	 * 		class => The class,
-	 * }
-	 */
-	protected function get_the_seo_bar_title_length_warning( $tit_len ) {
-
-		$classes = $this->get_the_seo_bar_classes();
-		$bad	= $classes['bad'];
-		$okay	= $classes['okay'];
-		$good	= $classes['good'];
-
-		if ( $tit_len < 25 ) {
-			$notice = ' ' . __( 'Length is far too short.', 'autodescription' );
-			$class = $bad;
-		} else if ( $tit_len < 42 ) {
-			$notice = ' ' . __( 'Length is too short.', 'autodescription' );
-			$class = $okay;
-		} else if ( $tit_len > 55 && $tit_len < 75 ) {
-			$notice = ' ' . __( 'Length is too long.', 'autodescription' );
-			$class = $okay;
-		} else if ( $tit_len >= 75 ) {
-			$notice = ' ' . __( 'Length is far too long.', 'autodescription' );
-			$class = $bad;
-		} else {
-			$notice = ' ' . __( 'Length is good.', 'autodescription' );
-			$class = $good;
-		}
-
-		return array(
-			'notice' => $notice,
-			'class' => $class
-		);
 	}
 
 	/**
@@ -1100,7 +761,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( $desc_len < 100 ) {
 			$notice = ' ' . __( 'Length is far too short.', 'autodescription' );
 			$class = $bad;
-		} else if ( $desc_len < 145 ) {
+		} else if ( $desc_len < 137 ) {
 			$notice = ' ' . __( 'Length is too short.', 'autodescription' );
 
 			// Don't make it okay if it's already bad.
@@ -1201,6 +862,541 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return array(
 			'notice' => $notice,
 			'class' => $class
+		);
+	}
+
+	/**
+	 * Render the SEO bar index block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Index Block
+	 */
+	protected function the_seo_bar_index_notice( $args ) {
+
+		$term = $args['term'];
+		$is_term = $args['is_term'];
+		$post_i18n = $args['post_i18n'];
+
+		$data = $this->the_seo_bar_data( $args );
+
+		$classes = $this->get_the_seo_bar_classes();
+		$unknown	= $classes['unknown'];
+		$bad		= $classes['bad'];
+		$okay		= $classes['okay'];
+		$good		= $classes['good'];
+		$ad_125		= $classes['12.5%'];
+
+		$i18n = $this->get_the_seo_bar_i18n();
+		$index_short	= $i18n['index_short'];
+		$but_i18n		= $i18n['but'];
+		$and_i18n		= $i18n['and'];
+		$ind_notice		= $i18n['index'];
+
+		$ind_notice .= ' ' . sprintf( __( "%s is being indexed.", 'autodescription' ), $post_i18n );
+		$ind_class = $good;
+
+		/**
+		 * Get noindex site option
+		 *
+		 * @since 2.2.2
+		 */
+		if ( $this->is_option_checked( 'site_noindex' ) ) {
+			$ind_notice .= '<br>' . __( "But you've disabled indexing for the whole site.", 'autodescription' );
+			$ind_class = $unknown;
+			$ind_but = true;
+		}
+
+		//* Adds notice for global archive indexing options.
+		if ( $is_term ) {
+
+			/**
+			 * @staticvar bool $checked
+			 * @staticvar string $label
+			 */
+			static $checked = null;
+
+			if ( ! isset( $checked ) ) {
+				//* Fetch whether it's checked.
+				$checked = $this->the_seo_bar_archive_robots_options( 'noindex' );
+			}
+
+			if ( $checked ) {
+				$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
+				$label = $this->get_the_term_name( $term, false );
+
+				/* translators: 1: But or And, 2: Current taxonomy term plural label */
+				$ind_notice .= '<br>' . sprintf( __( '%1$s indexing for %2$s has been disabled.', 'autodescription' ), $but_and, $label );
+				$ind_class = $unknown;
+				$ind_but = true;
+			}
+		}
+
+		//* Adds notice for WordPress blog public indexing.
+		if ( false === $this->is_blog_public() ) {
+			$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
+			/* translators: %s = But or And */
+			$ind_notice .= '<br>' . sprintf( __( "%s the blog isn't set to public. This means WordPress discourages indexing.", 'autodescription' ), $but_and );
+			$ind_class = $bad;
+			$ind_but = true;
+		}
+
+		/**
+		 * Check if archive is empty, and therefore has set noindex for those.
+		 *
+		 * @since 2.2.8
+		 */
+		if ( $is_term && isset( $term->count ) && 0 === $term->count ) {
+			$but_and = isset( $ind_but ) ? $and_i18n : $but_i18n;
+
+			/* translators: %s = But or And */
+			$ind_notice .= '<br>' . sprintf( __( "%s there are no posts in this term; therefore, indexing has been disabled.", 'autodescription' ), $but_and );
+			//* Don't make it unknown if it's not good.
+			$ind_class = $ind_class !== $good ? $ind_class : $unknown;
+		}
+
+		$ind_wrap_args = array(
+			'indicator' => $index_short,
+			'notice' => $ind_notice,
+			'width' => $ad_125,
+			'class' => $ind_class,
+		);
+
+		$index_notice = $this->wrap_the_seo_bar_block( $ind_wrap_args );
+
+		return $index_notice;
+	}
+
+	/**
+	 * Checks whether global index/archive/follow options are checked for archives.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $cache
+	 *
+	 * @param string $type : 'noindex', 'nofollow', 'noarchive'
+	 *
+	 * @return bool
+	 */
+	protected function the_seo_bar_archive_robots_options( $type ) {
+
+		$taxonomy = false;
+
+		if ( $this->is_category() )
+			$taxonomy = 'category';
+
+		if ( $this->is_tag() )
+			$taxonomy = 'tag';
+
+		if ( $taxonomy ) {
+			static $cache = array();
+
+			if ( isset( $cache[$type][$taxonomy] ) )
+				return $cache[$type][$taxonomy];
+
+			if ( $this->is_option_checked( $taxonomy . '_' . $type ) )
+				return $cache[$type][$taxonomy] = true;
+
+			return $cache[$type][$taxonomy] = false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Render the SEO bar follow block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Follow Block
+	 */
+	protected function the_seo_bar_follow_notice( $args ) {
+
+		$followed = true;
+
+		$term = $args['term'];
+		$is_term = $args['is_term'];
+		$post_i18n = $args['post_i18n'];
+
+		$data = $this->the_seo_bar_data( $args );
+		$nofollow = $data['nofollow'];
+
+		$classes = $this->get_the_seo_bar_classes();
+		$unknown	= $classes['unknown'];
+		$bad		= $classes['bad'];
+		$okay		= $classes['okay'];
+		$good		= $classes['good'];
+		$ad_125		= $classes['12.5%'];
+
+		$i18n = $this->get_the_seo_bar_i18n();
+		$follow_i18n	= $i18n['follow'];
+		$but_i18n		= $i18n['but'];
+		$and_i18n		= $i18n['and'];
+		$follow_short	= $i18n['follow_short'];
+
+		if ( $nofollow ) {
+			$fol_notice = $follow_i18n . ' ' . sprintf( __( "%s links aren't being followed.", 'autodescription' ), $post_i18n );
+			$fol_class = $unknown;
+			$fol_but = true;
+
+			$followed = false;
+		} else {
+			$fol_notice = $follow_i18n . ' ' . sprintf( __( '%s links are being followed.', 'autodescription' ), $post_i18n );
+			$fol_class = $good;
+		}
+
+		/**
+		 * Get nofolow site option
+		 *
+		 * @since 2.2.2
+		 */
+		if ( $this->is_option_checked( 'site_nofollow' ) ) {
+			$but_and = isset( $fol_but ) ? $and_i18n : $but_i18n;
+			/* translators: %s = But or And */
+			$fol_notice .= '<br>' . sprintf( __( "%s you've disabled following of links for the whole site.", 'autodescription' ), $but_and );
+			$fol_class = $unknown;
+			$fol_but = true;
+
+			$followed = false;
+		}
+
+		//* Adds notice for global archive indexing options.
+		if ( $is_term ) {
+
+			/**
+			 * @staticvar bool $checked
+			 * @staticvar string $label
+			 */
+			static $checked = null;
+
+			if ( ! isset( $checked ) ) {
+				//* Fetch whether it's checked.
+				$checked = $this->the_seo_bar_archive_robots_options( 'nofollow' );
+			}
+
+			if ( $checked ) {
+				$but_and = isset( $fol_but ) ? $and_i18n : $but_i18n;
+				$label = $this->get_the_term_name( $term, false );
+
+				/* translators: 1: But or And, 2: Current taxonomy term plural label */
+				$fol_notice .= '<br>' . sprintf( __( '%1$s following for %2$s has been disabled.', 'autodescription' ), $but_and, $label );
+				$fol_class = $unknown;
+
+				$followed = false;
+			}
+		}
+
+		if ( false === $this->is_blog_public() ) {
+			//* Make it "and" if following has not been disabled otherwise.
+			$but_and = $followed || ! isset( $fol_but ) ? $and_i18n : $but_i18n;
+
+			/* translators: %s = But or And */
+			$fol_notice .= '<br>' . sprintf( __( "%s the blog isn't set to public. This means WordPress allows the links to be followed regardless.", 'autodescription' ), $but_and );
+			$fol_class = $followed ? $fol_class : $okay;
+			$fol_but = true;
+
+			$followed = false;
+		}
+
+		$fol_wrap_args = array(
+			'indicator' => $follow_short,
+			'notice' => $fol_notice,
+			'width' => $ad_125,
+			'class' => $fol_class,
+		);
+
+		$follow_notice = $this->wrap_the_seo_bar_block( $fol_wrap_args );
+
+		return $follow_notice;
+	}
+
+	/**
+	 * Render the SEO bar archive block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Follow Block
+	 */
+	protected function the_seo_bar_archive_notice( $args ) {
+
+		$archived = true;
+
+		$term = $args['term'];
+		$is_term = $args['is_term'];
+		$post_low = $args['post_low'];
+
+		$data = $this->the_seo_bar_data( $args );
+		$noarchive	= $data['noarchive'];
+
+		$classes = $this->get_the_seo_bar_classes();
+		$unknown	= $classes['unknown'];
+		$bad		= $classes['bad'];
+		$okay		= $classes['okay'];
+		$good		= $classes['good'];
+		$ad_125		= $classes['12.5%'];
+
+		$i18n = $this->get_the_seo_bar_i18n();
+		$archive_i18n	= $i18n['archive'];
+		$but_i18n		= $i18n['but'];
+		$and_i18n		= $i18n['and'];
+		$archive_short	= $i18n['archive_short'];
+
+		if ( $noarchive ) {
+			$arc_notice = $archive_i18n . ' ' . sprintf( __( "Search Engine aren't allowed to archive this %s.", 'autodescription' ), $post_low );
+			$arc_class = $unknown;
+			$archived = false;
+			$arc_but = true;
+		} else {
+			$arc_notice = $archive_i18n . ' ' . sprintf( __( 'Search Engine are allowed to archive this %s.', 'autodescription' ), $post_low );
+			$arc_class = $good;
+		}
+
+		/**
+		 * Get noarchive site option
+		 *
+		 * @since 2.2.2
+		 */
+		if ( $this->is_option_checked( 'site_noarchive' ) ) {
+			$but_and = isset( $arc_but ) ? $and_i18n : $but_i18n;
+
+			$arc_notice .= '<br>' . sprintf( __( "But you've disabled archiving for the whole site.", 'autodescription' ), $but_and );
+			$arc_class = $unknown;
+			$arc_but = true;
+
+			$archived = false;
+		}
+
+		//* Adds notice for global archive indexing options.
+		if ( $is_term ) {
+
+			/**
+			 * @staticvar bool $checked
+			 * @staticvar string $label
+			 */
+			static $checked = null;
+
+			if ( ! isset( $checked ) ) {
+				//* Fetch whether it's checked.
+				$checked = $this->the_seo_bar_archive_robots_options( 'noarchive' );
+			}
+
+			if ( $checked ) {
+				$but_and = isset( $arc_but ) ? $and_i18n : $but_i18n;
+				$label = $this->get_the_term_name( $term, false );
+
+				/* translators: 1: But or And, 2: Current taxonomy term plural label */
+				$arc_notice .= '<br>' . sprintf( __( '%1$s archiving for %2$s has been disabled.', 'autodescription' ), $but_and, $label );
+				$arc_class = $unknown;
+				$arc_but = true;
+
+				$archived = false;
+			}
+		}
+
+		if ( false === $this->is_blog_public() ) {
+			//* Make it "and" if archiving has not been disabled otherwise.
+			$but_and = $archived || ! isset( $arc_but ) ? $and_i18n : $but_i18n;
+
+			/* translators: %s = But or And */
+			$arc_notice .= '<br>' . sprintf( __( "%s the blog isn't set to public. This means WordPress allows the blog to be archived regardless.", 'autodescription' ), $but_and );
+			$arc_but = true;
+
+			$arc_class = $archived ? $arc_class : $okay;
+			$archived = true;
+		}
+
+		$arc_wrap_args = array(
+			'indicator' => $archive_short,
+			'notice' => $arc_notice,
+			'width' => $ad_125,
+			'class' => $arc_class,
+		);
+
+		$archive_notice = $this->wrap_the_seo_bar_block( $arc_wrap_args );
+
+		return $archive_notice;
+	}
+
+	/**
+	 * Render the SEO bar redirect block and notice.
+	 *
+	 * @param array $args
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar Redirect Block
+	 */
+	protected function the_seo_bar_redirect_notice( $args ) {
+
+		$is_term = $args['is_term'];
+
+		if ( $is_term ) {
+			//* No redirection on taxonomies (yet).
+			$redirect_notice = '';
+		} else {
+			//* Pretty much outputs that it's not being redirected.
+
+			$post = $args['post_i18n'];
+
+			$classes = $this->get_the_seo_bar_classes();
+			$ad_125 = $classes['12.5%'];
+
+			$i18n = $this->get_the_seo_bar_i18n();
+			$redirect_i18n = $i18n['redirect'];
+			$redirect_short = $i18n['redirect_short'];
+
+			$red_notice = $redirect_i18n . ' ' . sprintf( __( "%s isn't being redirected.", 'autodescription' ), $post );
+			$red_class = $classes['good'];
+
+			$red_wrap_args = array(
+				'indicator' => $redirect_short,
+				'notice' => $red_notice,
+				'width' => $ad_125,
+				'class' => $red_class,
+			);
+
+			$redirect_notice = $this->wrap_the_seo_bar_block( $red_wrap_args );
+		}
+
+		return $redirect_notice;
+	}
+
+	/**
+	 * Render the SEO bar when the page/term is blocked.
+	 *
+	 * @param array $args {
+	 *		$is_term => bool,
+	 *		$redirect => bool,
+	 *		$noindex => bool,
+	 *		$post_i18n => string
+	 * }
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Bar
+	 */
+	protected function the_seo_bar_blocked( $args ) {
+
+		$classes = $this->get_the_seo_bar_classes();
+		$i18n = $this->get_the_seo_bar_i18n();
+
+		$is_term = $args['is_term'];
+		$redirect = $args['redirect'];
+		$noindex = $args['noindex'];
+		$post = $args['post_i18n'];
+
+		if ( $redirect && $noindex ) {
+			//* Redirect and noindex found, why bother showing SEO info?
+
+			$red_notice = $i18n['redirect'] . ' ' . sprintf( __( "%s is being redirected. This means no SEO values have to be set.", 'autodescription' ), $post );
+			$red_class = $classes['unknown'];
+
+			$noi_notice = $i18n['index'] . ' ' . sprintf( __( "%s is not being indexed. This means no SEO values have to be set.", 'autodescription' ), $post );
+			$noi_class = $classes['unknown'];
+
+			$red_wrap_args = array(
+				'indicator' => $i18n['redirect_short'],
+				'notice' => $red_notice,
+				'width' => $classes['50%'],
+				'class' => $red_class,
+			);
+
+			$noi_wrap_args = array(
+				'indicator' => $i18n['index_short'],
+				'notice' => $noi_notice,
+				'width' => $classes['50%'],
+				'class' => $noi_class,
+			);
+
+			$redirect_notice = $this->wrap_the_seo_bar_block( $red_wrap_args );
+			$noindex_notice = $this->wrap_the_seo_bar_block( $noi_wrap_args );
+
+			$content = $redirect_notice . $noindex_notice;
+
+			return $this->get_the_seo_bar_wrap( $content, $is_term );
+		} else if ( $redirect && false === $noindex ) {
+			//* Redirect found, why bother showing SEO info?
+
+			$red_notice = $i18n['redirect'] . ' ' . sprintf( __( "%s is being redirected. This means no SEO values have to be set.", 'autodescription' ), $post );
+			$red_class = $classes['unknown'];
+
+			$red_wrap_args = array(
+				'indicator' => $i18n['redirect_short'],
+				'notice' => $red_notice,
+				'width' => $classes['100%'],
+				'class' => $red_class,
+			);
+
+			$redirect_notice = $this->wrap_the_seo_bar_block( $red_wrap_args );
+
+			return $this->get_the_seo_bar_wrap( $redirect_notice, $is_term );
+		} else if ( $noindex && false === $redirect ) {
+			//* Noindex found, why bother showing SEO info?
+
+			$noi_notice = $i18n['index'] . ' ' . sprintf( __( "%s is not being indexed. This means no SEO values have to be set.", 'autodescription' ), $post );
+			$noi_class = $classes['unknown'];
+
+			$noi_wrap_args = array(
+				'indicator' => $i18n['index_short'],
+				'notice' => $noi_notice,
+				'width' => $classes['100%'],
+				'class' => $noi_class,
+			);
+
+			$noindex_notice = $this->wrap_the_seo_bar_block( $noi_wrap_args );
+
+			return $this->get_the_seo_bar_wrap( $noindex_notice, $is_term );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Title Length notices.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int $tit_len The Title length
+	 * @param string $class The Current Title notification class.
+	 *
+	 * @return array {
+	 * 		string $notice => The notice,
+	 * 		string $class => The class,
+	 * 		bool $but => Whether we should use but or and,
+	 * }
+	 */
+	protected function get_the_seo_bar_title_length_warning( $tit_len, $class ) {
+
+		$classes = $this->get_the_seo_bar_classes();
+		$bad	= $classes['bad'];
+		$okay	= $classes['okay'];
+		$good	= $classes['good'];
+
+		$but = false;
+
+		if ( $tit_len < 25 ) {
+			$notice = ' ' . __( 'Length is far too short.', 'autodescription' );
+			$class = $bad;
+		} else if ( $tit_len < 42 ) {
+			$notice = ' ' . __( 'Length is too short.', 'autodescription' );
+			$class = $okay;
+		} else if ( $tit_len > 55 && $tit_len < 75 ) {
+			$notice = ' ' . __( 'Length is too long.', 'autodescription' );
+			$class = $okay;
+		} else if ( $tit_len >= 75 ) {
+			$notice = ' ' . __( 'Length is far too long.', 'autodescription' );
+			$class = $bad;
+		} else {
+			$notice = ' ' . __( 'Length is good.', 'autodescription' );
+			$class = $good;
+			$but = true;
+		}
+
+		return array(
+			'notice' => $notice,
+			'class' => $class,
+			'but' => $but
 		);
 	}
 

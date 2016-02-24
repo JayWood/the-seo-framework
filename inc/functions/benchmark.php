@@ -291,10 +291,10 @@ function the_seo_framework_php_benchmark() {
 	echo 'Strict time: ' . $stricttime . " seconds\r\n";				// 0.1202042102813720703125 seconds
 	echo 'Strict Neg time: ' . $strictnegtime . " seconds\r\n";			// 0.1270349025726318359375 seconds
 	echo 'Empty time: ' . $emptytime . " seconds\r\n";					// 0.1297409534454345703125 seconds
-	echo 'Neg Empty time: ' . $negemptytime . " seconds\r\n";			// 0.20085906982421875 seconds
-	echo 'Strict Neg Empty time: ' . $strictemptytime . " seconds\r\n"; // 0.18640804290771484375 seconds
+	echo 'Neg Empty time: ' . $negemptytime . " seconds\r\n";			// 0.20085906982421875 seconds <- Triple check
+	echo 'Strict Neg Empty time: ' . $strictemptytime . " seconds\r\n"; // 0.18640804290771484375 seconds <- Double check
 	echo 'Isset time: ' . $issettime . " seconds\r\n"; 					// 0.115377902984619140625 seconds
-	echo 'Strict Isset time: ' . $issetstricttime . " seconds\r\n"; 	// 0.17035007476806640625 seconds
+	echo 'Strict Isset time: ' . $issetstricttime . " seconds\r\n"; 	// 0.17035007476806640625 seconds <- Double check
 
 	echo "\r\n";
 
@@ -302,12 +302,12 @@ function the_seo_framework_php_benchmark() {
 	echo 'Loose Neg Empty String time: ' . $loosenegemptystring . " seconds\r\n";				// 0.15882110595703125 seconds
 	echo 'Empty String time: ' . $emptystring . " seconds\r\n"; 								// 0.135138034820556640625 seconds
 	echo 'Strict Empty String time: ' . $emptystrictstring . " seconds\r\n"; 					// 0.1573431491851806640625 seconds
-	echo 'Strict Empty Function String time: ' . $emptystrictfunctionstring . " seconds\r\n"; 	// 0.385016918182373046875 seconds
+	echo 'Strict Empty Function String time: ' . $emptystrictfunctionstring . " seconds\r\n"; 	// 0.385016918182373046875 seconds <- Triple check.
 
 	echo "\r\n";
 
 	echo 'In array begin 5: ' . $inarraybegin5 . " seconds\r\n"; 						// 0.3640620708465576171875 seconds
-	echo 'In array begin function 5: ' . $inarraybegin5function . " seconds\r\n"; 		// 2.0675928592681884765625 seconds <- VERY bad
+	echo 'In array begin function 5: ' . $inarraybegin5function . " seconds\r\n"; 		// 2.0675928592681884765625 seconds <- VERY bad (1. function call, 2. array sorting. 3. Triple check)
 	echo 'In array end 5: ' . $inarrayend5 . " seconds\r\n"; 							// 0.5424749851226806640625 seconds
 	echo 'In array end function 5: ' . $inarrayend5function . " seconds\r\n"; 			// 2.0651528835296630859375 seconds <- VERY bad
 

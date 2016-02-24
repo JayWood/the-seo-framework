@@ -333,7 +333,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				'order' => 'DESC',
 				'post_status' => 'publish'
 			);
-
 			$latest_posts = get_posts( $args );
 		}
 
@@ -367,7 +366,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				'order' => 'DESC',
 				'post_status' => 'publish'
 			);
-
 			$latest_cpt_posts = get_posts( $args );
 		}
 

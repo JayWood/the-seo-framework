@@ -140,6 +140,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 				$message .= ' ' . sprintf( __( 'Please see <a href="%s">Debugging in WordPress</a> for more information.', 'autodescription' ),
 					__( 'https://codex.wordpress.org/Debugging_in_WordPress', 'autodescription' )
 				);
+				/* translators: 1: Function name, 2: Message, 3: Plugin Version notification */
 				trigger_error( sprintf( __( '%1$s was called <strong>incorrectly</strong>. %2$s %3$s', 'autodescription' ), $function, $message, $version ) );
 			} else {
 				$version = is_null( $version ) ? '' : sprintf( '(This message was added in version %s of The SEO Framework.)', $version );
@@ -147,6 +148,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 					'https://codex.wordpress.org/Debugging_in_WordPress'
 				);
 
+				/* translators: 1: Function name, 2: Message, 3: Plugin Version notification */
 				trigger_error( sprintf( '%1$s was called <strong>incorrectly</strong>. %2$s %3$s', $function, $message, $version ) );
 			}
 
@@ -305,7 +307,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 			}
 
 			if ( is_object( $values ) ) {
-				// Turn objects into arrays.
+				//* Turn objects into arrays.
 				$values = (array) $values;
 
 				foreach ( $values as $key => $value ) {

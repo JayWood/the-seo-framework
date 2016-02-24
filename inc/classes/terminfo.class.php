@@ -52,7 +52,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			$term = $this->fetch_the_term();
 		}
 
-		if ( isset( $term ) ) {
+		if ( $term ) {
 			$data = array();
 
 			$data['title'] = isset( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : '';
@@ -90,36 +90,80 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 	 * @since 2.6.0
 	 * @access private
 	 *
+	 * @param int $id The possible taxonomy Term ID.
+	 *
 	 * @return null|object The Term object.
 	 */
-	public function fetch_the_term() {
+	public function fetch_the_term( $id = '' ) {
+
+		static $term = null;
+
+		if ( isset( $term[$id] ) )
+			return $term[$id];
+
 		//* Return null if no term can be set.
 		if ( false === $this->is_category() )
-			return null;
+			return false;
 
 		if ( $this->is_admin() ) {
 			if ( 'term.php' === $this->page_hook ) {
 				global $current_screen;
 
 				if ( isset( $current_screen->taxonomy ) ) {
-					$term_id = abs( (int) $_REQUEST['term_id'] );
-					$term = get_term_by( 'id', $term_id, $current_screen->taxonomy );
+					$term_id = $id ? $id : abs( (int) $_REQUEST['term_id'] );
+					$term[$id] = get_term_by( 'id', $term_id, $current_screen->taxonomy );
 				}
 			}
 		} else {
 			if ( $this->is_category() || $this->is_tag() ) {
 				global $wp_query;
 
-				$term = $wp_query->get_queried_object();
+				$term[$id] = $wp_query->get_queried_object();
 			} else if ( $this->is_tax() ) {
-				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
+				$term[$id] = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 			}
 		}
 
-		if ( isset( $term ) )
-			return $term;
+		if ( isset( $term[$id] ) )
+			return $term[$id];
 
-		return null;
+		return $term[$id] = false;
+	}
+
+	/**
+	 * Get term from args.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @staticvar bool|object $cache
+	 *
+	 * @param array $args : The current args.
+	 * @param int $id : Taxonomy Term ID.
+	 * @param string $taxonomy : Optional.
+	 *
+	 * @return array $args with $args['term'] filled in as Object or null.
+	 */
+	public function get_term_for_args( $args, $id = '', $taxonomy = '' ) {
+
+		static $cache = array();
+
+		if ( isset( $cache[$taxonomy][$id] ) ) {
+			$args['term'] = $cache[$taxonomy][$id];
+			return $args;
+		}
+
+		$term = false;
+
+		if ( $taxonomy && $id ) {
+			$term = get_term_by( 'id', (int) $id, $taxonomy, OBJECT );
+		} else if ( $this->is_archive() ) {
+			$term = $this->fetch_the_term( $id );
+		}
+
+		$cache[$taxonomy][$id] = $term;
+		$args['term'] = $term;
+
+		return $args;
 	}
 
 }

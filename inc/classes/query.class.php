@@ -297,6 +297,9 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 */
 	public function is_category( $category = '' ) {
 
+		if ( $this->is_admin() )
+			return $this->is_category_admin();
+
 		static $cache = null;
 
 		if ( isset( $cache[$category] ) )
@@ -306,6 +309,33 @@ class AutoDescription_Query extends AutoDescription_Compat {
 			return $cache[$category] = true;
 
 		return $cache[$category] = false;
+	}
+
+	/**
+	 * Extends default WordPress is_category and made available in admin.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @global object $current_screen
+	 *
+	 * @return bool Post Type is category
+	 */
+	public function is_category_admin() {
+
+		$cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		if ( $this->is_archive_admin() ) {
+			global $current_screen;
+
+			if ( isset( $current_screen->taxonomy ) && false !== strrpos( $current_screen->taxonomy, 'category', -8 ) )
+				return $cache = true;
+		}
+
+		return $cache = false;
 	}
 
 	/**
@@ -648,6 +678,9 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 */
 	public function is_tag( $tag = '' ) {
 
+		if ( $this->is_admin() )
+			return $this->is_tag_admin();
+
 		static $cache = array();
 
 		if ( isset( $cache[$tag] ) )
@@ -657,6 +690,33 @@ class AutoDescription_Query extends AutoDescription_Compat {
 			return $cache[$tag] = true;
 
 		return $cache[$tag] = false;
+	}
+
+	/**
+	 * Extends default WordPress is_tag and made available in admin.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @global object $current_screen
+	 *
+	 * @return bool Post Type is category
+	 */
+	public function is_tag_admin() {
+
+		$cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		if ( $this->is_archive_admin() ) {
+			global $current_screen;
+
+			if ( isset( $current_screen->taxonomy ) && false !== strrpos( $current_screen->taxonomy, 'tag', -3 ) )
+				return $cache = true;
+		}
+
+		return $cache = false;
 	}
 
 	/**
