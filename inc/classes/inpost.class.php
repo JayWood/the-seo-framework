@@ -280,9 +280,6 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		$blog_name = $this->get_blogname();
 		$add_additions = $this->add_title_additions();
 
-		var_dump( $title );
-		var_dump( $generated_doctitle );
-
 		/**
 		 * Separator doesn't matter. Since html_entity_decode is used.
 		 * Order doesn't matter either. Since it's just used for length calculation.

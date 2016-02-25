@@ -299,7 +299,6 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		$cats = wp_get_object_terms( $post_id, $cat_type, array( 'fields' => 'all_with_object_id', 'orderby' => 'parent' ) );
 
-		//* @TODO delete all categories, including default, and try again to see if it fails. var_dump()
 		if ( is_wp_error( $cats ) || empty( $cats ) )
 			return '';
 
@@ -489,9 +488,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 			$items = '';
 
-			var_dump( $parents );
 			$parents = array_reverse( $parents );
-			var_dump( $parents );
 
 			foreach ( $parents as $position => $parent_id ) {
 				$pos = $position + 2;
