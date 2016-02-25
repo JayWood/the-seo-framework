@@ -214,7 +214,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 */
 	public function is_archive_admin() {
 
-		$cache = null;
+		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;
@@ -323,7 +323,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 */
 	public function is_category_admin() {
 
-		$cache = null;
+		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;
@@ -331,8 +331,10 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		if ( $this->is_archive_admin() ) {
 			global $current_screen;
 
-			if ( isset( $current_screen->taxonomy ) && false !== strrpos( $current_screen->taxonomy, 'category', -8 ) )
-				return $cache = true;
+			if ( isset( $current_screen->taxonomy ) ) {
+				if ( false !== strrpos( $current_screen->taxonomy, 'category', -8 ) || false !== strrpos( $current_screen->taxonomy, 'cat', -3 ) )
+					return $cache = true;
+			}
 		}
 
 		return $cache = false;
@@ -582,7 +584,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		if ( $this->is_admin() )
 			return $this->is_singular_admin();
 
-		$cache = array();
+		static $cache = array();
 
 		if ( isset( $cache[$post_types] ) )
 			return $cache[$post_types];
@@ -619,7 +621,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 */
 	public function is_singular_admin() {
 
-		$cache = null;
+		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;
@@ -704,7 +706,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 */
 	public function is_tag_admin() {
 
-		$cache = null;
+		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;

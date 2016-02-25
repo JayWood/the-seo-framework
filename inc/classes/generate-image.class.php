@@ -65,7 +65,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		 */
 		if ( ! is_array( $args ) ) {
 			//* Old style parameters are used. Doing it wrong.
-			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.5.0', __LINE__ );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.5.0' );
 			$args = $default_args;
 		} else if ( $args ) {
 			$args = $this->parse_image_args( $args, $default_args );
@@ -250,7 +250,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 			return;
 
 		static $called = array();
-
+		//* Don't parse image twice. Return empty on second run.
 		if ( isset( $called[$id] ) )
 			return '';
 
@@ -288,30 +288,34 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 				$h = 1500;
 			}
 
-			// Get path of image and load it into the wp_get_image_editor
+			//* Get path of image and load it into the wp_get_image_editor
 			$i_file_path = get_attached_file( $id );
 
 			$i_file_old_name	= basename( get_attached_file( $id ) );
 			$i_file_ext			= pathinfo( $i_file_path, PATHINFO_EXTENSION );
 
 			if ( $i_file_ext ) {
-				$i_file_dir_name 	= pathinfo( $i_file_path, PATHINFO_DIRNAME );
-				// Add trailing slash
-				$i_file_dir_name	.= '/' === ( substr( $i_file_dir_name, -1 ) ? '' : '/' );
+				$i_file_dir_name = pathinfo( $i_file_path, PATHINFO_DIRNAME );
+				//* Add trailing slash.
+				$i_file_dir_name = '/' === substr( $i_file_dir_name, -1 ) ? $i_file_dir_name : $i_file_dir_name . '/';
 
-				$i_file_file_name 	= pathinfo( $i_file_path, PATHINFO_FILENAME );
+				$i_file_file_name = pathinfo( $i_file_path, PATHINFO_FILENAME );
 
-				// Yes I know, I should use generate_filename, but it's slower.
-				// Will look at that later. This is already 100 lines of correctly working code.
-				$new_image_dirfile 	= $i_file_dir_name . $i_file_file_name . '-' . $w . 'x' . $h . '.' . $i_file_ext;
+				//* Yes I know, I should use generate_filename, but it's slower.
+				//* Will look at that later. This is already 100 lines of correctly working code.
+				$new_image_dirfile = $i_file_dir_name . $i_file_file_name . '-' . $w . 'x' . $h . '.' . $i_file_ext;
 
-				// This should work on multisite too.
+				/**
+				 * Generate image URL.
+				 */
 				$upload_dir 	= wp_upload_dir();
 				$upload_url 	= $upload_dir['baseurl'];
 				$upload_basedir = $upload_dir['basedir'];
+				$new_image_url = str_ireplace( $upload_basedir, '', $new_image_dirfile );
+				$new_image_url = $upload_url . $new_image_url;
 
-				// Dub this $new_image
-				$new_image_url = preg_replace( '/' . preg_quote( $upload_basedir, '/' ) . '/', $upload_url, $new_image_dirfile );
+				//* We've got our image path.
+				$i = $new_image_url;
 
 				// Generate file if it doesn't exists yet.
 				if ( ! file_exists( $new_image_dirfile ) ) {
@@ -320,12 +324,13 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 
 					if ( ! is_wp_error( $image_editor ) ) {
 						$image_editor->resize( $w, $h, false );
-						$image_editor->set_quality( 70 ); // Let's save some bandwidth, Facebook compresses it even further anyway.
+						$image_editor->set_quality( 82 ); // Let's save some bandwidth, Facebook compresses it even further anyway.
 						$image_editor->save( $new_image_dirfile );
+					} else {
+						//* Image has failed to create.
+						$i = '';
 					}
 				}
-
-				$i = $new_image_url;
 			}
 		}
 

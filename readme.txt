@@ -403,6 +403,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * TODO Smarter and a more vibrant SEO bar, with many more conditional checks.
 * Personalized error handling for developers.
 * More than 150 new functions for developers.
+* WP Query Admin synchronization for developers.
 
 **SEO Tip of the Update:**
 /
@@ -432,7 +433,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **For everyone - About Author SEO:**
 /
-* TODO When a post has an author assigned, and the author SEO has been filled in, the post will obtain the Author information.
+* TODO When a post has an author assigned through the default WordPress interface, and the author SEO has been filled in, the post will obtain the Author information.
 * TODO If there's no Author information set, or the default Social Meta Settings will be used.
 
 **For everyone - About Canonical SEO:**
@@ -451,12 +452,16 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 **For everyone - About translations:**
 /
 * Objective translations for grammatically gender noun types like "this post" (male in Dutch) and "this page" (genderless in Dutch) within sentences which are fetched dynamically (like "Product" and "ProductTag" for WooCommerce) couldn't be translated correctly.
-* Therefore, I've exchanged these types of sentences without losing understanding of those. TODO by adding plural forms of such.
+* Therefore, I've exchanged these types of sentences without losing understanding of those.
 * Small changes within translations happen over time and I try to reduce it when to only when nessecary, as this is an ongoing project you can expect continous improvements wherever possible. Translating WordPress and its plugins are a team effort :).
 * Other small changes include conversion of WordPress slang to real English. Like "Paged" to "Paginated".
 * Over time, inconsitencies have been created with the language used within this plugin. If you still find any, please notify me through the support forums and I'll address them.
 * Thanks @pidengmor for many (over 30) linguistic improvements, they're really appreciated! Thank you so much for your time!
 * I also want to make a big shout out to all the other translators who have contributed to this plugin! <3
+
+**For translators:**
+
+* Please look for **Front-end output** comments within the translation page to find high-priority translations.
 
 **For developers - About class changes:**
 /
@@ -468,8 +473,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **For developers - About the new functions:**
 /
-* TODO In order to maintain a stable future, all dynamic generation output that depends on a setting are put in functions.
-* TODO This also counts for filters. To prevent and fix miscalculations.
+* TODO In order to maintain a stable future, most dynamic generation output that depends on a setting are put in functions.
+* TODO This also counts for filters. To prevent and fix miscalculations through Javascript and other means.
 
 **For developers - Performance, improved:**
 
@@ -484,7 +489,15 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 **For developers - Refactoring classes:**
 
 * The classes `AutoDescription_DoingItRight`, `AutoDescription_Generate_Description`, `AutoDescription_Generate_Url`, `AutoDescription_Generate_Ldjson`, and `AutoDescription_Generate_Title` have been greatly refactored to improve performance and maintainability.
-* All initialization functions have maintained their initial behaviour.
+* All pre-overhaul functions have maintained their initial behaviour, the generation of the output has just been split over multiple functions.
+
+**For developers - About WP Query Sync:**
+
+* The current WordPress query only works on the front-end.
+* `query.class.php` contains alternative functions based on the WordPress query.
+* These functions work just like WordPress Core query functions, but now they also look for the screens in the admin area.
+* These functions do not work on custom post types, yet. But they do work on WooCommerce products and product categories.
+* This resulted in easing the whole code base as it doesn't have to check for admin/front-end per-function anymore. Further improvements are planned, but this update already contains most of the overhaul.
 
 **Detailed log:**
 
@@ -555,7 +568,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Massively improved LD-json script generation time.
 * **Improved:**
 	/
-	* SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
+	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
+	* The SEO Bar buttons are now converted to placeholder hyperlinks.
 	* Translations with multiple variable strings can now safely be translated and switched around.
 	* TODO The canonical URL now also allows page pagination.
 	* LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
@@ -609,6 +623,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	/
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
 	* `AutoDescription_Core::get_the_real_ID()` now returns 0 instead of false if no ID is found.
+	* `AutoDescription_Generate_Title::build_title_notagline()` is now protected.
+	* `AutoDescription_Generate_Title::get_placeholder_title()` is now protected.
+	* `AutoDescription_Generate_Title::title_for_terms()` now uses `array $args` for parameters.
+	* `AutoDescription_Generate_Title::generate_title()` now uses `array $args` for parameters.
 * **Updated:**
 	/
 	* JS files and cache.
@@ -638,8 +656,12 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `the_seo_framework_canonical_force_scheme` filter now works on all URL's generated by this plugin and has now an `$scheme` argument which passes the current used scheme.
 	* WordPress Query detection.
 	* Blog page and Home Page query detection.
+	* Search query titles aren't escaped twice anymore.
+	* Removed duplicated term object calls on term pages, reducing memory usage.
 	* When the paged URL's filter is used, the then useless url's aren't rendered.
 	* Benchmarks have shown that an array flip to use an isset match only benefits huge arrays very little and only when you're certain the result is at the end of the array. Otherwise, it's a drastic performance decrease. Therefore `$this->is_array()` calls have been set back to the default PHP behaviour.
+	* `og:image` resizing now doesn't use PCRE anymore, but regular PHP find and replace.
+	* `og:image` quality has been upped to 82 from 70. This is according to the [new WordPress 4.5.0 standards](https://make.wordpress.org/core/2016/02/22/proposal-increase-the-default-image-compression-in-wordpress/).
 * **Fixed:**
 	/
 	* `the_seo_framework_dot_version` now checks for four dot versions if applicable.
@@ -666,6 +688,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(string) the_seo_framework_paged_url_output`
 		* `(string) the_seo_framework_ldjson_scripts`
 		* `(bool) the_seo_framework_json_name_output`
+		* `(bool) the_seo_framework_use_archive_title_prefix`
 		* TODO `(string) the_seo_framework_pre_add_title`
 		* TODO `(string) the_seo_Framework_pro_add_title`
 	* **Altered:**

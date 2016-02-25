@@ -19,7 +19,7 @@
 /**
  * Class AutoDescription_Core
  *
- * Holds plugin core functions.
+ * Initializes the plugin & Holds plugin core functions.
  *
  * @since 2.6.0
  */
@@ -353,7 +353,7 @@ class AutoDescription_Core {
 	 */
 	public function is_blog_public() {
 
-		$cache = null;
+		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;

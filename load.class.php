@@ -205,7 +205,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( array( $this, $method ), (array) $args );
 					}
 				} else if ( $version ) {
-					$this->_doing_it_wrong( (string) $this . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version, __LINE__ );
+					$this->_doing_it_wrong( (string) $this . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
 				}
 			} else {
 				// This doesn't work in Apache configurations.
@@ -221,7 +221,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( $class . '::'. $method, (array) $args );
 					}
 				} else if ( $version ) {
-					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version, __LINE__ );
+					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
 				}
 			}
 		} else if ( is_string( $function[0] ) && $function[1] ) {
@@ -240,7 +240,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 				$output = call_user_func_array( $func, (array) $args );
 			}
 		} else if ( $version ) {
-			$this->_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version, __LINE__ );
+			$this->_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version );
 		}
 
 		return $output;

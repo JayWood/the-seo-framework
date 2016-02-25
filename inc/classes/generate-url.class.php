@@ -86,7 +86,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 */
 		if ( ! is_array( $args ) ) {
 			//* Old style parameters are used. Doing it wrong.
-			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.4.2', __LINE__ );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.4.2' );
 			$args = $default_args;
 		} else if ( $args ) {
 			$args = $this->parse_url_args( $args, $default_args );

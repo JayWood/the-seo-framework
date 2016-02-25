@@ -150,7 +150,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			}
 		} else {
 			//* Old style parameters are used. Doing it wrong.
-			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.5.0', __LINE__ );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.5.0' );
 			$args = $default_args;
 		}
 

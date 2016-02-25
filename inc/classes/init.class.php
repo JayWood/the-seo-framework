@@ -19,7 +19,6 @@
 /**
  * Class AutoDescription_Init
  *
- * Initializes the plugin
  * Outputs all data in front-end header
  *
  * @since 2.1.6

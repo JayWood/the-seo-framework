@@ -159,7 +159,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 				return $this->inpost_seo_box( $object, (array) $args );
 			}
 		} else {
-			// Note: Passes through object.
+			//* Note: Passes object.
 			// Empty the arguments, if any.
 			return $this->inpost_seo_box( $object, $args = '' );
 		}
@@ -182,7 +182,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	public function inpost_seo_box( &$object, $args ) {
 
 		//* Determines if it's inside a meta box or within a taxonomy page.
-		$nobox = false;
+		$is_term = false;
 
 		// Args are passed.
 		if ( is_array( $args ) && isset( $args['args'] ) ) {
@@ -200,23 +200,20 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 				// This shouldn't happen.
 				return '';
 			}
-		} else {
-			$term = get_term_by( 'id', $object->term_id, $object->taxonomy, OBJECT );
+		} else if ( is_object( $object ) ) {
 
-			if ( $term && is_object( $term ) ) {
-				$tax_type = $term->taxonomy;
+			$tax_type = $object->taxonomy;
 
-				/**
-				 * Dynamically fetch the term name.
-				 *
-				 * @since 2.3.1
-				 */
-				$term_labels = $this->get_tax_labels( $tax_type );
+			/**
+			 * Dynamically fetch the term name.
+			 *
+			 * @since 2.3.1
+			 */
+			$term_labels = $this->get_tax_labels( $tax_type );
 
-				if ( isset( $term_labels ) ) {
-					$type = isset( $term_labels->singular_name ) ? $term_labels->singular_name : null;
-					$type = ! isset( $type ) && isset( $term_labels->name ) ? $term_labels->name : $type;
-				}
+			if ( isset( $term_labels ) ) {
+				$type = isset( $term_labels->singular_name ) ? $term_labels->singular_name : null;
+				$type = is_null( $type ) && isset( $term_labels->name ) ? $term_labels->name : $type;
 			}
 
 			if ( ! isset( $type ) ) {
@@ -224,10 +221,10 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 				$type = __( 'Page', 'autodescription' );
 			}
 
-			$nobox = true;
+			$is_term = true;
 		}
 
-		if ( $nobox ) {
+		if ( $is_term ) {
 			$this->tt_inpost_box( $type, $object );
 		} else {
 			$this->page_inpost_box( $type );
@@ -272,15 +269,19 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 
 		$generated_description_args = array(
 			'id' => $term_id,
-			'taxonomy' => $taxonomy
+			'taxonomy' => $taxonomy,
+			'get_custom_field' => false,
 		);
 
 		//* Generate title and description.
 		$generated_doctitle = $this->title( '', '', '', $generated_doctitle_args );
-		$generated_description = $this->generate_description_from_id( $generated_description_args );
+		$generated_description = $this->generate_description( '', $generated_description_args );
 
 		$blog_name = $this->get_blogname();
 		$add_additions = $this->add_title_additions();
+
+		var_dump( $title );
+		var_dump( $generated_doctitle );
 
 		/**
 		 * Separator doesn't matter. Since html_entity_decode is used.

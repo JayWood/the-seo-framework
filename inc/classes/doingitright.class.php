@@ -296,7 +296,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	protected function wrap_the_seo_bar_block( $args ) {
 
 		$wrap 	= '<span class="ad-sec-wrap ' . $args['width'] . '">'
-				. '<a href="#" onclick="return false;" class="' . $args['class'] . '" data-desc="' . $args['notice'] . '">' . $args['indicator'] . '</a>'
+				. '<a onclick="return false;" class="' . $args['class'] . '" data-desc="' . $args['notice'] . '">' . $args['indicator'] . '</a>'
 				. '<span class="screen-reader-text">' . $args['notice'] . '</span>'
 				. '</span>';
 
@@ -644,8 +644,8 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 			$blogname = $this->get_blogname();
 
-			$first = stripos( $title, $this->get_blogname() );
-			$last = strripos( $title, $this->get_blogname() );
+			$first = stripos( $title, $blogname );
+			$last = strripos( $title, $blogname );
 
 			if ( $first !== $last )
 				$title_duplicated = true;
@@ -1481,7 +1481,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 */
 	protected function square_the_seo_bar() {
 
-		$cache = null;
+		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;

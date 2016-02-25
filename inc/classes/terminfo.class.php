@@ -46,7 +46,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 		if ( is_null( $term ) ) {
 			if ( $this->is_author() ) {
 				//* Special handling.
-				return $this->get_author_settings();
+				return $this->get_author_data();
 			}
 
 			$term = $this->fetch_the_term();
