@@ -669,6 +669,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial achives.
 	* `AutoDescription_Generate_Image::get_image()` now returns something when the third parameter is set to false.
 	* The SEO Bar filter used to be called as an action and mixed echoing and returning. It's now a consistent filter, as WP core suggests.
+	* Fixed empty delimiter PHP warning when the theme is doing it wrong and no separator has been provided.
 * **Deprecated:**
 	/
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
