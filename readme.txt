@@ -387,7 +387,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Feature highlights:**
 /
-* Author Twitter and Facebook connections for posts.
+* TODO Author Twitter and Facebook connections for posts.
 * WooCommerce schema.org breadcrumbs.
 * Intelligently nested schema.org breadcrumbs.
 * Definite schema.org website name.
@@ -398,6 +398,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Improved performance, TODO more efficient cache key generation.
 * TODO New Date output options.
 * TODO Canonical scheme protocol options.
+* Elastic WPML URL generation.
 * Many linguistic improvements, with more flow in the SEO Bar.
 * Improved editorial translations.
 * TODO Smarter and a more vibrant SEO bar, with many more conditional checks.
@@ -667,6 +668,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `the_seo_framework_dot_version` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial achives.
 	* `AutoDescription_Generate_Image::get_image()` now returns something when the third parameter is set to false.
+	* The SEO Bar filter used to be called as an action and mixed echoing and returning. It's now a consistent filter, as WP core suggests.
 * **Deprecated:**
 	/
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
