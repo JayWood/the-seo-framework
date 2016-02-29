@@ -770,7 +770,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$home_url = $this->the_home_url_from_cache();
 			$parse_url = parse_url( $home_url );
-			$path = $site_url['path'] ? $site_url['path'] : '';
+			$path = $parse_url['path'] ? $parse_url['path'] : '';
 
 			$output .= $pre;
 			//* Output defaults

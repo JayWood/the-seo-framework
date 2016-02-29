@@ -27,24 +27,18 @@ class AutoDescription_Core {
 
 	/**
 	 * Constructor, just be there for me when I need you.
+	 * Latest Class. Doesn't have parent.
 	 */
-	public function __construct() {	}
+	public function __construct() {
 
-	/**
-	 * Returns the front page ID, if home is a page.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @return int the ID.
-	 */
-	public function get_the_front_page_ID() {
+		add_action( 'init', array( $this, 'post_type_support' ) );
 
-		static $front_id = null;
+		/**
+		 * Add plugin links to the plugin activation page.
+		 * @since 2.2.8
+		 */
+		add_filter( 'plugin_action_links_' . THE_SEO_FRAMEWORK_PLUGIN_BASENAME, array( $this, 'plugin_action_links' ), 10, 2 );
 
-		if ( isset( $front_id ) )
-			return $front_id;
-
-		return $front_id = $this->has_page_on_front() ? (int) get_option( 'page_on_front' ) : 0;
 	}
 
 	/**
@@ -78,6 +72,66 @@ class AutoDescription_Core {
 		foreach ( $post_types as $type )
 			add_post_type_support( $type, array( 'autodescription-meta' ) );
 
+	}
+
+	/**
+	 * Adds link from plugins page to SEO Settings page.
+	 *
+	 * @param array $links The current links.
+	 *
+	 * @since 2.2.8
+	 */
+	public function plugin_action_links( $links = array() ) {
+
+		$framework_links = array();
+
+		if ( $this->load_options )
+			$framework_links['settings'] = '<a href="' . esc_url( admin_url( 'admin.php?page=' . $this->page_id ) ) . '">' . __( 'SEO Settings', 'autodescription' ) . '</a>';
+
+		$framework_links['home'] = '<a href="'. esc_url( 'https://theseoframework.com' ) . '" target="_blank">' . _x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
+
+		return array_merge( $framework_links, $links );
+	}
+
+	/**
+	 * Returns the front page ID, if home is a page.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return int the ID.
+	 */
+	public function get_the_front_page_ID() {
+
+		static $front_id = null;
+
+		if ( isset( $front_id ) )
+			return $front_id;
+
+		return $front_id = $this->has_page_on_front() ? (int) get_option( 'page_on_front' ) : 0;
+	}
+
+	/**
+	 * Generate dismissible notice.
+	 *
+	 * @param $message The notice message.
+	 * @param $type The notice type : 'updated', 'error', 'warning'
+	 *
+	 * @since 2.6.0
+	 */
+	public function generate_dismissible_notice( $message = '', $type = 'updated' ) {
+
+		if ( empty( $message ) )
+			return '';
+
+		if ( 'warning' === $type )
+			$type = 'notice-warning';
+
+		$notice = '<div class="notice ' . $type . ' seo-notice"><p>';
+		$notice .= '<a class="hide-if-no-js autodescription-dismiss" title="' . __( 'Dismiss', 'AutoDescription' ) . '"></a>';
+		$notice .= '<strong>' . $message . '</strong>';
+		$notice .= '</p></div>';
+
+		return $notice;
 	}
 
 	/**

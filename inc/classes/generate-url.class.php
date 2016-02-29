@@ -169,7 +169,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		$output = $this->set_url_scheme( $url, $scheme );
 
-		if ( true === $this->url_slashit ) {
+		if ( $this->url_slashit ) {
 			/**
 			 * Slash it only if $slashit is true
 			 *

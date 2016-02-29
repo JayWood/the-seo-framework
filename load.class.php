@@ -189,57 +189,59 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 			$args = (array) $params;
 		}
 
+		$class = reset( $function );
+		$method = next( $function );
+
 		/**
 		 * Fetch method/function
 		 */
-		if ( is_object( $function[0] ) ) {
-			$method = (string) $function[1];
+		if ( is_object( $class ) && is_string( $method ) ) {
+			$class = get_class( $class );
 
-			if ( get_class( $function[0] ) === get_class( $this ) ) {
+			if ( $class === get_class( $this ) ) {
 				if ( method_exists( $this, $method ) ) {
 					if ( empty( $args ) ) {
 						// In-Object calling.
 						$output = call_user_func( array( $this, $method ) );
 					} else {
 						// In-Object calling.
-						$output = call_user_func_array( array( $this, $method ), (array) $args );
+						$output = call_user_func_array( array( $this, $method ), $args );
 					}
-				} else if ( $version ) {
-					$this->_doing_it_wrong( (string) $this . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
+				} else {
+					$this->_doing_it_wrong( (string) get_class( $this ) . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
 				}
 			} else {
 				// This doesn't work in Apache configurations.
-				$class = get_class( $function[0] );
-				$method = (string) $function[1];
-
 				if ( method_exists( $class, $method ) ) {
 					if ( empty( $args ) ) {
 						// Static calling
-						$output = call_user_func( $class . '::'. $method );
+						$output = call_user_func( array( $class, $method ) );
 					} else {
 						// Static calling
-						$output = call_user_func_array( $class . '::'. $method, (array) $args );
+						$output = call_user_func_array( array( $class, $method ), $args );
 					}
-				} else if ( $version ) {
-					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
+				} else {
+					$this->_doing_it_wrong( (string) get_class( $class ) . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
 				}
 			}
-		} else if ( is_string( $function[0] ) && $function[1] ) {
+		} else if ( is_string( $class ) && is_string( $method ) ) {
 			if ( empty( $args ) ) {
 				// Static calling
-				$output = call_user_func( $function[0] . '::' . $function[1] );
+				$output = call_user_func( array( $class, $method ) );
 			} else {
 				// Static calling
-				$output = call_user_func_array( $function[0] . '::' . $function[1], (array) $args );
+				$output = call_user_func_array( array( $class, $method ), $args );
 			}
-		} else if ( is_string( $function[0] ) ) {
-			$func = $function[0];
+		} else if ( is_string( $class ) ) {
+			//* Class is function.
+			$func = $class;
+
 			if ( empty( $args ) ) {
 				$output = call_user_func( $func );
 			} else {
-				$output = call_user_func_array( $func, (array) $args );
+				$output = call_user_func_array( $func, $args );
 			}
-		} else if ( $version ) {
+		} else {
 			$this->_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version );
 		}
 

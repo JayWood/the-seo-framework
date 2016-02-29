@@ -62,6 +62,15 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	protected $page_id;
 
 	/**
+	 * Holds the update option.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @var string The Updated option name.
+	 */
+	protected $plugin_updated;
+
+	/**
 	 * Constructor, load parent constructor and set up cachable variables.
 	 */
 	public function __construct() {
@@ -77,12 +86,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		// The page_id
 		$this->page_id = 'autodescription-settings';
-
-		/**
-		 * Add plugin links to the plugin activation page.
-		 * @since 2.2.8
-		 */
-		add_filter( 'plugin_action_links_' . THE_SEO_FRAMEWORK_PLUGIN_BASENAME, array( $this, 'plugin_action_links' ), 10, 2 );
 	}
 
 	/**
@@ -92,6 +95,9 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 * @since 2.5.0
 	 */
 	public function initialize_defaults() {
+
+		$this->plugin_updated = 'updated_' . str_replace( '.', '', THE_SEO_FRAMEWORK_VERSION );
+
 		/**
 		 * Switch when RTL is active;
 		 * @since 2.5.0
@@ -223,6 +229,9 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Feed
 			'excerpt_the_feed'		=> 1,	// Generate feed Excerpts
 			'source_the_feed'		=> 1,	// Add backlink at the end of the feed
+
+			// Cache
+			$this->plugin_updated 	=> 1,	// Plugin update cache.
 		);
 
 		/**
@@ -307,7 +316,76 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Feed
 			'excerpt_the_feed'		=> 0,	// Generate feed Excerpts
 			'source_the_feed'		=> 0,	// Add backlink at the end of the feed
+
+			// Cache
+			$this->plugin_updated 	=> 1, // Plugin update cache.
 		);
+
+		//* Update site options at plugin update.
+		add_action( 'admin_init', array( $this, 'site_updated_plugin_option' ) );
+
+	}
+
+	/**
+	 * Updates option from default options at plugin update.
+	 *
+	 * @since 2.6.0
+	 *
+	 * Applies filters 'the_seo_framework_update_options_at_update' : bool
+	 *
+	 * @ignore
+	 * @access private
+	 *
+	 * @return void early if already has been updated.
+	 */
+	public function site_updated_plugin_option() {
+
+		$plugin_updated = $this->plugin_updated;
+
+		//* If this page doesn't store settings, no need to register them
+		if ( $this->get_option( $plugin_updated ) || empty( $this->settings_field ) )
+			return;
+
+		if ( false === (bool) apply_filters( 'the_seo_framework_update_options_at_update', true ) )
+			return;
+
+		$updated = false;
+		$options = $this->get_all_options();
+		$default_options = $this->default_site_options();
+
+		foreach ( $options as $key => $value ) {
+			if ( ! isset( $options[$key] ) ) {
+				$options[$key] = isset( $default_options[$key] ) ? $default_options[$key] : '';
+				$updated = true;
+			}
+		}
+
+		//* Stop this madness from happening again until next update.
+		$options[$plugin_updated] = true;
+
+		if ( update_option( $this->settings_field, $options ) && $updated ) {
+			if ( $this->load_options && is_super_admin() ) {
+				//* Make sure scripts are being added.
+				$this->init_admin_scripts();
+
+				//* Output notice only to super admin.
+				add_action( 'admin_notices', array( $this, 'site_updated_plugin_notice' ) );
+			}
+		}
+
+	}
+
+	/**
+	 * Echo plugin updated notification.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @access private
+	 */
+	public function site_updated_plugin_notice() {
+
+		echo $this->generate_dismissible_notice( $this->page_defaults['option_update_text'], 'updated' );
+
 	}
 
 	/**
@@ -325,6 +403,92 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function get_option( $key, $use_cache = true ) {
 		return $this->the_seo_framework_get_option( $key, THE_SEO_FRAMEWORK_SITE_OPTIONS, $use_cache );
+	}
+
+	/**
+	 * Return current option array.
+	 *
+	 * Applies `the_seo_framework_get_options` filters.
+	 *
+	 * @since 2.6.0
+	 * @staticvar array $cache The option cache.
+	 *
+	 * @return array Options.
+	 */
+	public function get_all_options( $setting = null ) {
+
+		static $cache = array();
+
+		if ( isset( $cache[$setting] ) )
+			return $cache[$setting];
+
+		if ( is_null( $setting ) )
+			$setting = THE_SEO_FRAMEWORK_SITE_OPTIONS;
+
+		return $cache[$setting] = apply_filters( 'the_seo_framework_get_options', get_option( $setting ), $setting );
+	}
+
+	/**
+	 * Return option from the options table and cache result.
+	 *
+	 * Applies `the_seo_framework_get_options` filters.
+	 * This filter retrieves the (previous) values from Genesis if exists.
+	 *
+	 * Values pulled from the database are cached on each request, so a second request for the same value won't cause a
+	 * second DB interaction.
+	 * @staticvar array $settings_cache
+	 * @staticvar array $options_cache
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string  $key        Option name.
+	 * @param string  $setting    Optional. Settings field name. Eventually defaults to null if not passed as an argument.
+	 * @param boolean $use_cache  Optional. Whether to use the cache value or not. Default is true.
+	 *
+	 * @return mixed The value of this $key in the database.
+	 *
+	 * @thanks StudioPress (http://www.studiopress.com/) for some code.
+	 */
+	public function the_seo_framework_get_option( $key, $setting = null, $use_cache = true ) {
+
+		//* If we need to bypass the cache
+		if ( ! $use_cache ) {
+			$options = get_option( $setting );
+
+			if ( ! is_array( $options ) || ! array_key_exists( $key, $options ) )
+				return '';
+
+			return is_array( $options[$key] ) ? stripslashes_deep( $options[$key] ) : stripslashes( wp_kses_decode_entities( $options[$key] ) );
+		}
+
+		//* Setup caches
+		static $settings_cache = array();
+		static $options_cache  = array();
+
+		//* Check options cache
+		if ( isset( $options_cache[$setting][$key] ) )
+			//* Option has been cached
+			return $options_cache[$setting][$key];
+
+		//* Check settings cache
+		if ( isset( $settings_cache[$setting] ) ) {
+			//* Setting has been cached
+			$options = apply_filters( 'the_seo_framework_get_options', $settings_cache[$setting], $setting );
+		} else {
+			//* Set value and cache setting
+			$options = $settings_cache[$setting] = apply_filters( 'the_seo_framework_get_options', get_option( $setting ), $setting );
+		}
+
+		//* Check for non-existent option
+		if ( ! is_array( $options ) || ! array_key_exists( $key, (array) $options ) ) {
+			//* Cache non-existent option
+			$options_cache[$setting][$key] = '';
+		} else {
+			//* Option has not been previously been cached, so cache now
+			$options_cache[$setting][$key] = is_array( $options[$key] ) ? stripslashes_deep( $options[$key] ) : stripslashes( wp_kses_decode_entities( $options[$key] ) );
+		}
+
+		return $options_cache[$setting][$key];
 	}
 
 	/**
@@ -539,23 +703,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			$warned_cache[$key] = -1;
 
 		return $warned_cache[$key];
-	}
-
-	/**
-	 * Adds link from plugins page to SEO Settings page.
-	 *
-	 * @param array $links The current links.
-	 *
-	 * @since 2.2.8
-	 */
-	public function plugin_action_links( $links ) {
-
-		$framework_links = array(
-			'settings' => '<a href="' . esc_url( admin_url( 'admin.php?page=' . $this->page_id ) ) . '">' . __( 'SEO Settings', 'autodescription' ) . '</a>',
-			'home' => '<a href="'. esc_url( 'https://theseoframework.com' ) . '" target="_blank">' . _x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>'
-		);
-
-		return array_merge( $framework_links, $links );
 	}
 
 	/**
