@@ -164,7 +164,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		wp_register_script( $this->js_name, THE_SEO_FRAMEWORK_DIR_URL . "lib/js/autodescription{$suffix}.js", array( 'jquery' ), THE_SEO_FRAMEWORK_VERSION, true );
 
 		$registered = true;
-
 	}
 
 	/**
