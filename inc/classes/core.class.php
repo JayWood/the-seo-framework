@@ -111,14 +111,14 @@ class AutoDescription_Core {
 	}
 
 	/**
-	 * Generate dismissable notice.
+	 * Generate dismissible notice.
 	 *
 	 * @param $message The notice message.
 	 * @param $type The notice type : 'updated', 'error', 'warning'
 	 *
 	 * @since 2.6.0
 	 */
-	public function generate_dismissable_notice( $message = '', $type = 'updated' ) {
+	public function generate_dismissible_notice( $message = '', $type = 'updated' ) {
 
 		if ( empty( $message ) )
 			return '';

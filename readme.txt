@@ -569,7 +569,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Twitter card plugin detection and subtle notification of such.
 	* TODO Image Description is now used as an excerpt to the page meta descriptions.
 	* TODO Neatly styled sitemaps, I hope you like it!
-	* TODO All admin notices are now dismissable.
+	* TODO All admin notices are now dismissible.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!

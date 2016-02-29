@@ -384,7 +384,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function site_updated_plugin_notice() {
 
-		echo $this->generate_dismissable_notice( $this->page_defaults['option_update_text'], 'updated' );
+		echo $this->generate_dismissible_notice( $this->page_defaults['option_update_text'], 'updated' );
 
 	}
 
