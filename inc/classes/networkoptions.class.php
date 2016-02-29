@@ -91,7 +91,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 	 */
 	public function register_network_settings() {
 		//* If this page doesn't store settings, no need to register them
-		if ( ! $this->network_settings_field )
+		if ( empty( $this->network_settings_field ) )
 			return;
 
 		register_setting( $this->network_settings_field, $this->network_settings_field );

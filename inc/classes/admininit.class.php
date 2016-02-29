@@ -42,7 +42,16 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 *
 	 * @var array JavaScript name identifier.
 	 */
-	protected $js_name;
+	public $js_name;
+
+	/**
+	 * CSS script name identifier to be used with enqueuing.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @var array CSS name identifier.
+	 */
+	public $css_name;
 
 	/**
 	 * Constructor, load parent constructor
@@ -52,56 +61,11 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	public function __construct() {
 		parent::__construct();
 
-		add_action( 'admin_init', array( $this, 'post_state' ) );
-		add_action( 'init', array( $this, 'post_type_support' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 0, 1 );
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 10, 1 );
+		$this->js_name = 'autodescription';
+		$this->css_name = 'autodescription';
 
-		$this->js_name = 'autodescription-js';
-	}
-
-	/**
-	 * Add post state on edit.php to the page or post that has been altered
-	 *
-	 * Called outside autodescription_run
-	 *
-	 * Applies filters `the_seo_framework_allow_states` : boolean
-	 *
-	 * @uses $this->add_post_state
-	 *
-	 * @since 2.1.0
-	 */
-	public function post_state() {
-
-		$allow_states = (bool) apply_filters( 'the_seo_framework_allow_states', true );
-
-		//* Prevent this function from running if this plugin is set to disabled.
-		if ( false === $allow_states )
-			return;
-
-		add_filter( 'display_post_states', array( $this, 'add_post_state' ) );
-
-	}
-
-	/**
-	 * Adds post states in post/page edit.php query
-	 *
-	 * @param array states 		the current post state
-	 * @param string redirected	$this->get_custom_field( 'redirect' );
-	 * @param string noindex	$this->get_custom_field( '_genesis_noindex' );
-	 *
-	 * @since 2.1.0
-	 */
-	public function add_post_state( $states = array() ) {
-
-		$post_id = $this->get_the_real_ID( false );
-
-		$searchexclude = (bool) $this->get_custom_field( 'exclude_local_search', $post_id );
-
-		if ( $searchexclude === true )
-			$states[] = __( 'No Search', 'autodescription' );
-
-		return $states;
 	}
 
 	/**
@@ -113,25 +77,44 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 
+		$enqueue_hooks = array(
+			'edit.php',
+			'post.php',
+			'edit-tags.php',
+			'edit-tags.php',
+			'term.php',
+		);
+
 		/**
 		 * Check hook first.
 		 * @since 2.3.9
 		 */
-		if ( isset( $hook ) && $hook && ( 'edit.php' === $hook || 'post.php' === $hook || 'edit-tags.php' === $hook || 'term.php' === $hook ) ) {
+		if ( isset( $hook ) && $hook && in_array( $hook, $enqueue_hooks ) ) {
 			/**
 			 * @uses $this->post_type_supports_custom_seo()
 			 * @since 2.3.9
 			 */
 			if ( $this->post_type_supports_custom_seo() ) {
-				add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_css' ), 11 );
-				add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_javascript' ), 11 );
+				$this->init_admin_scripts();
 			}
 		}
 
 	}
 
 	/**
-	 * AutoDescription Javascript helper file
+	 * Register and output Admin scripts.
+	 *
+	 * @since 2.6.0
+	 */
+	public function init_admin_scripts() {
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_css' ), 1 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_javascript' ), 1 );
+
+	}
+
+	/**
+	 * AutoDescription JavaScript helper file
 	 *
 	 * @since 2.0.2
 	 *
@@ -142,18 +125,45 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 */
 	public function enqueue_admin_javascript( $hook ) {
 
-		$suffix = $this->script_debug ? '' : '.min';
-
-		wp_enqueue_script( $this->js_name, THE_SEO_FRAMEWORK_DIR_URL . "lib/js/autodescription{$suffix}.js", array( 'jquery' ), THE_SEO_FRAMEWORK_VERSION, true );
-
 		/**
 		 * Put hook and js name in class vars.
 		 * @since 2.5.2.2
 		 */
-		$this->page_hook = $hook;
+		$this->page_hook = $this->page_hook ? $this->page_hook : $hook;
 
-		//* @since 2.5.2.2
+		//* Register the script.
+		$this->register_admin_javascript();
+
+		wp_enqueue_script( $this->js_name );
+
+		/**
+		 * Localize JavaScript.
+		 * @since 2.5.2.2
+		 */
 		add_action( 'admin_footer', array( $this, 'localize_admin_javascript' ) );
+
+	}
+
+	/**
+	 * Registers Admin CSS.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $registered : Prevents Re-registering of the style.
+	 *
+	 * @access private
+	 */
+	public function register_admin_javascript() {
+
+		$registered = null;
+
+		if ( isset( $registered ) )
+			return;
+
+		$suffix = $this->script_debug ? '' : '.min';
+
+		wp_register_script( $this->js_name, THE_SEO_FRAMEWORK_DIR_URL . "lib/js/autodescription{$suffix}.js", array( 'jquery' ), THE_SEO_FRAMEWORK_VERSION, true );
+
+		$registered = true;
 	}
 
 	/**
@@ -162,6 +172,34 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 * @since 2.5.2.2
 	 */
 	public function localize_admin_javascript() {
+
+		static $localized = null;
+
+		if ( isset( $localized ) )
+			return;
+
+		$strings = $this->get_javascript_l10n();
+
+		wp_localize_script( $this->js_name, 'autodescriptionL10n', $strings );
+
+		$localized = true;
+
+	}
+
+	/**
+	 * Generate Javascript Localization.
+	 *
+	 * @since 2.6.0
+	 * @staticvar array $strings : The l10n strings.
+	 *
+	 * @return array $strings The l10n strings.
+	 */
+	protected function get_javascript_l10n() {
+
+		static $strings = null;
+
+		if ( isset( $strings ) )
+			return $strings;
 
 		$blog_name = $this->get_blogname();
 		$description = $this->get_blogdescription();
@@ -259,7 +297,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 			$additions = $home_tagline ? $home_tagline : $description;
 		}
 
-		$strings = array(
+		return $strings = array(
 			'saveAlert'		=> __( 'The changes you made will be lost if you navigate away from this page.', 'autodescription' ),
 			'confirmReset'	=> __( 'Are you sure you want to reset all SEO settings to their defaults?', 'autodescription' ),
 			'siteTitle' 	=> $title,
@@ -271,8 +309,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 			'isRTL' => $rtl,
 			'isHome' => $ishome,
 		);
-
-		wp_localize_script( 'autodescription-js', 'autodescriptionL10n', $strings );
 	}
 
 	/**
@@ -286,6 +322,34 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 */
 	public function enqueue_admin_css( $hook ) {
 
+		/**
+		 * Put hook and js name in class vars.
+		 * @since 2.5.2.2
+		 */
+		$this->page_hook = $this->page_hook ? $this->page_hook : $hook;
+
+		//* Register the script.
+		$this->register_admin_css();
+
+		wp_enqueue_style( $this->css_name );
+
+	}
+
+	/**
+	 * Registers Admin CSS.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $registered : Prevents Re-registering of the style.
+	 *
+	 * @access private
+	 */
+	protected function register_admin_css() {
+
+		static $registered = null;
+
+		if ( isset( $registered ) )
+			return;
+
 		$rtl = '';
 
 		if ( is_rtl() )
@@ -293,7 +357,9 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 		$suffix = $this->script_debug ? '' : '.min';
 
-		wp_enqueue_style( 'autodescription-css', THE_SEO_FRAMEWORK_DIR_URL . "lib/css/autodescription{$rtl}{$suffix}.css", array(), THE_SEO_FRAMEWORK_VERSION, 'all' );
+		wp_register_style( $this->css_name, THE_SEO_FRAMEWORK_DIR_URL . "lib/css/autodescription{$rtl}{$suffix}.css", array(), THE_SEO_FRAMEWORK_VERSION, 'all' );
+
+		$registered = true;
 
 	}
 
@@ -301,6 +367,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 * Checks the screen hook.
 	 *
 	 * @since 2.2.2
+	 * @global string $page_hook the current page hook.
 	 *
 	 * @return bool true if screen match.
 	 */
@@ -327,6 +394,8 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 * @param array  $query_args 	Optional. Associative array of query string arguments
 	 * 								(key => value). Default is an empty array.
 	 *
+	 * @credits StudioPress for some code.
+	 *
 	 * @return null Return early if first argument is false.
 	 */
 	public function admin_redirect( $page, array $query_args = array() ) {
@@ -336,17 +405,15 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 		$url = html_entity_decode( menu_page_url( $page, 0 ) );
 
-		foreach ( (array) $query_args as $key => $value ) {
-			if ( empty( $key ) && empty( $value ) ) {
+		foreach ( $query_args as $key => $value ) {
+			if ( empty( $key ) || empty( $value ) )
 				unset( $query_args[$key] );
-			}
 		}
 
 		$url = add_query_arg( $query_args, $url );
 
 		wp_redirect( esc_url_raw( $url ) );
 		exit;
-
 	}
 
 }
