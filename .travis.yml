@@ -9,14 +9,6 @@
 # Tell Travis CI we're using PHP
 language: php
 
-# PHP version used in first build configuration.
-php:
-  - "5.6"
-
-# WordPress version used in first build configuration.
-env:
-  - WP_VERSION=master WP_TRAVISCI=travis:phpunit
-
 # Declare versions of PHP to use. Use one decimal max.
 # Declare which versions of WordPress to test against.
 # Also declare whether or not to test in Multisite.
@@ -25,50 +17,50 @@ env:
 matrix:
   include:
     - php: "7.0"
-      env: WP_VERSION=master WP_MULTISITE=1 WP_TRAVISCI=travis:phpunit
+      env: WP_VERSION=master WP_MULTISITE=1
 #    - php: "7.0"
-#      env: WP_VERSION=4.4 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.4
 #    - php: "5.6"
-#      env: WP_VERSION=master WP_MULTISITE=1 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=master WP_MULTISITE=1
 #    - php: "5.6"
-#      env: WP_VERSION=4.4 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.4
 #    - php: "5.6"
-#      env: WP_VERSION=4.3 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.3
 #    - php: "5.6"
-#      env: WP_VERSION=4.2 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.2
 #    - php: "5.6"
-#      env: WP_VERSION=4.1 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.1
 #    - php: "5.6"
-#      env: WP_VERSION=4.0 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.0
 #    # If this fails, I'll probably drop support for 3.9
 #    - php: "5.6"
-#      env: WP_VERSION=3.9 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=3.9
 #    # If this fails, I'll probably drop support for 3.8
 #    - php: "5.6"
-#      env: WP_VERSION=3.8 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=3.8
 #    # If this fails, I'll probably drop support for 3.7
 #    - php: "5.6"
-#      env: WP_VERSION=3.7 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=3.7
 #    # If this fails, I'll probably drop support for 3.6
 #    - php: "5.6"
-#      env: WP_VERSION=3.6 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=3.6
 #    - php: "5.5"
-#      env: WP_VERSION=4.4 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.4
 #    - php: "5.4"
-#      env: WP_VERSION=4.4 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.4
 #    - php: "5.3"
-#      env: WP_VERSION=4.4 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.4
 #    # Current $required_php_version for WordPress: 5.2.4
 #    - php: "5.2"
-#      env: WP_VERSION=master WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=master
 #    - php: "5.2"
-#      env: WP_VERSION=4.4 WP_MULTISITE=1 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.4 WP_MULTISITE=1
 #    - php: "5.2"
-#      env: WP_VERSION=4.3 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=4.3
 #    - php: "hhvm"
-#      env: WP_VERSION=master WP_MULTISITE=1 WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=master WP_MULTISITE=1
 #    - php: "nightly"
-#      env: WP_VERSION=master WP_TRAVISCI=travis:phpunit
+#      env: WP_VERSION=master
 #  allow_failures:
 #    - php: "hhvm"
 #    - php: "nightly"
@@ -101,8 +93,13 @@ before_script:
     # Install plugin.
     - cd "/tmp/wordpress/src/wp-content/plugins/$PLUGIN_SLUG"
 
-# Run test script commands.
-script: grunt $WP_TRAVISCI
+    # Refresh PHP.
+    - phpenv rehash
 
+# Run test script commands.
+script:
+    phpunit
+
+# For now, no notifications are needed, as I'm with my head in this project, daily.
 notifications:
     email: false
