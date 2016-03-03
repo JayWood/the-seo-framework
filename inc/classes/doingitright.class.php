@@ -29,13 +29,58 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	/**
 	 * Constructor, load parent constructor
 	 *
-	 * Initalizes columns
+	 * Initalizes columns and load post states.
 	 */
 	public function __construct() {
 		parent::__construct();
 
+		add_action( 'admin_init', array( $this, 'post_state' ) );
+
 		add_action( 'current_screen', array( $this, 'init_columns' ) );
 	}
+
+	/**
+	 * Add post state on edit.php to the page or post that has been altered
+	 *
+	 * Applies filters `the_seo_framework_allow_states` : boolean
+	 *
+	 * @uses $this->add_post_state
+	 *
+	 * @since 2.1.0
+	 */
+	public function post_state() {
+
+		$allow_states = (bool) apply_filters( 'the_seo_framework_allow_states', true );
+
+		//* Prevent this function from running if this plugin is set to disabled.
+		if ( false === $allow_states )
+			return;
+
+		add_filter( 'display_post_states', array( $this, 'add_post_state' ) );
+
+	}
+
+	/**
+	 * Adds post states in post/page edit.php query
+	 *
+	 * @param array states 		the current post state
+	 * @param string redirected	$this->get_custom_field( 'redirect' );
+	 * @param string noindex	$this->get_custom_field( '_genesis_noindex' );
+	 *
+	 * @since 2.1.0
+	 */
+	public function add_post_state( $states = array() ) {
+
+		$post_id = $this->get_the_real_ID( false );
+
+		$searchexclude = (bool) $this->get_custom_field( 'exclude_local_search', $post_id );
+
+		if ( $searchexclude )
+			$states[] = __( 'No Search', 'autodescription' );
+
+		return $states;
+	}
+
 
 	/**
 	 * Initializes columns
@@ -61,18 +106,18 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 				$slug = substr( $id, (int) 5 );
 
 				if ( 'post' !== $type && 'page' !== $type ) {
-					add_action( "manage_{$type}_columns", array( $this, 'add_column' ), 10, 1 );
-					add_action( "manage_{$slug}_custom_column", array( $this, 'seo_column' ), 10, 3 );
+					add_filter( "manage_{$type}_columns", array( $this, 'add_column' ), 1, 1 );
+					add_filter( "manage_{$slug}_custom_column", array( $this, 'seo_column' ), 1, 3 );
 				}
 
 				/**
 				 * Always load pages and posts.
 				 * Many CPT plugins rely on these.
 				 */
-				add_action( 'manage_posts_columns', array( $this, 'add_column' ), 10, 1 );
-				add_action( 'manage_pages_columns', array( $this, 'add_column' ), 10, 1 );
-				add_action( 'manage_posts_custom_column', array( $this, 'seo_column' ), 10, 3 );
-				add_action( 'manage_pages_custom_column', array( $this, 'seo_column' ), 10, 3 );
+				add_filter( 'manage_posts_columns', array( $this, 'add_column' ), 1, 1 );
+				add_filter( 'manage_pages_columns', array( $this, 'add_column' ), 1, 1 );
+				add_filter( 'manage_posts_custom_column', array( $this, 'seo_column' ), 1, 3 );
+				add_filter( 'manage_pages_custom_column', array( $this, 'seo_column' ), 1, 3 );
 			}
 
 		}
@@ -179,7 +224,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( 'ad_seo' === $column )
 			$status = $this->post_status( $post_id, $type_cache, true );
 
-		echo $status;
+		return $status;
 	}
 
 	/**
@@ -270,12 +315,12 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			);
 
 			if ( $is_term ) {
-				return $this->the_seo_bar_term( $args );
+				echo $this->the_seo_bar_term( $args );
 			} else {
-				return $this->the_seo_bar_page( $args );
+				echo $this->the_seo_bar_page( $args );
 			}
 		} else {
-			return '<span>' . __( 'Failed to fetch post ID.', 'autodescription' ) . '</span>';
+			echo '<span>' . __( 'Failed to fetch post ID.', 'autodescription' ) . '</span>';
 		}
 	}
 

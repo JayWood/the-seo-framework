@@ -1,6 +1,43 @@
- /**
-  * WooCommerce fix
-  */
+/**
+ * Dismissible Notices.
+ */
+.seo-notice {
+	position: relative;
+}
+
+a.autodescription-dismiss {
+	position: absolute;
+	top: 0;
+	left: 1px;
+	border: none;
+	margin: 0;
+	padding: 9px;
+	background: 0 0;
+	color: #b4b9be;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+a.autodescription-dismiss:before {
+	background: 0 0;
+	content: "\f153";
+	display: block;
+	font: 400 16px/20px dashicons;
+	speak: none;
+	height: 20px;
+	text-align: center;
+	width: 20px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a.autodescription-dismiss:hover {
+	color: #c00;
+}
+
+/**
+ * WooCommerce fix
+ */
 table.wp-list-table .column-name {
 	width: 15%;
 }
@@ -285,7 +322,7 @@ span.ad-seo .explanation-desc div {
 	margin-left: 10px;
 }
 
-.autodescription-metaboxes #message {
+.seo-notice {
 	clear: both;
 }
 

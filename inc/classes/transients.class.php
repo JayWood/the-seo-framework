@@ -542,7 +542,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 */
 	public function set_theme_dir_transient( $dir = '' ) {
 
-		if ( is_bool( $dir ) && false === $this->get_transient( $this->theme_doing_it_right_transient ) ) {
+		if ( is_bool( $dir ) && false === get_transient( $this->theme_doing_it_right_transient ) ) {
 
 			//* Convert $dir to string 1 or 0 as transients can be false on failure.
 			$dir = true === $dir ? '1' : '0';
@@ -553,7 +553,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 			 */
 			$expiration = 60 * 60 * 24 * 3;
 
-			$this->set_transient( $this->theme_doing_it_right_transient, $dir, $expiration );
+			set_transient( $this->theme_doing_it_right_transient, $dir, $expiration );
 		}
 
 	}

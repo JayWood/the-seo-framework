@@ -123,7 +123,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		}
 
 		//* Translate the URL.
-		$path = $this->get_translation_url( $path, $args['id'], $args['external'] );
+		$path = $this->get_translation_path( $path, $args['id'], $args['external'] );
 
 		//* Domain Mapping canonical URL
 		if ( empty( $url ) ) {
@@ -149,7 +149,8 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 				$url = user_trailingslashit( get_option( 'home' ) );
 				$slashit = false;
 			} else {
-				$url = trailingslashit( get_option( 'home' ) ) . ltrim( $path, '\/ ' );
+				$url = $this->generate_full_url( $path );
+
 				$scheme = is_ssl() ? 'https' : 'http';
 			}
 		}
@@ -169,7 +170,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		$output = $this->set_url_scheme( $url, $scheme );
 
-		if ( true === $this->url_slashit ) {
+		if ( $this->url_slashit ) {
 			/**
 			 * Slash it only if $slashit is true
 			 *
@@ -264,7 +265,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		if ( empty( $args ) )
 			$args = $this->parse_url_args( '', '', true );
 
-		if ( $args['is_term'] || is_archive() ) {
+		if ( $args['is_term'] || $this->is_archive() ) {
 			$term = $args['term'];
 
 			//* Term or Taxonomy.
@@ -345,7 +346,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		if ( ! isset( $post_id ) )
 			return '';
 
-		if ( $post_id && ( ! is_home() || $external ) ) {
+		if ( $post_id && ( $external || ! $this->is_home() ) ) {
 			$permalink = get_permalink( $post_id );
 		} else if ( ! $external ) {
 			global $wp;
@@ -363,7 +364,44 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 */
 		$path = $this->set_url_scheme( $permalink, 'relative' );
 
+
 		return $path;
+	}
+
+	/**
+	 * Generate full URL from path.
+	 *
+	 * @since 2.6.0
+	 * @staticvar string $home_url The Home URL.
+	 * @staticvar string|bool $home_path The Home Directory Path.
+	 *
+	 * @return string URL the full URL.
+	 */
+	protected function generate_full_url( $path = '' ) {
+
+		static $home_url = null;
+		static $home_path = null;
+		static $home_url_slashed = null;
+
+		//* Set up caches.
+		if ( is_null( $home_url ) ) {
+			$home_url = get_option( 'home' );
+
+			$home_url_parsed = parse_url( $home_url );
+			$home_path = isset( $home_url_parsed['path'] ) ? $home_url_parsed['path'] : false;
+
+			$home_url_slashed = trailingslashit( $home_url );
+		}
+
+		//* Prevent duplicated first path from Site Address config.
+		if ( $home_path ) {
+			$count = 1;
+			$url = $home_url_slashed . ltrim( str_replace( $home_path, '', $path ), '\/ ' );
+		} else {
+			$url = $home_url_slashed . ltrim( $path, '\/ ' );
+		}
+
+		return $url;
 	}
 
 	/**
@@ -373,16 +411,16 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * @param int $post_id The post ID.
 	 * @param bool $external Wether to fetch the WP Request or get the permalink by Post Object.
 	 *
-	 * @since 2.3.0
+	 * @since 2.6.0
 	 *
 	 * @global object $post
 	 *
 	 * @return relative Post or Page url.
 	 */
-	public function get_translation_url( $path = '', $post_id = null, $external = false ) {
+	public function get_translation_path( $path = '', $post_id = null, $external = false ) {
 
 		if ( is_object( $post_id ) )
-			$post_id = isset( $post->ID ) ? $post->ID : $this->get_the_real_ID();
+			$post_id = isset( $post_id->ID ) ? $post_id->ID : $this->get_the_real_ID();
 
 		if ( ! isset( $post_id ) )
 			$post_id = $this->get_the_real_ID();

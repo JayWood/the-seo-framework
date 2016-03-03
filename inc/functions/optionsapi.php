@@ -76,25 +76,13 @@ function the_seo_framework_dot_version( $version = '2.4' ) {
 		$current_version_len = strlen( $current_version );
 
 		//* Only allow 3 or 5 length.
-		if ( 3 !== $version_len && 5 !== $version_len )
-			return false;
+		if ( 3 !== $version_len )
+			$version = substr( $version, 0, 3 );
 
-		//* If 5 length, chop.
-		if ( 5 === $version_len ) {
-			$version = (string) substr( $version, 0, -2 );
-		} else {
-			$version = (string) $version;
-		}
+		if ( 3 !== $current_version_len )
+			$current_version = substr( $current_version, 0, 3 );
 
-		if ( 5 === $current_version_len ) {
-			$offset = -2;
-		} else {
-			$offset = -4;
-		}
-
-		$current_version = (string) substr( $current_version, 0, -2 );
-
-		if ( version_compare( $current_version, $version, '=' ) )
+		if ( $current_version_len === $verion )
 			return true;
 	}
 

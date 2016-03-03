@@ -122,6 +122,10 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( ! isset( $this->title_doing_it_wrong ) )
 			$this->title_doing_it_wrong = false;
 
+		//* Set transient to true if the theme is doing it right.
+		if ( false === $this->title_doing_it_wrong )
+			$this->set_theme_dir_transient( true );
+
 		//* Empty title and rebuild it.
 		return $this->build_title( $title = '', $seplocation, $args );
 	}
@@ -391,12 +395,17 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			 * Now also considers seplocation.
 			 * @since 2.4.1
 			 */
-			if ( 'right' === $seplocation ) {
-				if ( $tit_len > 2 && ! mb_strpos( $title, $sep_to_replace, $tit_len - 2 ) )
-					$title = $title . ' ' . $sep_to_replace;
-			} else {
-				if ( $tit_len > 2 && ! mb_strpos( $title, $sep_to_replace, 2 ) )
-					$title = $sep_to_replace . ' ' . $title;
+			if ( $sep_to_replace ) {
+
+				$sep_to_replace_length = mb_strlen( $sep_to_replace );
+
+				if ( 'right' === $seplocation ) {
+					if ( $tit_len > $sep_to_replace_length && ! mb_strpos( $title, $sep_to_replace, $tit_len - $sep_to_replace_length ) )
+						$title = $title . ' ' . $sep_to_replace;
+				} else {
+					if ( $tit_len > $sep_to_replace_length && ! mb_strpos( $title, $sep_to_replace, $sep_to_replace_length ) )
+						$title = $sep_to_replace . ' ' . $title;
+				}
 			}
 
 			/**

@@ -91,7 +91,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			's_knowledge_type',
 			$this->settings_field,
 			array(
-				'knowledge_person',
+				'knowledge_type',
 			)
 		);
 
@@ -524,14 +524,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 */
 	protected function s_knowledge_type( $new_value ) {
 
-		$person_organization = array( 'person', 'organization' );
-
-		$key = array_key_exists( $new_value, $person_organization );
-
-		if ( $key )
+		if ( 'person' === $new_value || 'organization' === $new_value )
 			return (string) $new_value;
-
-		$this->delete_front_ld_json_transient();
 
 		$previous = $this->get_field_value( 'knowledge_type' );
 
@@ -548,7 +542,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 */
 	protected function s_left_right( $new_value ) {
 
-		if ( $new_value === 'left' || $new_value === 'right' )
+		if ( 'left' === $new_value || 'right' === $new_value )
 			return (string) $new_value;
 
 		$previous = $this->get_field_value( 'title_location' );
@@ -570,7 +564,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 */
 	protected function s_left_right_home( $new_value ) {
 
-		if ( $new_value === 'left' || $new_value === 'right' )
+		if ( 'left' === $new_value || 'right' === $new_value )
 			return (string) $new_value;
 
 		$previous = $this->get_field_value( 'home_title_location' );
@@ -699,18 +693,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 		$this->delete_front_ld_json_transient();
 
-		/**
-		 * Remove query strings
-		 */
-		$pattern 	= 	'/'
-					.	'(\?|\&)' 	// 1: ? or &
-					. 	'([^=]+)'	// 2: text until =
-					.	'\='		// =
-					.	'([^&]+)'	// 3: until & if found
-					.	'/s'
-					;
-
-		$url = preg_replace( $pattern, '', $new_value );
+		$removed_queries = strtok( $new_value, '?' );
+		$url = $removed_queries ? $removed_queries : $new_value;
 
 		return esc_url_raw( $url );
 	}
@@ -769,16 +753,16 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		if ( empty( $new_value ) )
 			return (string) $new_value;
 
-		$profile = trim(strip_tags( $new_value ));
+		$profile = trim( strip_tags( $new_value ) );
 
-		if ( substr( $profile, 0, 4 ) === 'http' ) {
+		if ( 'http' === substr( $profile, 0, 4 ) ) {
 			$path = str_replace( '/', '', parse_url( $profile, PHP_URL_PATH ) );
 			$profile = $path ? '@' . $path : '';
 
 			return (string) $profile;
 		}
 
-		if ( substr( $profile, 0, 1 ) !== '@' ) {
+		if ( '@' !== substr( $profile, 0, 1 ) ) {
 			$profile = '@' . $profile;
 		}
 

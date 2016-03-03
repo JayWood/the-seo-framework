@@ -886,7 +886,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( isset( $dir ) )
 			return $dir;
 
-		$transient = $this->get_transient( $this->theme_doing_it_right_transient );
+		$transient = get_transient( $this->theme_doing_it_right_transient );
 
 		if ( '0' === $transient )
 			return $dir = false;

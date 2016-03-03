@@ -53,6 +53,15 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	public $network_pagehook;
 
 	/**
+	 * Load the options.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @var bool Load options.
+	 */
+	public $load_options = true;
+
+	/**
 	 * Constructor, load parent constructor
 	 *
 	 * Cache various variables
@@ -62,10 +71,9 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	public function __construct() {
 		parent::__construct();
 
-		$load_options = (bool) apply_filters( 'the_seo_framework_load_options', true );
+		$this->load_options = (bool) apply_filters( 'the_seo_framework_load_options', true );
 
-		if ( $load_options ) {
-
+		if ( $this->load_options ) {
 			add_action( 'admin_init', array( $this, 'enqueue_page_defaults' ), 1 );
 
 			// Add menu links and register $this->pagehook
@@ -85,8 +93,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 			// Load nessecary assets
 			add_action( 'admin_init', array( $this, 'load_assets' ) );
-
 		}
+
 	}
 
 	/**
@@ -96,18 +104,18 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * This filter adds i18n support for buttons and notices.
 	 *
 	 * @since 2.3.1
-	 * @return void
 	 */
 	public function enqueue_page_defaults() {
 
 		$this->page_defaults = (array) apply_filters(
 			'the_seo_framework_admin_page_defaults',
 			array(
-				'save_button_text'  => __( 'Save Settings', 'autodescription' ),
-				'reset_button_text' => __( 'Reset Settings', 'autodescription' ),
-				'saved_notice_text' => __( 'Settings saved.', 'autodescription' ),
-				'reset_notice_text' => __( 'Settings reset.', 'autodescription' ),
-				'error_notice_text' => __( 'Error saving settings.', 'autodescription' ),
+				'save_button_text'		=> __( 'Save Settings', 'autodescription' ),
+				'reset_button_text'		=> __( 'Reset Settings', 'autodescription' ),
+				'saved_notice_text'		=> __( 'Settings are saved.', 'autodescription' ),
+				'reset_notice_text'		=> __( 'Settings are reset.', 'autodescription' ),
+				'error_notice_text'		=> __( 'Error saving settings.', 'autodescription' ),
+				'option_update_text'	=> __( 'New SEO Settings have been updated.', 'autodescription' ),
 			)
 		);
 
@@ -144,13 +152,12 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			$menu['position']
 		);
 
-		// Enqueue styles
-		// Doesn't pass the $hook argument
+		//* Enqueue styles
 		add_action( 'admin_print_styles-' . $this->pagehook, array( $this, 'enqueue_admin_css' ), 11 );
 
-		// Enqueue scripts
-		// Doesn't pass the $hook argument
+		//* Enqueue scripts
 		add_action( 'admin_print_scripts-' . $this->pagehook, array( $this, 'enqueue_admin_javascript' ), 11 );
+
 	}
 
 	/**
@@ -357,11 +364,11 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			return;
 
 		if ( isset( $_REQUEST['settings-updated'] ) && 'true' === $_REQUEST['settings-updated'] )
-			echo '<div id="message" class="updated"><p><strong>' . $this->page_defaults['saved_notice_text'] . '</strong></p></div>';
+			echo $this->generate_dismissible_notice( $this->page_defaults['saved_notice_text'], 'updated' );
 		else if ( isset( $_REQUEST['reset'] ) && 'true' === $_REQUEST['reset'] )
-			echo '<div id="message" class="notice notice-warning"><p><strong>' . $this->page_defaults['reset_notice_text'] . '</strong></p></div>';
+			echo $this->generate_dismissible_notice( $this->page_defaults['reset_notice_text'], 'warning' );
 		else if ( isset( $_REQUEST['error'] ) && 'true' === $_REQUEST['error'] )
-			echo '<div id="message" class="error"><p><strong>' . $this->page_defaults['error_notice_text'] . '</strong></p></div>';
+			echo $this->generate_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
 
 	}
 
@@ -484,69 +491,6 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				'main'
 			);
 
-	}
-
-	/**
-	 * Return option from the options table and cache result.
-	 *
-	 * Applies `the_seo_framework_get_options` filters.
-	 * This filter retrieves the (previous) values from Genesis if exists.
-	 *
-	 * Values pulled from the database are cached on each request, so a second request for the same value won't cause a
-	 * second DB interaction.
-	 * @staticvar array $settings_cache
-	 * @staticvar array $options_cache
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string  $key        Option name.
-	 * @param string  $setting    Optional. Settings field name. Eventually defaults to null if not passed as an argument.
-	 * @param boolean $use_cache  Optional. Whether to use the cache value or not. Default is true.
-	 *
-	 * @return mixed The value of this $key in the database.
-	 *
-	 * @thanks StudioPress (http://www.studiopress.com/) for some code.
-	 */
-	public function the_seo_framework_get_option( $key, $setting = null, $use_cache = true ) {
-
-		//* If we need to bypass the cache
-		if ( ! $use_cache ) {
-			$options = get_option( $setting );
-
-			if ( ! is_array( $options ) || ! array_key_exists( $key, $options ) )
-				return '';
-
-			return is_array( $options[$key] ) ? stripslashes_deep( $options[$key] ) : stripslashes( wp_kses_decode_entities( $options[$key] ) );
-		}
-
-		//* Setup caches
-		static $settings_cache = array();
-		static $options_cache  = array();
-
-		//* Check options cache
-		if ( isset( $options_cache[$setting][$key] ) )
-			//* Option has been cached
-			return $options_cache[$setting][$key];
-
-		//* Check settings cache
-		if ( isset( $settings_cache[$setting] ) ) {
-			//* Setting has been cached
-			$options = apply_filters( 'the_seo_framework_get_options', $settings_cache[$setting], $setting );
-		} else {
-			//* Set value and cache setting
-			$options = $settings_cache[$setting] = apply_filters( 'the_seo_framework_get_options', get_option( $setting ), $setting );
-		}
-
-		//* Check for non-existent option
-		if ( ! is_array( $options ) || ! array_key_exists( $key, (array) $options ) ) {
-			//* Cache non-existent option
-			$options_cache[$setting][$key] = '';
-		} else {
-			//* Option has not been previously been cached, so cache now
-			$options_cache[$setting][$key] = is_array( $options[$key] ) ? stripslashes_deep( $options[$key] ) : stripslashes( wp_kses_decode_entities( $options[$key] ) );
-		}
-
-		return $options_cache[$setting][$key];
 	}
 
 	/**

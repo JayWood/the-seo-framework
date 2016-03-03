@@ -295,7 +295,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			return;
 
 		//* @since 2.3.0
-		$title = (string) apply_filters( 'the_seo_framework_ogtitle_output', '', $this->get_the_real_ID()  );
+		$title = (string) apply_filters( 'the_seo_framework_ogtitle_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $title ) )
 			$title = $this->title_from_cache( '', '', '', true );
