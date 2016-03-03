@@ -569,7 +569,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Twitter card plugin detection and subtle notification of such.
 	* TODO Image Description is now used as an excerpt to the page meta descriptions.
 	* TODO Neatly styled sitemaps, I hope you like it!
-	* TODO All admin notices are now dismissible.
+	* All admin notices are now dismissible.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -588,6 +588,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* URL generation.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
+	* Massively improved URL generation time by adding more layers of cache on often used and also heavy scripts.
 	* Massively improved LD-json script generation time.
 * **Improved:**
 	/
@@ -612,6 +613,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Some deprecated functions gave a fatal error or warning, this has been resolved.
 	* TODO When Reading Settings' Feed Options are set to summary, the backlink is still shown when enabled.
 	* TODO When Reading Settings' Feed Options are set to summary, the excerpt generation is disabled.
+	* TODO Screen Options showed an SEO column, while there isn't any in pages, posts and terms.
+	* TODO Sitemap's content was affected by minification plugins.
+	* TODO When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
+	* Double subdirectory generation in special Site Address URL configurations.
 * **Removed:**
 	* Shortlink URL from home page, as it's quite useless there.
 	* Page navigation confirmation warning when deleting post.

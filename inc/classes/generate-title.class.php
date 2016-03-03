@@ -122,6 +122,10 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( ! isset( $this->title_doing_it_wrong ) )
 			$this->title_doing_it_wrong = false;
 
+		//* Set transient to true if the theme is doing it right.
+		if ( false === $this->title_doing_it_wrong )
+			$this->set_theme_dir_transient( true );
+
 		//* Empty title and rebuild it.
 		return $this->build_title( $title = '', $seplocation, $args );
 	}
