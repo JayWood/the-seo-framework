@@ -315,7 +315,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 */
 	public function generate_description_from_id( $args = array(), $escape = true ) {
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, func_get_args() );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
 
 		/**
 		 * Applies filters bool 'the_seo_framework_enable_auto_description' : Enable or disable the description.
@@ -342,7 +342,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			$description = trim( $description );
 		}
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'description' => $description ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'description' => $description ) );
 
 		return (string) $description;
 	}

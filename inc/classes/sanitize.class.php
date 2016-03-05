@@ -179,7 +179,6 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				'sitemaps_robots',
 				'ping_google',
 				'ping_bing',
-				'ping_yahoo',
 				'ping_yandex',
 
 				'excerpt_the_feed',

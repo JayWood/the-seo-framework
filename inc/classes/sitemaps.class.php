@@ -345,8 +345,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 */
 			$excluded_cpt = (array) apply_filters( 'the_seo_framework_sitemap_exclude_cpt', array() );
 
+			$notcpt = array( 'post', 'page', 'attachment' );
+
 			foreach ( $post_page as $post_type ) {
-				if ( $post_type != 'post' && $post_type != 'page' && $post_type != 'attachment' ) {
+				if ( ! in_array( $post_type, $notcpt ) ) {
 					if ( empty( $excluded_cpt ) || ! in_array( $post_type, $excluded_cpt ) ) {
 						if ( $this->post_type_supports_custom_seo( $post_type ) ) {
 							$cpt[] = $post_type;
@@ -653,9 +655,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				if ( $this->is_option_checked( 'ping_bing' ) )
 					$this->ping_bing();
 
-				if ( $this->is_option_checked( 'ping_yahoo' ) )
-					$this->ping_yahoo();
-
 				if ( $this->is_option_checked( 'ping_yandex' ) )
 					$this->ping_yandex();
 
@@ -700,18 +699,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	public function ping_bing() {
 
 		$pingurl = 'http://www.bing.com/webmaster/ping.aspx?siteMap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
-		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
-
-	}
-
-	/**
-	 * Ping Yahoo
-	 *
-	 * @since 2.2.9
-	 */
-	public function ping_yahoo() {
-
-		$pingurl = 'http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
 		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
 
 	}
@@ -925,8 +912,8 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 						$key = 'the_seo_framework_wpmdev_dm' . get_current_blog_id() . '_extra_flush';
 
 						if ( $options_saved ) {
+							//* Reset the flush on option change.
 							if ( get_site_option( $key ) ) {
-								//* Prevent flushing multiple times.
 								update_site_option( $key, false );
 							}
 						} else {

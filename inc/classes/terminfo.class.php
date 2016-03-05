@@ -62,7 +62,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			$data['noarchive'] = isset( $term->admeta['noarchive'] ) ? $term->admeta['noarchive'] : '';
 			$flag = isset( $term->admeta['saved_flag'] ) ? (bool) $term->admeta['saved_flag'] : false;
 
-			//* Genesis data fetch. This will override our options with Genesis options.
+			//* Genesis data fetch. This will override our options with Genesis options on save.
 			if ( false === $flag && isset( $term->meta ) ) {
 				$data['title'] = empty( $data['title'] ) && isset( $term->meta['doctitle'] ) 				? $term->meta['doctitle'] : $data['noindex'];
 				$data['description'] = empty( $data['description'] ) && isset( $term->meta['description'] )	? $term->meta['description'] : $data['description'];

@@ -62,8 +62,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function title( $title = '', $sep = '', $seplocation = '', $args = array() ) {
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, func_get_args() );
-
 		//* Use WordPress default feed title.
 		if ( is_feed() )
 			return trim( $title );
@@ -315,6 +313,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function build_title_doingitwrong( $title = '', $sep = '', $seplocation = '', $args = array() ) {
 
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
+
 		/**
 		 * Empty the title, because most themes think they 'know' how to SEO the front page.
 		 * Because, most themes know how to make the title 'pretty'.
@@ -440,7 +440,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = capital_P_dangit( $title );
 		}
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'title' => $title ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'title_output' => $title ) );
 
 		return $title;
 	}
@@ -464,6 +464,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * @return string $title Title
 	 */
 	public function build_title( $title = '', $seplocation = '', $args = array() ) {
+
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
 
 		$args = $this->reparse_title_args( $args );
 
@@ -554,7 +556,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = trim( $title );
 		}
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'title' => $title ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'title_output' => $title ) );
 
 		return $title;
 	}
@@ -768,7 +770,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			if ( $args['get_custom_field'] ) {
 				$title = empty( $term->admeta['doctitle'] ) ? $title : $term->admeta['doctitle'];
 
-				$flag = $this->is_checked( $term->admeta['saved_flag'] );
+				$flag = isset( $term->admeta['saved_flag'] ) && $this->is_checked( $term->admeta['saved_flag'] ) ? true : false;
 				if ( false === $flag && empty( $title ) && isset( $term->meta['doctitle'] ) )
 					$title = empty( $term->meta['doctitle'] ) ? $title : $term->meta['doctitle'];
 			}
@@ -836,7 +838,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = isset( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : $title;
 		}
 
-		//** Fetch Title from WordPress page title input.
+		//* Fetch Title from WordPress page title input.
 		if ( empty( $title ) )
 			$title = $this->post_title_from_ID( $id );
 

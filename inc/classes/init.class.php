@@ -71,6 +71,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 
 		$this->init_actions();
 		$this->init_filters();
+
 	}
 
 	/**
@@ -94,6 +95,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 		} else {
 			add_action( 'wp_head', array( $this, 'html_output' ), 1 );
 		}
+
 	}
 
 	/**
@@ -125,6 +127,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 			//* Override WordPress Title
 			add_filter( 'wp_title', array( $this, 'title_from_cache' ), 9, 3 );
 		}
+
 	}
 
 	/**
@@ -381,8 +384,8 @@ class AutoDescription_Init extends AutoDescription_Query {
 		function tsf_explode() {
 			if ( function_exists( 'the_seo_framework' ) ) {
 				$the_seo_framework = the_seo_framework();
-				if (isset( $the_seo_framework ) )
-					$the_seo_framework->call_function( array( $the_seo_framework, 'explode' ) );
+				if ( isset( $the_seo_framework ) )
+					$the_seo_framework->explode();
 			}
 		}
 		*/

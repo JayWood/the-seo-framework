@@ -47,11 +47,9 @@ class AutoDescription_Core {
 	 * Applies filters the_seo_framework_supported_post_types : The supported post types.
 	 * @since 2.3.1
 	 *
-	 * @param array $args
-	 *
 	 * @since 2.1.6
 	 */
-	public function post_type_support( $args = array() ) {
+	public function post_type_support() {
 
 		/**
 		 * Added product post type.
@@ -65,11 +63,11 @@ class AutoDescription_Core {
 			'jetpack-testimonial', 'jetpack-portfolio'
 		);
 
-		$post_types = (array) apply_filters( 'the_seo_framework_supported_post_types', $defaults, $args );
+		$post_types = (array) apply_filters( 'the_seo_framework_supported_post_types', $defaults );
 
-		$post_types = wp_parse_args( $args, $post_types );
+		$types = wp_parse_args( $defaults, $post_types );
 
-		foreach ( $post_types as $type )
+		foreach ( $types as $type )
 			add_post_type_support( $type, array( 'autodescription-meta' ) );
 
 	}
@@ -88,7 +86,7 @@ class AutoDescription_Core {
 		if ( $this->load_options )
 			$framework_links['settings'] = '<a href="' . esc_url( admin_url( 'admin.php?page=' . $this->page_id ) ) . '">' . __( 'SEO Settings', 'autodescription' ) . '</a>';
 
-		$framework_links['home'] = '<a href="'. esc_url( 'https://theseoframework.com' ) . '" target="_blank">' . _x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
+		$framework_links['home'] = '<a href="'. esc_url( 'https://theseoframework.com/' ) . '" target="_blank">' . _x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
 
 		return array_merge( $framework_links, $links );
 	}
@@ -457,9 +455,11 @@ class AutoDescription_Core {
 	}
 
 	/**
-	 * Get the term labels.
+	 * Get the current screen term labels.
 	 *
 	 * @since 2.6.0
+	 *
+	 * @staticvar string $term_name : Caution: This function only runs once per screen and doesn't check the term type more than once.
 	 *
 	 * @param object $term The Taxonomy Term object.
 	 * @param bool $singular Whether to fetch a singular or plural name.
@@ -476,12 +476,15 @@ class AutoDescription_Core {
 		if ( $term && is_object( $term ) ) {
 			$tax_type = $term->taxonomy;
 
+			static $term_labels = null;
+
 			/**
 			 * Dynamically fetch the term name.
 			 *
 			 * @since 2.3.1
 			 */
-			$term_labels = $this->get_tax_labels( $tax_type );
+			if ( is_null( $term_labels ) )
+				$term_labels = $this->get_tax_labels( $tax_type );
 
 			if ( $singular ) {
 				if ( isset( $term_labels->singular_name ) )

@@ -44,7 +44,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		$this->setup_ld_json_transient( $this->get_the_real_ID() );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
 
 		$output = $this->get_transient( $this->ld_json_transient );
 		if ( false === $output ) {
@@ -89,7 +89,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		 * Debug output.
 		 * @since 2.4.2
 		 */
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, array( 'LD Json transient output' => $output ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'LD Json transient output' => $output ) );
 
 		return $output;
 	}

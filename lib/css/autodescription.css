@@ -53,10 +53,6 @@ table.wp-list-table .column-price {
 	width: 8%;
 }
 
-#ad_seo {
-	width: 20%;
-}
-
 .ad-seo a {
 	text-decoration: none;
 	font-size: 13px;
@@ -110,6 +106,10 @@ span.ad-count-good {
 	font-weight: 600;
 }
 
+#ad_seo {
+	width: 18%;
+}
+
 /* WooCommerce fix */
 th:last-of-type#ad_seo {
 	width: 160px;
@@ -117,15 +117,11 @@ th:last-of-type#ad_seo {
 
 span.ad-seo {
 	display: block;
-	background-color: #f1f1f1;
 	width: 95%;
-	max-width: 260px;
-	border-radius: 30px;
+	max-width: 220px;
+	border-radius: 0;
 	padding: 3px;
-}
-
-span.ad-seo.square {
-	border-radius: 0px;
+	text-shadow: 0 0 3px rgba(0,0,0,0.3);
 }
 
 span.ad-seo.ad-100 {
@@ -135,16 +131,12 @@ span.ad-seo.ad-100 {
 span.ad-bar-wrap {
 	display: table;
 	width: 100%;
-	border-radius: 30px;
+	border-radius: 0;
 	margin: 0 auto;
 	border-collapse: separate;
 	border-spacing: 0;
 	vertical-align: middle;
 	position: relative;
-}
-
-span.ad-seo.square span.ad-bar-wrap {
-	border-radius: 0px;
 }
 
 span.ad-sec-wrap {
@@ -159,26 +151,31 @@ span.ad-sec-wrap {
 	text-align: center;
 	cursor: help;
 	height: 100%;
+	min-width: 12px;
 	vertical-align: top;
 	line-height: 1.625em;
-	box-shadow: 2px 6px 3px -2px rgba(255,255,255,0.2) inset, -2px -6px 3px -2px rgba(41,41,41,0.2) inset, 0px 0px 1px rgba(41,41,41,0.6);
+	box-shadow: 2px 0px 0px -1px rgba(0,0,0,0.1) inset, -2px 0px 0px -1px rgba(0,0,0,0.1) inset;
 }
 
-.ad-bar-wrap span.ad-sec-wrap:first-of-type,
-.ad-bar-wrap span.ad-sec-wrap:first-of-type a {
+span.ad-seo.pill,
+span.ad-seo.pill span.ad-bar-wrap {
+	border-radius: 30px;
+}
+
+span.ad-seo.pill span.ad-bar-wrap a {
+	box-shadow: 2px 6px 3px -2px rgba(255,255,255,.2) inset,-2px -6px 3px -2px rgba(41,41,41,.2) inset,0 0 1px rgba(41,41,41,.6);
+}
+
+.ad-seo.pill .ad-bar-wrap span.ad-sec-wrap:first-of-type,
+.ad-seo.pill .ad-bar-wrap span.ad-sec-wrap:first-of-type a {
 	border-top-left-radius: 30px;
 	border-bottom-left-radius: 30px;
 }
 
-.ad-bar-wrap span.ad-sec-wrap:last-of-type,
-.ad-bar-wrap span.ad-sec-wrap:last-of-type a {
+.ad-seo.pill .ad-bar-wrap span.ad-sec-wrap:last-of-type,
+.ad-seo.pill .ad-bar-wrap span.ad-sec-wrap:last-of-type a {
 	border-top-right-radius: 30px;
 	border-bottom-right-radius: 30px;
-}
-
-.ad-seo.square .ad-bar-wrap span.ad-sec-wrap,
-.ad-seo.square .ad-bar-wrap span.ad-sec-wrap a {
-	border-radius: 0px;
 }
 
 .ad-100 {
@@ -245,16 +242,16 @@ span.ad-seo .explanation-desc {
 	position: absolute;
 	width: auto;
 	min-width: 90%;
-	max-width: inherit;
+	max-width: 220px;
 	font-weight: 600;
 	background: #007bd2;
-	padding: 12px 16px;
+	padding: 8px 12px;
 	color: #fdfdfd;
-	border-radius: 3px;
-	z-index: 9999999;
-	box-shadow: 0px 0px 2px rgb(171, 171, 171), 2px 6px 3px -2px rgba(255,255,255,0.2) inset, -2px -6px 3px -2px rgba(41,41,41,0.05) inset;
-	border: 1px solid #ccc;
+	border-radius: 0px;
+	z-index: 900142;
+	box-shadow: 0px 0px 2px rgba(0,0,0,0.6);
 	left: 0;
+	right: 0;
 	text-align: left;
 }
 
@@ -265,9 +262,9 @@ span.ad-seo .explanation-desc span {
 span.ad-seo .explanation-desc div {
 	width: 0;
 	height: 0;
-	border-left: 10px solid transparent;
-	border-right: 10px solid transparent;
-	border-top: 10px solid #007bd2;
+	border-left: 12px solid transparent;
+	border-right: 12px solid transparent;
+	border-top: 12px solid #007bd2;
 	position: absolute;
 	bottom: -8px;
 	z-index: 9999999;
@@ -506,6 +503,12 @@ span.ad-seo .explanation-desc div {
 	.autodescription-metaboxes h3 .nav-tab {
 		margin-right: 7px;
 		margin-bottom: -1px;
+	}
+}
+
+@media screen and (max-width: 510px) {
+	span.ad-seo.ad-100 {
+		width: inherit;
 	}
 }
 

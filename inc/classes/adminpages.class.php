@@ -100,7 +100,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	/**
 	 * Enqueue page defaults early.
 	 *
-	 * Applies filter `the_seo_framework_admin_page_defaults` : Array
+	 * Applies filter 'the_seo_framework_admin_page_defaults' : Array
 	 * This filter adds i18n support for buttons and notices.
 	 *
 	 * @since 2.3.1
@@ -124,7 +124,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	/**
 	 * Adds menu links under "settings" in the wp-admin dashboard
 	 *
-	 * Applies filter `the_seo_framework_settings_capability`.
+	 * Applies filter 'the_seo_framework_settings_capability' : string
 	 * This filter changes the minimum role for viewing and editing the plugin's settings.
 	 *
 	 * @since 2.2.2
@@ -200,6 +200,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		// Enqueue scripts
 		add_action( 'admin_print_scripts-' . $this->network_pagehook, array( $this, 'enqueue_admin_javascript' ), 11 );
+
 	}
 
 	/**
@@ -228,7 +229,6 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		<div class="metabox-holder columns-2">
 			<div class="postbox-container-1">
 				<?php
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_before_siteadmin_metaboxes', $this->pagehook );
 
 				do_meta_boxes( $this->pagehook, 'main', null );
@@ -236,140 +236,20 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				if ( isset( $wp_meta_boxes[$this->pagehook]['main_extra'] ) )
 					do_meta_boxes( $this->pagehook, 'main_extra', null );
 
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_after_siteadmin_metaboxes', $this->pagehook );
 				?>
 			</div>
 			<div class="postbox-container-2">
 				<?php
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_before_siteadmin_metaboxes_side', $this->pagehook );
 
 				// @TODO fill this in
 
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_after_siteadmin_metaboxes_side', $this->pagehook );
 				?>
 			</div>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Use this as the settings admin callback to create an admin page with sortable metaboxes.
-	 * Create a 'settings_boxes' method to add metaboxes.
-	 *
-	 * @since 2.2.2
-	 */
-	public function admin() {
-		?>
-		<div class="wrap autodescription-metaboxes">
-		<form method="post" action="options.php">
-
-			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
-			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
-			<?php settings_fields( $this->settings_field ); ?>
-
-			<div class="top-wrap">
-				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-				<p class="top-buttons">
-					<?php
-					submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
-					submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
-					?>
-				</p>
-			</div>
-
-			<?php do_action( "{$this->pagehook}_settings_page_boxes", $this->pagehook ); ?>
-
-			<div class="bottom-buttons">
-				<?php
-				submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
-				submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
-				?>
-			</div>
-		</form>
-		</div>
-		<?php // Add postbox listeners ?>
-		<script type="text/javascript">
-			//<![CDATA[
-			jQuery(document).ready( function ($) {
-				// close postboxes that should be closed
-				$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
-				// postboxes setup
-				postboxes.add_postbox_toggles('<?php echo $this->pagehook; ?>');
-			});
-			//]]>
-		</script>
-		<?php
-	}
-
-	/**
-	 * Use this as the settings admin callback to create an admin page with sortable metaboxes.
-	 * Create a 'settings_boxes' method to add metaboxes.
-	 *
-	 * @since 2.2.2
-	 */
-	public function network_admin() {
-		?>
-		<div class="wrap autodescription-metaboxes">
-		<form method="post" action="options.php">
-
-			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
-			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
-			<?php settings_fields( $this->network_settings_field ); ?>
-
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<p class="top-buttons">
-				<?php
-				submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
-				submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
-				?>
-			</p>
-
-			<?php do_action( "{$this->network_pagehook}_settings_page_boxes", $this->network_pagehook ); ?>
-
-			<div class="bottom-buttons">
-				<?php
-				submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
-				submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
-				?>
-			</div>
-		</form>
-		</div>
-		<?php // Add postbox listeners ?>
-		<script type="text/javascript">
-			//<![CDATA[
-			jQuery(document).ready( function ($) {
-				// close postboxes that should be closed
-				$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
-				// postboxes setup
-				postboxes.add_postbox_toggles('<?php echo $this->network_pagehook; ?>');
-			});
-			//]]>
-		</script>
-		<?php
-	}
-
-	/**
-	 * Display notices on the save or reset of settings.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @return void
-	 */
-	public function notices() {
-
-		if ( false === $this->is_menu_page( $this->pagehook ) )
-			return;
-
-		if ( isset( $_REQUEST['settings-updated'] ) && 'true' === $_REQUEST['settings-updated'] )
-			echo $this->generate_dismissible_notice( $this->page_defaults['saved_notice_text'], 'updated' );
-		else if ( isset( $_REQUEST['reset'] ) && 'true' === $_REQUEST['reset'] )
-			echo $this->generate_dismissible_notice( $this->page_defaults['reset_notice_text'], 'warning' );
-		else if ( isset( $_REQUEST['error'] ) && 'true' === $_REQUEST['error'] )
-			echo $this->generate_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
-
 	}
 
 	/**
@@ -490,6 +370,123 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				$this->pagehook,
 				'main'
 			);
+
+	}
+
+	/**
+	 * Use this as the settings admin callback to create an admin page with sortable metaboxes.
+	 * Create a 'settings_boxes' method to add metaboxes.
+	 *
+	 * @since 2.2.2
+	 */
+	public function admin() {
+		?>
+		<div class="wrap autodescription-metaboxes">
+		<form method="post" action="options.php">
+
+			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
+			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
+			<?php settings_fields( $this->settings_field ); ?>
+
+			<div class="top-wrap">
+				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+				<p class="top-buttons">
+					<?php
+					submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
+					submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
+					?>
+				</p>
+			</div>
+
+			<?php do_action( "{$this->pagehook}_settings_page_boxes", $this->pagehook ); ?>
+
+			<div class="bottom-buttons">
+				<?php
+				submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
+				submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
+				?>
+			</div>
+		</form>
+		</div>
+		<?php // Add postbox listeners ?>
+		<script type="text/javascript">
+			//<![CDATA[
+			jQuery(document).ready( function ($) {
+				// close postboxes that should be closed
+				$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+				// postboxes setup
+				postboxes.add_postbox_toggles('<?php echo $this->pagehook; ?>');
+			});
+			//]]>
+		</script>
+		<?php
+	}
+
+	/**
+	 * Use this as the settings admin callback to create an admin page with sortable metaboxes.
+	 * Create a 'settings_boxes' method to add metaboxes.
+	 *
+	 * @since 2.2.2
+	 */
+	public function network_admin() {
+		?>
+		<div class="wrap autodescription-metaboxes">
+		<form method="post" action="options.php">
+
+			<?php wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false ); ?>
+			<?php wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false ); ?>
+			<?php settings_fields( $this->network_settings_field ); ?>
+
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<p class="top-buttons">
+				<?php
+				submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
+				submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
+				?>
+			</p>
+
+			<?php do_action( "{$this->network_pagehook}_settings_page_boxes", $this->network_pagehook ); ?>
+
+			<div class="bottom-buttons">
+				<?php
+				submit_button( $this->page_defaults['save_button_text'], 'primary', 'submit', false, array( 'id' => '' ) );
+				submit_button( $this->page_defaults['reset_button_text'], 'secondary autodescription-js-confirm-reset', $this->get_field_name( 'reset' ), false, array( 'id' => '' ) );
+				?>
+			</div>
+		</form>
+		</div>
+		<?php // Add postbox listeners ?>
+		<script type="text/javascript">
+			//<![CDATA[
+			jQuery(document).ready( function ($) {
+				// close postboxes that should be closed
+				$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+				// postboxes setup
+				postboxes.add_postbox_toggles('<?php echo $this->network_pagehook; ?>');
+			});
+			//]]>
+		</script>
+		<?php
+	}
+
+	/**
+	 * Display notices on the save or reset of settings.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @return void
+	 */
+	public function notices() {
+
+		if ( false === $this->is_menu_page( $this->pagehook ) )
+			return;
+
+		if ( isset( $_REQUEST['settings-updated'] ) && 'true' === $_REQUEST['settings-updated'] )
+			echo $this->generate_dismissible_notice( $this->page_defaults['saved_notice_text'], 'updated' );
+		else if ( isset( $_REQUEST['reset'] ) && 'true' === $_REQUEST['reset'] )
+			echo $this->generate_dismissible_notice( $this->page_defaults['reset_notice_text'], 'warning' );
+		else if ( isset( $_REQUEST['error'] ) && 'true' === $_REQUEST['error'] )
+			echo $this->generate_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
 
 	}
 

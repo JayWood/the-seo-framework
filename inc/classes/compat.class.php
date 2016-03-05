@@ -43,6 +43,10 @@ class AutoDescription_Compat extends AutoDescription_Debug {
 	 */
 	public function genesis_compat() {
 
+		//* Nothing to do on admin.
+		if ( $this->is_admin() )
+			return;
+
 		//* Reverse the removal of head attributes, this shouldn't affect SEO.
 		remove_filter( 'genesis_attr_head', 'genesis_attributes_empty_class' );
 		add_filter( 'genesis_attr_head', 'genesis_attributes_head' );
@@ -61,15 +65,10 @@ class AutoDescription_Compat extends AutoDescription_Debug {
 	public function no_more_genesis_seo( $plugins ) {
 
 		$plugins = array(
-				// Classes to detect.
 				'classes' => array(
 					'The_SEO_Framework_Load',
 				),
-
-				// Functions to detect.
 				'functions' => array(),
-
-				// Constants to detect.
 				'constants' => array(),
 			);
 
