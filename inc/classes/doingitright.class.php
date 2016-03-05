@@ -141,7 +141,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 				if ( '' !== $id ) {
 
-					if ( $this->is_wp_lists_edit() ) {
+					if ( ! $this->is_post_edit() && ! $this->is_term_edit() ) {
 						add_filter( 'manage_' . $id . '_columns', array( $this, 'add_column' ), 10, 1 );
 
 						$taxonomy = isset( $screen->taxonomy ) ? $screen->taxonomy : '';
