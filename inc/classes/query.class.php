@@ -278,6 +278,31 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	}
 
 	/**
+	 * Detects Post or Archive Lists in Admin.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @global object $current_screen
+	 *
+	 * @return bool We're on the edit screen.
+	 */
+	public function is_wp_lists_edit() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		global $current_screen;
+
+		if ( isset( $current_screen->base ) && ( ( 'edit' === $current_screen->base ) || ( 'edit-tags' === $current_screen->base ) ) )
+			return $cache = true;
+
+		return $cache = false;
+	}
+
+	/**
 	 * Detects author archives.
 	 *
 	 * @staticvar bool $cache
