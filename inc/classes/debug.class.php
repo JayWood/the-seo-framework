@@ -40,8 +40,9 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	public function __construct() {
 		parent::__construct();
 
-		add_action( 'admin_footer', array( $this, 'debug_output' ) );
 		add_action( 'admin_footer', array( $this, 'debug_screens' ) );
+		add_action( 'admin_footer', array( $this, 'debug_output' ) );
+
 	}
 
 	/**
@@ -228,7 +229,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	protected function error_handler( $error, $message ) {
 
 		$file = isset( $error['file'] ) ? $error['file'] : '';
-		$line = isset( $error['line'] ) ? $error['file'] : '';
+		$line = isset( $error['line'] ) ? $error['line'] : '';
 
 		if ( isset( $message ) ) {
 			echo "\r\n" . '<strong>Notice:</strong> ' . $message;
@@ -236,26 +237,6 @@ class AutoDescription_Debug extends AutoDescription_Core {
 			echo $line ? ' on line ' . $line : '';
 			echo ".<br>\r\n";
 		}
-	}
-
-	/**
-	 * Echos debug output.
-	 *
-	 * @access private
-	 * @since 2.6.0
-	 */
-	public function debug_output() {
-
-		if ( $this->the_seo_framework_debug && '' !== $this->debug_output ) {
-			if ( $this->the_seo_framework_debug_hidden ) echo "<!--\r\n";
-
-			?><div style="float:right;margin:3em;padding:1em;border:1px solid;background:#fff;color:#000;"><?php
-				echo $this->debug_output;
-			?></div><?php
-
-			if ( $this->the_seo_framework_debug_hidden ) echo "\r\n-->";
-		}
-
 	}
 
 	/**
@@ -272,12 +253,27 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		if ( $this->the_seo_framework_debug ) {
 			global $current_screen;
 
-			?><div style="float:right;margin:3em;padding:1em;border:1px solid;background:#fff;color:#000;"><?php
+			$this->debug_init( __CLASS__, __FUNCTION__, false, get_defined_vars() );
+		}
 
-				foreach( $current_screen as $screen )
-					echo "<p>$screen</p>";
+	}
 
+	/**
+	 * Echos debug output.
+	 *
+	 * @access private
+	 * @since 2.6.0
+	 */
+	public function debug_output() {
+
+		if ( $this->the_seo_framework_debug && '' !== $this->debug_output ) {
+			if ( $this->the_seo_framework_debug_hidden ) echo "<!--\r\n";
+
+			?><div style="float:right;margin:3em;padding:1em;border:1px solid;background:#fff;color:#000;max-width:80%;max-width:calc( 100% - 280px )"><?php
+				echo $this->debug_output;
 			?></div><?php
+
+			if ( $this->the_seo_framework_debug_hidden ) echo "\r\n-->";
 		}
 
 	}
@@ -397,15 +393,16 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 * Wrap debug key in a colored span.
 	 *
 	 * @param string $key The debug key.
+	 * @param bool $ignore Ignore the hidden output.
 	 *
 	 * @since 2.3.9
 	 * @access private
 	 *
 	 * @return string
 	 */
-	public function debug_key_wrapper( $key ) {
+	public function debug_key_wrapper( $key, $ignore = false ) {
 
-		if ( false === $this->the_seo_framework_debug_hidden )
+		if ( $ignore || false === $this->the_seo_framework_debug_hidden )
 			return '<font color="chucknorris">' . esc_attr( (string) $key ) . '</font>';
 
 		return esc_attr( (string) $key );
@@ -415,18 +412,19 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 * Wrap debug value in a colored span.
 	 *
 	 * @param string $value The debug value.
+	 * @param bool $ignore Ignore the hidden output.
 	 *
 	 * @since 2.3.9
 	 * @access private
 	 *
 	 * @return string
 	 */
-	public function debug_value_wrapper( $value ) {
+	public function debug_value_wrapper( $value, $ignore = false ) {
 
 		if ( ! is_scalar( $value ) )
 			return 'Debug message: not scalar';
 
-		if ( false === $this->the_seo_framework_debug_hidden )
+		if ( $ignore || false === $this->the_seo_framework_debug_hidden )
 			return '<span class="wp-ui-notification">' . esc_attr( (string) trim( $value ) ) . '</span>';
 
 		return esc_attr( (string) $value );
@@ -439,50 +437,67 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 *
 	 * @param string $class The class name.
 	 * @param string $method The function name.
+	 * @param bool $store Whether to store the output in cache for next run to pick up on.
+	 *
 	 * @param mixed function args.
 	 *
 	 * @access private
 	 *
 	 * @return void early if debugging is disabled.
 	 */
-	public function debug_init( $class, $method ) {
+	protected function debug_init( $class, $method, $store = false ) {
 
 		if ( false === $this->the_seo_framework_debug )
 			return;
 
 		$output = '';
 
-		if ( func_num_args() >= 3 ) {
-			if ( $args = func_get_args() ) {
+		if ( func_num_args() >= 4 ) {
 
-				$output = 'START: ' . $class . '::' . $method . "\r\n";
+			static $cached_args = array();
+
+			$args = array_slice( func_get_args(), 3 );
+
+			if ( $store ) {
+				$cached_args[$class][$method] = $args;
+				return;
+			} else {
+				if ( isset( $cached_args[$class][$method] ) ) {
+					$args = array_merge( $cached_args[$class][$method], $args );
+					$cached_args[$class][$method] = null;
+
+					//* We created a dimension too many with the merge.
+				//	$args = $args[0];
+				}
+			}
+
+			if ( $args ) {
+
+				$output = $class . '::' . $method . "\r\n";
 
 				foreach ( $args as $num => $a ) {
-
-					if ( $num >= 2 ) {
-						if ( is_array( $a ) ) {
-							foreach ( $a as $k => $v ) {
-								$output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="padding-left:6px">';
-									$output .= (string) $k . ': ';
-									$output .= $this->the_seo_framework_debug_hidden ? '' : '<br>';
-									$output .= gettype( $v ) . ': [';
-									$output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="padding-left:12px">';
-										$output .= $this->get_debug_information( $v );
-									$output .= $this->the_seo_framework_debug_hidden ? '' : '</div><br>';
-									$output .= ']' . "\r\n";
-								$output .= $this->the_seo_framework_debug_hidden ? '' : '</div>';
-							}
-						} else {
+					if ( is_array( $a ) ) {
+						foreach ( $a as $k => $v ) {
 							$output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="padding-left:6px">';
-								$output .= (string) $num . ': ';
+								$output .= (string) $k . ': ';
 								$output .= $this->the_seo_framework_debug_hidden ? '' : '<br>';
-								$output .= gettype( $a ) . ': [';
+								$output .= gettype( $v ) . ': [';
 								$output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="padding-left:12px">';
-									$output .= $this->get_debug_information( $a );
+									$output .= $this->get_debug_information( $v );
 								$output .= $this->the_seo_framework_debug_hidden ? '' : '</div><br>';
 								$output .= ']' . "\r\n";
 							$output .= $this->the_seo_framework_debug_hidden ? '' : '</div>';
 						}
+					} else {
+						$output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="padding-left:6px">';
+							$output .= (string) $num . ': ';
+							$output .= $this->the_seo_framework_debug_hidden ? '' : '<br>';
+							$output .= gettype( $a ) . ': [';
+							$output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="padding-left:12px">';
+								$output .= $this->get_debug_information( $a );
+							$output .= $this->the_seo_framework_debug_hidden ? '' : '</div><br>';
+							$output .= ']' . "\r\n";
+						$output .= $this->the_seo_framework_debug_hidden ? '' : '</div>';
 					}
 				}
 			}
@@ -496,7 +511,6 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		}
 
 	}
-
 
 	/**
 	 * Count the timings and memory usage.
@@ -555,21 +569,6 @@ class AutoDescription_Debug extends AutoDescription_Core {
 				echo (string) ( $difference_memory / 1024 ) . "kiB\r\n";
 			}
 
-			//* Reflect.
-			/* Mockup, untested.
-			$class = new ReflectionClass( $this );
-			$methods = $class->getMethods();
-
-			$timer = 0;
-
-			foreach ( $methods as $method ) {
-				$start = microtime( start );
-				$a = @ (string) $this->call_function( array( &$method['class'], $method['name'] ) );
-				$timer = $timer + $start - microtime( true );
-			}
-
-			$this->debug_output .= '<p><br><br><strong>REFLECTION Timing:</strong> ' . $timer . ' seconds.<br><br></p>';
-			*/
 		}
 
 	}

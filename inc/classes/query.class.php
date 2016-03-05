@@ -228,6 +228,56 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	}
 
 	/**
+	 * Detects Term edit screen in WP Admin.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @global object $current_screen
+	 *
+	 * @return bool We're on Term Edit screen.
+	 */
+	public function is_term_edit() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		global $current_screen;
+
+		if ( isset( $current_screen->base ) && ( 'term' === $current_screen->base ) )
+			return $cache = true;
+
+		return $cache = false;
+	}
+
+	/**
+	 * Detects Post edit screen in WP Admin.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @global object $current_screen
+	 *
+	 * @return bool We're on Post Edit screen.
+	 */
+	public function is_post_edit() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		global $current_screen;
+
+		if ( isset( $current_screen->base ) && ( 'post' === $current_screen->base ) )
+			return $cache = true;
+
+		return $cache = false;
+	}
+
+	/**
 	 * Detects author archives.
 	 *
 	 * @staticvar bool $cache
@@ -245,7 +295,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		if ( isset( $cache[$author] ) )
 			return $cache[$author];
 
-		if ( $this->is_archive( $author ) && is_author( $author ) )
+		if ( $this->is_archive() && is_author( $author ) )
 			return $cache[$author] = true;
 
 		return $cache[$author] = false;

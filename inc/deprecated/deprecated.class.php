@@ -253,4 +253,40 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 		return $this->get_the_real_archive_title();
 	}
 
+	/**
+	 * Adds the SEO Bar.
+	 *
+	 * @param string $column the current column    : If it's a taxonomy, this is empty
+	 * @param int $post_id the post id             : If it's a taxonomy, this is the column name
+	 * @param string $tax_id this is empty         : If it's a taxonomy, this is the taxonomy id
+	 *
+	 * @param string $status the status in html
+	 *
+	 * @staticvar string $type_cache
+	 * @staticvar string $column_cache
+	 *
+	 * @since 2.1.9
+	 *
+	 * @deprecated
+	 * @since 2.6.0
+	 */
+	public function seo_column( $column, $post_id, $tax_id = '' ) {
+		$this->_deprecated_function( 'AutoDescription_DoingItRight::' . __FUNCTION__, '2.6.0', 'AutoDescription_DoingItRight::seo_bar()' );
+
+		return $this->seo_bar( $column, $post_id, $tax_id );
+	}
+
+	/**
+	 * Ping Yahoo
+	 *
+	 * @since 2.2.9
+	 * @deprecated
+	 * @since 2.6.0
+	 */
+	public function ping_yahoo() {
+		$this->_deprecated_function( 'AutoDescription_Sitemaps::' . __FUNCTION__, '2.6.0', 'AutoDescription_DoingItRight::ping_bing()' );
+
+		$this->ping_bing();
+	}
+
 }

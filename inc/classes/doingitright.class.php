@@ -34,9 +34,14 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	public function __construct() {
 		parent::__construct();
 
-		add_action( 'admin_init', array( $this, 'post_state' ) );
+		//* Initialize post states.
+		add_action( 'current_screen', array( $this, 'post_state' ) );
 
+		//* Ajax handlers for columns.
+		add_action( 'admin_init', array( $this, 'init_columns_ajax' ) );
+		//* Initialize columns.
 		add_action( 'current_screen', array( $this, 'init_columns' ) );
+
 	}
 
 	/**
@@ -50,29 +55,29 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 */
 	public function post_state() {
 
-		$allow_states = (bool) apply_filters( 'the_seo_framework_allow_states', true );
+		//* Only load on singular pages.
+		if ( $this->is_singular() ) {
 
-		//* Prevent this function from running if this plugin is set to disabled.
-		if ( false === $allow_states )
-			return;
+			//* Prevent this function from running if this plugin is set to disabled.
+			$allow_states = (bool) apply_filters( 'the_seo_framework_allow_states', true );
 
-		add_filter( 'display_post_states', array( $this, 'add_post_state' ) );
+			if ( $allow_states )
+				add_filter( 'display_post_states', array( $this, 'add_post_state' ) );
+
+		}
 
 	}
 
 	/**
 	 * Adds post states in post/page edit.php query
 	 *
-	 * @param array states 		the current post state
-	 * @param string redirected	$this->get_custom_field( 'redirect' );
-	 * @param string noindex	$this->get_custom_field( '_genesis_noindex' );
+	 * @param array states The current post states array
 	 *
 	 * @since 2.1.0
 	 */
 	public function add_post_state( $states = array() ) {
 
 		$post_id = $this->get_the_real_ID( false );
-
 		$searchexclude = (bool) $this->get_custom_field( 'exclude_local_search', $post_id );
 
 		if ( $searchexclude )
@@ -81,43 +86,78 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		return $states;
 	}
 
+	/**
+	 * AJAX wrapper for init_columns
+	 *
+	 * @since 2.6.0
+	 */
+	public function init_columns_ajax() {
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+
+			//* Securely check the referrer, instead of leaving holes everywhere.
+			if ( check_ajax_referer( 'add-tag', '_wpnonce_add-tag', false ) )
+				$this->init_columns( '', true );
+
+		}
+
+	}
 
 	/**
 	 * Initializes columns
 	 *
 	 * Applies filter the_seo_framework_show_seo_column : Show the SEO column in edit.php
 	 *
-	 * @param array $support_admin_pages the supported admin pages
+	 * @param object|empty $screen WP_Screen
+	 * @param bool $doing_ajax Whether we're doing an AJAX response.
 	 *
 	 * @since 2.1.9
 	 */
-	public function init_columns() {
+	public function init_columns( $screen = '', $doing_ajax = false ) {
 
 		$show_seo_column = (bool) apply_filters( 'the_seo_framework_show_seo_column', true );
 
-		if ( $show_seo_column && $this->post_type_supports_custom_seo() ) {
-			global $current_screen;
+		if ( $doing_ajax ) {
+			$post_type = isset( $_POST['post_type'] ) ? $_POST['post_type'] : '';
+		} else {
+			$post_type = isset( $screen->post_type ) ? $screen->post_type : '';
+		}
 
-			$id = isset( $current_screen->id ) ? $current_screen->id : '';
+		if ( $show_seo_column && $this->post_type_supports_custom_seo( $post_type ) ) {
 
-			if ( '' !== $id ) {
+			if ( $doing_ajax ) {
 
-				$type = $id;
-				$slug = substr( $id, (int) 5 );
+				$id = isset( $_POST['screen'] ) ? $_POST['screen'] : false;
+				$taxonomy = isset( $_POST['taxonomy'] ) ? $_POST['taxonomy'] : false;
 
-				if ( 'post' !== $type && 'page' !== $type ) {
-					add_filter( "manage_{$type}_columns", array( $this, 'add_column' ), 1, 1 );
-					add_filter( "manage_{$slug}_custom_column", array( $this, 'seo_column' ), 1, 3 );
+				if ( $taxonomy && $id ) {
+					add_filter( 'manage_' . $id . '_columns', array( $this, 'add_column' ), 1 );
+					add_action( 'manage_' . $taxonomy . '_custom_column', array( $this, 'seo_bar_ajax' ), 1, 3 );
 				}
 
-				/**
-				 * Always load pages and posts.
-				 * Many CPT plugins rely on these.
-				 */
-				add_filter( 'manage_posts_columns', array( $this, 'add_column' ), 1, 1 );
-				add_filter( 'manage_pages_columns', array( $this, 'add_column' ), 1, 1 );
-				add_filter( 'manage_posts_custom_column', array( $this, 'seo_column' ), 1, 3 );
-				add_filter( 'manage_pages_custom_column', array( $this, 'seo_column' ), 1, 3 );
+			} else {
+
+				$id = isset( $screen->id ) ? $screen->id : '';
+
+				if ( '' !== $id ) {
+
+					if ( ! $this->is_post_edit() && ! $this->is_term_edit() ) {
+						add_filter( 'manage_' . $id . '_columns', array( $this, 'add_column' ), 10, 1 );
+
+						$taxonomy = isset( $screen->taxonomy ) ? $screen->taxonomy : '';
+
+						if ( $taxonomy )
+							add_action( 'manage_' . $taxonomy . '_custom_column', array( $this, 'seo_bar' ), 1, 3 );
+
+						/**
+						 * Always load pages and posts.
+						 * Many CPT plugins rely on these.
+						 */
+						add_action( 'manage_posts_custom_column', array( $this, 'seo_bar' ), 1, 3 );
+						add_action( 'manage_pages_custom_column', array( $this, 'seo_bar' ), 1, 3 );
+					}
+
+				}
 			}
 
 		}
@@ -125,7 +165,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	}
 
 	/**
-	 * Adds SEO column on edit.php
+	 * Adds SEO column on edit(-tags).php
 	 *
 	 * @param array $columns The existing columns
 	 *
@@ -149,6 +189,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			'tags',
 			'bbp_topic_freshness',
 			'bbp_forum_freshness',
+			'bbp_reply_created',
 		);
 
 		foreach ( $order_keys as $key ) {
@@ -157,14 +198,14 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 				break;
 		}
 
-		// I tried but found nothing
+		//* I tried but found nothing
 		if ( false === $offset ) {
 			//* Add SEO bar at the end of columns.
 			$columns = array_merge( $columns, $seocolumn );
 		} else {
 			//* Add seo bar between columns.
 
-			// Cache columns.
+			//* Cache columns.
 			$columns_before = $columns;
 
 			$columns = array_merge(
@@ -178,7 +219,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	}
 
 	/**
-	 * Adds SEO column to two to the left.
+	 * Adds the SEO Bar.
 	 *
 	 * @param string $column the current column    : If it's a taxonomy, this is empty
 	 * @param int $post_id the post id             : If it's a taxonomy, this is the column name
@@ -189,11 +230,9 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 * @staticvar string $type_cache
 	 * @staticvar string $column_cache
 	 *
-	 * @since 2.1.9
+	 * @since 2.6.0
 	 */
-	public function seo_column( $column, $post_id, $tax_id = '' ) {
-
-		$status = '';
+	public function seo_bar( $column, $post_id, $tax_id = '' ) {
 
 		static $type_cache = null;
 		static $column_cache = null;
@@ -222,15 +261,79 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		}
 
 		if ( 'ad_seo' === $column )
-			$status = $this->post_status( $post_id, $type_cache, true );
+			echo $this->post_status( $post_id, $type_cache, true );
 
-		return $status;
+	}
+
+	/**
+	 * Adds SEO column to edit screens.
+	 *
+	 * @param string $column the current column    : If it's a taxonomy, this is empty
+	 * @param int $post_id the post id             : If it's a taxonomy, this is the column name
+	 * @param string $tax_id this is empty         : If it's a taxonomy, this is the taxonomy id
+	 *
+	 * @param string $status the status in html
+	 *
+	 * @staticvar string $type_cache
+	 * @staticvar string $column_cache
+	 *
+	 * @since 2.1.9
+	 */
+	public function seo_bar_ajax( $column, $post_id, $tax_id = '' ) {
+
+		$is_term = false;
+
+		/**
+		 * Params are shifted.
+		 * @link https://core.trac.wordpress.org/ticket/33521
+		 */
+		if ( '' !== $tax_id ) {
+			$is_term = true;
+			$column = $post_id;
+		}
+
+		if ( 'ad_seo' === $column ) {
+			$context = __( 'Refresh to see the SEO bar status.', 'autodescription' );
+
+			$ajax_id = $column . $tax_id;
+
+			echo $this->post_status_special( $context, '?', 'unknown', $is_term, $ajax_id );
+		}
+
+	}
+
+	/**
+	 * Wrap a single-line block for the SEO bar, showing special statuses.
+	 *
+	 * @param string $context The hover/screenreader context.
+	 * @param string $symbol The single-character symbol.
+	 * @param string $class The SEO block color code. : 'bad', 'okay', 'good', 'unknown'.
+	 * @param int|null $ajax_id The unique Ajax ID to generate a small on-hover script for this ID. May be Arbitrary.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The special block with wrap.
+	 */
+	protected function post_status_special( $context, $symbol = '?', $color = 'unknown', $is_term = '', $ajax_id = null ) {
+
+		$classes = $this->get_the_seo_bar_classes();
+
+		$args = array();
+		$args['class'] = $classes[$color];
+		$args['width'] = $classes['ad-100'];
+		$args['notice'] = $context;
+		$args['indicator'] = $symbol;
+
+		$block = $this->wrap_the_seo_bar_block( $args );
+
+		if ( empty( $is_term ) )
+			$is_term = $this->is_archive();
+
+		return $this->get_the_seo_bar_wrap( $block, $is_term, $ajax_id );
 	}
 
 	/**
 	 * Renders post status. Caches the output.
-	 *
-	 * Applies filter the_seo_framework_seo_bar_squared : Make the SEO Bar squared.
 	 *
 	 * @param int $post_id The Post ID or taxonomy ID
 	 * @param string $type Is fetched on edit.php, inpost, taxonomies, etc.
@@ -250,7 +353,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( empty( $post_id ) )
 			$post_id = $this->get_the_real_ID();
 
-		$run = isset( $post_id ) && false !== $post_id ? true : false;
+		$run = isset( $post_id ) && $post_id ? true : false;
 
 		//* Only run when post ID is found.
 		if ( $run ) {
@@ -315,12 +418,14 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			);
 
 			if ( $is_term ) {
-				echo $this->the_seo_bar_term( $args );
+				return $this->the_seo_bar_term( $args );
 			} else {
-				echo $this->the_seo_bar_page( $args );
+				return $this->the_seo_bar_page( $args );
 			}
 		} else {
-			echo '<span>' . __( 'Failed to fetch post ID.', 'autodescription' ) . '</span>';
+			$context = __( 'Failed to fetch post ID.', 'autodescription' );
+
+			return $this->post_status_special( $context, '!', 'bad' );
 		}
 	}
 
@@ -352,21 +457,35 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	 * Wrap the SEO bar.
 	 *
 	 * @staticvar string $class
+	 * @since 2.6.0
 	 *
 	 * @param string $content The SEO Bar content.
-	 * @param bool $term Whether the bar is for a term.
+	 * @param bool $is_term Whether the bar is for a term.
+	 * @param int|null $ajax_id The unique Ajax ID to generate a small on-hover script for.
+	 *
+	 * If Ajax ID is set, a small jQuery script will also be output to reset the
+	 * DOM element for the status bar hover.
+	 *
+	 * @return string The SEO Bar wrapped.
 	 */
-	protected function get_the_seo_bar_wrap( $content, $term ) {
+	protected function get_the_seo_bar_wrap( $content, $is_term, $ajax_id = null ) {
 
 		static $class = null;
 
-		if ( ! isset( $class ) ) {
+		if ( is_null( $class ) ) {
 			$classes = $this->get_the_seo_bar_classes();
 
-			$termwidth = $term ? ' ' . $classes['100%'] : '';
-			$square = $this->square_the_seo_bar() ? ' ' . $classes['square'] : '';
+			$width = $is_term ? ' ' . $classes['100%'] : '';
+			$pill = $this->pill_the_seo_bar() ? ' ' . $classes['pill'] : '';
 
-			$class = 'ad-seo clearfix' . $termwidth . $square;
+			$class = 'ad-seo clearfix' . $width . $pill;
+		}
+
+		if ( isset( $ajax_id ) ) {
+			//* Ajax handler.
+			$script = '<script>jQuery("#' . esc_attr( $ajax_id ) . '").on( "hover click", autodescription.statusBarHover );</script>';
+
+			return sprintf( '<span class="%s" id="%s"><span class="ad-bar-wrap">%s</span></span>', $class, $ajax_id, $content ) . $script;
 		}
 
 		return sprintf( '<span class="%s"><span class="ad-bar-wrap">%s</span></span>', $class, $content );
@@ -1459,7 +1578,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			'good' 		=> 'ad-seo-good',
 			'unknown' 	=> 'ad-seo-unknown',
 
-			'square' => 'square',
+			'pill' => 'pill',
 
 			'100%' 	=> 'ad-100',
 			'60%' 	=> 'ad-60',
@@ -1515,23 +1634,27 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	}
 
 	/**
-	 * Whether to square the seo bar.
+	 * Whether to square or pill the seo bar.
 	 *
-	 * Applies filters 'the_seo_framework_seo_bar_squared' : boolean
+	 * Applies filters 'the_seo_framework_seo_bar_pill' : boolean
 	 *
 	 * @staticvar bool $cache
 	 * @since 2.6.0
 	 *
 	 * @return bool
 	 */
-	protected function square_the_seo_bar() {
+	protected function pill_the_seo_bar() {
 
 		static $cache = null;
 
 		if ( isset( $cache ) )
 			return $cache;
 
-		return $cache = (bool) apply_filters( 'the_seo_framework_seo_bar_squared', false );
+		//* var_dump() TODO miscelaneous option.
+		$option = false;
+		$filter = (bool) apply_filters( 'the_seo_framework_seo_bar_pill', false );
+
+		return $cache = $option || $filter ? true : false;
 	}
 
 }

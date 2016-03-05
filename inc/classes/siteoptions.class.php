@@ -78,11 +78,15 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		//* Register defaults early.
 		add_action( 'after_setup_theme', array( $this, 'initialize_defaults' ), 0 );
+		add_action( 'after_setup_theme', array( $this, 'initialize_defaults_admin' ), 0 );
 
 		$this->settings_field = THE_SEO_FRAMEWORK_SITE_OPTIONS;
 
 		//* Set up site settings and save/reset them
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+		//* Update site options at plugin update.
+		add_action( 'admin_init', array( $this, 'site_updated_plugin_option' ) );
 
 		// The page_id
 		$this->page_id = 'autodescription-settings';
@@ -223,7 +227,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'sitemaps_robots'		=> 1,	// Add sitemaps location to robots.txt
 			'ping_google'			=> 1,	// Ping Google
 			'ping_bing'				=> 1,	// Ping Bing
-			'ping_yahoo'			=> 1,	// Ping Yahoo
 			'ping_yandex'			=> 1,	// Ping Yandex
 
 			// Feed
@@ -233,6 +236,24 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Cache
 			$this->plugin_updated 	=> 1,	// Plugin update cache.
 		);
+
+	}
+
+	/**
+	 * Initializes default settings very early at the after_setup_theme hook
+	 * Therefore supports is_rtl().
+	 *
+	 * Admin only.
+	 *
+	 * @since 2.5.0
+	 * @access private
+	 *
+	 * @return void Early if not WP-admin.
+	 */
+	public function initialize_defaults_admin() {
+
+		if ( ! $this->is_admin() )
+			return;
 
 		/**
 		 * Warned site settings. Only accepts checkbox options.
@@ -310,19 +331,12 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'sitemaps_robots'		=> 0,	// Add sitemaps location to robots.txt
 			'ping_google'			=> 0,	// Ping Google
 			'ping_bing'				=> 0,	// Ping Bing
-			'ping_yahoo'			=> 0,	// Ping Yahoo
 			'ping_yandex'			=> 0,	// Ping Yandex
 
 			// Feed
 			'excerpt_the_feed'		=> 0,	// Generate feed Excerpts
 			'source_the_feed'		=> 0,	// Add backlink at the end of the feed
-
-			// Cache
-			$this->plugin_updated 	=> 1, // Plugin update cache.
 		);
-
-		//* Update site options at plugin update.
-		add_action( 'admin_init', array( $this, 'site_updated_plugin_option' ) );
 
 	}
 
@@ -361,7 +375,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		}
 
 		//* Stop this madness from happening again until next update.
-		$options[$plugin_updated] = true;
+		$options[$plugin_updated] = 1;
 
 		if ( update_option( $this->settings_field, $options ) && $updated ) {
 			if ( $this->load_options && is_super_admin() ) {
@@ -408,7 +422,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	/**
 	 * Return current option array.
 	 *
-	 * Applies `the_seo_framework_get_options` filters.
+	 * Applies filters 'the_seo_framework_get_options' : boolean
 	 *
 	 * @since 2.6.0
 	 * @staticvar array $cache The option cache.
@@ -462,22 +476,14 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		}
 
 		//* Setup caches
-		static $settings_cache = array();
-		static $options_cache  = array();
+		static $options_cache = array();
 
 		//* Check options cache
 		if ( isset( $options_cache[$setting][$key] ) )
 			//* Option has been cached
 			return $options_cache[$setting][$key];
 
-		//* Check settings cache
-		if ( isset( $settings_cache[$setting] ) ) {
-			//* Setting has been cached
-			$options = apply_filters( 'the_seo_framework_get_options', $settings_cache[$setting], $setting );
-		} else {
-			//* Set value and cache setting
-			$options = $settings_cache[$setting] = apply_filters( 'the_seo_framework_get_options', get_option( $setting ), $setting );
-		}
+		$options = $this->get_all_options( $setting );
 
 		//* Check for non-existent option
 		if ( ! is_array( $options ) || ! array_key_exists( $key, (array) $options ) ) {

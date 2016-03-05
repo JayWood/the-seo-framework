@@ -833,16 +833,18 @@ class AutoDescription_Detect extends AutoDescription_Render {
 			static $post_type = null;
 
 			//* Detect post type if empty or not set.
-			if ( ! isset( $post_type ) || empty( $post_type ) ) {
+			if ( is_null( $post_type ) || empty( $post_type ) ) {
 				global $current_screen;
 
-				static $post_page = null;
+				if ( isset( $current_screen->post_type ) ) {
+					static $post_page = null;
 
-				if ( ! isset( $post_page ) )
-					$post_page = (array) get_post_types( array( 'public' => true ) );
+					if ( ! isset( $post_page ) )
+						$post_page = (array) get_post_types( array( 'public' => true ) );
 
-				//* Smart var. This elemenates the need for a foreach loop, reducing resource usage.
-				$post_type = isset( $post_page[ $current_screen->post_type ] ) ? $current_screen->post_type : '';
+					//* Smart var. This elemenates the need for a foreach loop, reducing resource usage.
+					$post_type = isset( $post_page[ $current_screen->post_type ] ) ? $current_screen->post_type : '';
+				}
 			}
 
 			//* No post type has been found.
@@ -861,10 +863,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		 *
 		 * @since 2.3.5
 		 */
-		if ( post_type_supports( $post_type, 'autodescription-meta' ) )
-			return $supported[$post_type] = true;
-
-		if ( $this->post_type_supports_inpost( $post_type ) )
+		if ( post_type_supports( $post_type, 'autodescription-meta' ) || $this->post_type_supports_inpost( $post_type ) )
 			return $supported[$post_type] = true;
 
 		return $supported[$post_type] = false;

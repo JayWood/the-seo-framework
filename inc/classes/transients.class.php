@@ -73,7 +73,6 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		//* Delete Sitemap and Description transients on post publish/delete.
 		add_action( 'publish_post', array( $this, 'delete_transients_post' ) );
 		add_action( 'delete_post', array( $this, 'delete_transients_post' ) );
-		add_action( 'save_post', array( $this, 'delete_transients_post' ) );
 
 		add_action( 'edit_term', array( $this, 'delete_auto_description_transients_term' ), 10, 3 );
 		add_action( 'delete_term', array( $this, 'delete_auto_description_transients_term' ), 10, 4 );
@@ -99,14 +98,15 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 * @since 2.6.0
 	 *
 	 * @param string $transient Transient name. Expected to not be SQL-escaped.
-	 * @return mixed Value of the transient.
+	 *
+	 * @return mixed|bool Value of the transient. False on failure or non existing transient.
 	 */
 	public function get_transient( $transient ) {
 
-		if ( false === $this->the_seo_framework_use_transients )
-			return false;
+		if ( $this->the_seo_framework_use_transients )
+			return get_transient( $transient );
 
-		return get_transient( $transient );
+		return false;
 	}
 
 	/**
@@ -120,14 +120,12 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 * @param string $transient Transient name. Expected to not be SQL-escaped.
 	 * @param string $value Transient value. Expected to not be SQL-escaped.
 	 * @param int $expiration Optional Transient expiration date, optional. Expected to not be SQL-escaped.
-	 * @return mixed Value of the transient.
 	 */
 	public function set_transient( $transient, $value, $expiration = '' ) {
 
-		if ( false === $this->the_seo_framework_use_transients )
-			return;
+		if ( $this->the_seo_framework_use_transients )
+			set_transient( $transient, $value, $expiration );
 
-		set_transient( $transient, $value, $expiration );
 	}
 
 	/**

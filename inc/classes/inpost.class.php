@@ -44,7 +44,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		add_action( 'add_meta_boxes', array( $this, 'add_inpost_seo_box_init' ), 5 );
 
 		//* Enqueue taxonomy meta boxes
-		add_action( 'admin_init', array( $this, 'add_taxonomy_seo_box_init' ), 9 );
+		add_action( 'current_screen', array( $this, 'add_taxonomy_seo_box_init' ) );
 
 		/**
 		 * Applies filters bool|string the_seo_framework_inpost_seo_bar :
@@ -69,12 +69,13 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	public function add_inpost_seo_box_init() {
 
 		if ( $this->detect_seo_plugins() )
-			return '';
+			return;
 
 		$show_seobox = (bool) apply_filters( 'the_seo_framework_seobox_output', true );
 
 		if ( $show_seobox )
 			add_action( 'add_meta_boxes', array( $this, 'add_inpost_seo_box' ), 10 );
+
 	}
 
 	/**
@@ -84,9 +85,17 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 */
 	public function add_taxonomy_seo_box_init() {
 
-		//* Add taxonomy meta boxes
-		foreach ( get_taxonomies( array( 'public' => true ) ) as $tax_name )
-			add_action( $tax_name . '_edit_form', array( &$this, 'pre_seo_box' ), 10, 2 );
+		//* @since 2.6.0
+		if ( $this->detect_seo_plugins() )
+			return;
+
+		//* @since 2.6.0
+		if ( $this->is_term_edit() ) {
+			//* Add taxonomy meta boxes
+			foreach ( get_taxonomies( array( 'public' => true ) ) as $tax_name )
+				add_action( $tax_name . '_edit_form', array( &$this, 'pre_seo_box' ), 10, 2 );
+
+		}
 
 	}
 
@@ -572,7 +581,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		<p>
 			<label for="autodescription_canonical">
 				<strong><?php _e( 'Custom Canonical URL', 'autodescription' ); ?></strong>
-				<a href="https://support.google.com/webmasters/answer/139066?hl=<?php echo $language; ?>" target="_blank" title="&lt;link rel=&quot;canonical&quot; /&gt;">[?]</a>
+				<a href="https://support.google.com/webmasters/answer/139066?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Preferred %s URL location', 'autodescription' ), $type ); ?>">[?]</a>
 			</label>
 		</p>
 		<p>
