@@ -71,6 +71,15 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	protected $plugin_updated;
 
 	/**
+	 * Holds the update notification.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @var string The updated notification.
+	 */
+	protected $plugin_updated_notification;
+
+	/**
 	 * Constructor, load parent constructor and set up cachable variables.
 	 */
 	public function __construct() {
@@ -83,7 +92,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		$this->settings_field = THE_SEO_FRAMEWORK_SITE_OPTIONS;
 
 		//* Set up site settings and save/reset them
-		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ), 5 );
 
 		//* Update site options at plugin update.
 		add_action( 'admin_init', array( $this, 'site_updated_plugin_option' ) );
@@ -356,18 +365,21 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		$plugin_updated = $this->plugin_updated;
 
-		//* If this page doesn't store settings, no need to register them
+		/**
+		 * Prevent this function from running more than once after update.
+		 * Also prevent running if no settings field is found.
+		 */
 		if ( $this->get_option( $plugin_updated ) || empty( $this->settings_field ) )
 			return;
 
-		if ( false === (bool) apply_filters( 'the_seo_framework_update_options_at_update', true ) )
+		if ( ! apply_filters( 'the_seo_framework_update_options_at_update', true ) )
 			return;
 
 		$updated = false;
 		$options = $this->get_all_options();
 		$default_options = $this->default_site_options();
 
-		foreach ( $options as $key => $value ) {
+		foreach ( $default_options as $key => $value ) {
 			if ( ! isset( $options[$key] ) ) {
 				$options[$key] = isset( $default_options[$key] ) ? $default_options[$key] : '';
 				$updated = true;
@@ -379,13 +391,34 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		if ( update_option( $this->settings_field, $options ) && $updated ) {
 			if ( $this->load_options && is_super_admin() ) {
-				//* Make sure scripts are being added.
-				$this->init_admin_scripts();
-
 				//* Output notice only to super admin.
-				add_action( 'admin_notices', array( $this, 'site_updated_plugin_notice' ) );
+				$this->pre_output_site_updated_plugin_notice();
 			}
 		}
+
+	}
+
+	/**
+	 * Determine whether to output update notice directly or on refresh.
+	 * Run before headers are sent.
+	 *
+	 * @since 2.6.0
+	 */
+	protected function pre_output_site_updated_plugin_notice() {
+
+		//* Redirect to current page if on options page to correct option values. Once.
+		if ( $this->is_seo_settings_page() && ( ! isset( $_REQUEST['seo-updated'] ) || 'true' !== $_REQUEST['seo-updated'] ) )
+			$this->admin_redirect( $this->page_id, array( 'seo-updated' => 'true' ) );
+
+		//* Notice has already been sent.
+		if ( $this->is_seo_settings_page() )
+			return;
+
+		//* Make sure this plugin's scripts are being added.
+		$this->init_admin_scripts();
+
+		//* Output notice.
+		add_action( 'admin_notices', array( $this, 'site_updated_plugin_notice' ) );
 
 	}
 
@@ -398,7 +431,16 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function site_updated_plugin_notice() {
 
-		echo $this->generate_dismissible_notice( $this->page_defaults['option_update_text'], 'updated' );
+		$notice = $this->page_defaults['option_update_text'];
+
+		$settings_url = $this->seo_settings_page_url();
+		$link = sprintf( '<a href="%s" title="%s" target="_self">%s</a>', $settings_url, __( 'SEO Settings', 'autodescription' ), __( 'here', 'autodescription' ) );
+
+		$go_to_page = sprintf( _x( 'View the new options %s.', '%s = here', 'autodescription' ), $link );
+
+		$notice = $notice . ' ' . $go_to_page;
+
+		echo $this->generate_dismissible_notice( $notice, 'updated' );
 
 	}
 
@@ -596,7 +638,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		add_option( $this->settings_field, $this->default_site_options() );
 
 		//* If this page isn't the SEO Settings page, there's no need to check for a reset.
-		if ( false === $this->is_menu_page( $this->page_id ) )
+		if ( false === $this->is_seo_settings_page() )
 			return;
 
 		if ( $this->get_option( 'reset', $this->settings_field ) ) {

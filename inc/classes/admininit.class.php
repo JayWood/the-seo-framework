@@ -378,7 +378,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		if ( isset( $page_hook ) && $page_hook === $pagehook )
 			return true;
 
-			//* May be too early for $page_hook
+		//* May be too early for $page_hook
 		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === $pagehook )
 			return true;
 

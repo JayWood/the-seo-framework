@@ -420,6 +420,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * WP Query Admin synchronization for developers.
 * Just AJAX integration when adding tags.
 
+**Feature highlights visualized:**
+/
+* TODO View visual changes [here](link_to_page)
+
 **SEO Tip of the Update: Redirects & Canonical**
 /
 * A change in the Canonical URL or the use of a 301 Redirect URL indicate that your page has moved.
@@ -465,7 +469,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * No options will be overwritten in this process, and it only happens in the admin area.
 * This new feature is multisite compatible and can be disabled through a filter.
 * An update notification will shown whenever this happens, only to the Super Admin on Mutli-Site environments, and only to Admins on Single-Site environments.
-* The notification is unbranded, it will say "New SEO options have been updated.".
+* The notification is unbranded, it will say "New SEO options have been updated." on the SEO Settings Page and will add "View the new options here." on all other Admin Pages.
 
 **For everyone - About Author SEO:**
 /
@@ -563,7 +567,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
 	* Article Modified Time now also works for WooCommerce products. TODO test and compare
 	* TODO Headway compatibility. Done by removing of the SEO features and their output to prevent SEO conflict when filters are used.
-	* Yandex sitemap pinging support. TODO test and var_dump
+	* Yandex sitemap pinging support.
 	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s.
 	* The SEO Bar now has a Double Title check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
 	* The SEO Bar now also checks for global category and tag indexing, following and archiving options on the applicable pages.
@@ -611,7 +615,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
 	* The SEO Bar buttons are now converted to placeholder hyperlinks.
 	* The SEO Bar's text is now easier on the eyes due to added text-shadow.
-	* The SEO Bar's hover balloon is now aligned with its bar.
+	* The SEO Bar's hover balloon is now aligned with its bar on Posts and Pages overview and to column in Term overview.
 	* Translations with multiple variable strings can now safely be translated and switched around.
 	* LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
 	* Robots tag generation time.
@@ -634,7 +638,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO When Reading Settings' Feed Options are set to summary, the excerpt generation is disabled.
 	* Screen Options showed an SEO column, while there isn't any in pages, posts and terms.
 	* TODO Sitemap's content was affected by minification plugins.
-	* TODO On Touching the SEO bar, the pointer could be mislocated.
+	* TODO `og:image` and `twitter:image` weren't falling back on the Site Icon on MultiSite.
+	* On Touching the SEO bar, the pointer could be misplaced.
 	* When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
 	* Double subdirectory generation in special Site Address URL configurations.
 	* Link relationship on the second Page was pointing to itself.
@@ -673,6 +678,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Siteoptions::get_all_options()` function.
 	* Customized error handlers.
 	* `THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS` boolean constant listener to disable transients.
+	* `the_seo_framework_is_settings_page()` function.
 	* Extra `$post_id` arguments, see **Filter notes** for more information below.
 	* TODO Multibyte support for paged URLs (urlencode) ?? Is this needed ??.
 * **Changed:**
@@ -701,7 +707,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Functions have been put in their respective aptly named classes where applicable.
 	* Debugging has been modified to clean up the code greatly.
 * **Improved:**
-	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Herz!).
+	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Hertz!).
 	* Cached the SEO bar translations.
 	* render.class.php filters can now return empty string to disable its output.
 	* `The_SEO_Framework_Load::call_function()` consumes less memory.
@@ -730,7 +736,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Empty delimiter PHP warning when the theme is doing it wrong and no separator has been provided.
 	* Improperly sanitized option, disclosed. Although, it holds no security treat as all options always go through multiple sanitation processes.
 	* PHP Warning in the robots.txt output. This will make subdirectory sitemaps work again.
-	* JavaScript undefined TypeError on mobile screens.
+	* JavaScript undefined TypeError on mobile screens and Microsoft Edge.
 	* `The_SEO_Framework_Load::call_function()` contained wrong error handling.
 	* `The_SEO_Framework_Load::call_function()` now converts and checks for `$this` correctly. Evidently speeding up the plugin greatly.
 * **Deprecated:**
