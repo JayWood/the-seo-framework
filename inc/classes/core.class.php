@@ -42,6 +42,27 @@ class AutoDescription_Core {
 	}
 
 	/**
+	 * Proportionate dimensions based on Width and Height.
+	 * AKA Aspect Ratio.
+	 *
+	 * @param int $i The dimension to resize.
+	 * @param int $r1 The deminsion that determines the ratio.
+	 * @param int $r2 The dimension to proportionate to.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return int The proportional dimension, rounded.
+	 */
+	public function proportionate_dimensions( $i, $r1, $r2 ) {
+
+		//* Get aspect ratio.
+		$ar = $r1 / $r2;
+
+		$i = $i / $ar;
+		return round( $i );
+	}
+
+	/**
 	 * Adds post type support
 	 *
 	 * Applies filters the_seo_framework_supported_post_types : The supported post types.
@@ -500,6 +521,26 @@ class AutoDescription_Core {
 			return $term_name[$singular] = __( 'Page', 'autodescription' );
 
 		return $term_name[$singular] = __( 'Pages', 'autodescription' );
+	}
+
+	/**
+	 * Returns the SEO Settings page URL.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The SEO Settings page URL.
+	 */
+	public function seo_settings_page_url() {
+
+		if ( $this->load_options ) {
+			//* Options are allowed to be loaded.
+
+			$url = html_entity_decode( menu_page_url( $this->page_id, 0 ) );
+
+			return esc_url( $url );
+		}
+
+		return '';
 	}
 
 }

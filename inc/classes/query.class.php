@@ -906,4 +906,22 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		return $cache = false;
 	}
 
+	/**
+	 * Whether we're on the SEO settings page.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @return bool
+	 */
+	public function is_seo_settings_page() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		return $cache = $this->is_menu_page( $this->page_id );
+	}
+
 }

@@ -83,10 +83,11 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		//* 0. Image from argument.
 		$image = $args['image'];
 
-		$check = (bool) empty( $args['disallowed'] );
+		//* Check if there are no disallowed arguments.
+		$all_allowed = empty( $args['disallowed'] );
 
 		//* 1. Fetch image from featured
-		if ( empty( $image ) && ( $check || ! in_array( 'featured', $args['disallowed'] ) ) )
+		if ( empty( $image ) && ( $all_allowed || ! in_array( 'featured', $args['disallowed'] ) ) )
 			$image = $this->get_image_from_post_thumbnail( $args );
 
 		//* 2. Fetch image from fallback filter 1
@@ -94,7 +95,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 			$image = (string) apply_filters( 'the_seo_framework_og_image_after_featured', '', $args['post_id'] );
 
 		//* 3. Fallback: Get header image if exists
-		if ( empty( $image ) && ( $check || ! in_array( 'header', $args['disallowed'] ) ) )
+		if ( empty( $image ) && ( $all_allowed || ! in_array( 'header', $args['disallowed'] ) ) )
 			$image = get_header_image();
 
 		//* 4. Fetch image from fallback filter 2
@@ -102,11 +103,11 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 			$image = (string) apply_filters( 'the_seo_framework_og_image_after_header', '', $args['post_id'] );
 
 		//* 5. Get the WP 4.3.0 Site Icon
-		if ( empty( $image ) && ( $check || ! in_array( 'icon', $args['disallowed'] ) ) )
+		if ( empty( $image ) && ( $all_allowed || ! in_array( 'icon', $args['disallowed'] ) ) )
 			$image = $this->site_icon();
 
 		//* 6. If there still is no image, try the "site avatar" from WPMUdev Avatars
-		if ( empty( $image ) && ( $check || ! in_array( 'wpmudev-avatars', $args['disallowed'] ) ) )
+		if ( empty( $image ) && ( $all_allowed || ! in_array( 'wpmudev-avatars', $args['disallowed'] ) ) )
 			$image = $this->get_image_from_wpmudev_avatars();
 
 		/**
@@ -241,6 +242,8 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	 *
 	 * @since 2.5.0
 	 *
+	 * @todo create formula to fetch transient.
+	 *
 	 * @return string|empty Parsed image url or empty if already called
 	 */
 	public function parse_og_image( $id, $args = array() ) {
@@ -272,20 +275,10 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 				$h = 1500;
 			} else if ( $w > $h ) {
 				//* Landscape
-				$dev = $w / 1500;
-
-				$h = $h / $dev;
-
-				$h = round( $h );
-				$w = 1500;
+				$h = $this->proportionate_dimensions( $h, $w, $w = 1500 );
 			} else if ( $h > $w ) {
 				//* Portrait
-				$dev = $h / 1500;
-
-				$w = $w / $dev;
-
-				$w = round( $w );
-				$h = 1500;
+				$w = $this->proportionate_dimensions( $w, $h, $h = 1500 );
 			}
 
 			//* Get path of image and load it into the wp_get_image_editor
@@ -414,7 +407,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	/**
 	 * Fetches site icon brought in WordPress 4.3.0
 	 *
-	 * @param string $size 	The icon size, accepts 'full' and pixel values
+	 * @param string $size The icon size, accepts 'full' and pixel values
 	 * @since 2.2.1
 	 *
 	 * @return string url site icon, not escaped.
@@ -423,21 +416,21 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 
 		$icon = '';
 
-		if ( function_exists( 'has_site_icon' ) && $this->wp_version( '4.3.0', '>=' ) ) {
-			if ( 'full' === $size ) {
-				$site_icon_id = get_option( 'site_icon' );
+		if ( 'full' === $size ) {
+			$site_icon_id = get_option( 'site_icon' );
 
+			if ( $site_icon_id ) {
 				$url_data = '';
-
-				if ( $site_icon_id ) {
-					$url_data = wp_get_attachment_image_src( $site_icon_id, $size );
-				}
+				$url_data = wp_get_attachment_image_src( $site_icon_id, $size );
 
 				$icon = $url_data ? $url_data[0] : '';
-			} else if ( is_int( $size ) ) {
-				$icon = get_site_icon_url( $size );
 			}
+
+		} else if ( is_int( $size ) && function_exists( 'has_site_icon' ) && $this->wp_version( '4.3.0', '>=' ) ) {
+			//* Also uses (MultiSite) filters.
+			$icon = get_site_icon_url( $size );
 		}
+
 		return $icon;
 	}
 

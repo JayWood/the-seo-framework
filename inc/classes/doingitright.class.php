@@ -293,7 +293,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		}
 
 		if ( 'ad_seo' === $column ) {
-			$context = __( 'Refresh to see the SEO bar status.', 'autodescription' );
+			$context = __( 'Refresh to see the SEO Bar status.', 'autodescription' );
 
 			$ajax_id = $column . $tax_id;
 

@@ -59,7 +59,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 *
 	 * @var bool Load options.
 	 */
-	public $load_options = true;
+	public $load_options;
 
 	/**
 	 * Constructor, load parent constructor
@@ -478,7 +478,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 */
 	public function notices() {
 
-		if ( false === $this->is_menu_page( $this->pagehook ) )
+		if ( false === $this->is_seo_settings_page() )
 			return;
 
 		if ( isset( $_REQUEST['settings-updated'] ) && 'true' === $_REQUEST['settings-updated'] )
@@ -487,6 +487,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			echo $this->generate_dismissible_notice( $this->page_defaults['reset_notice_text'], 'warning' );
 		else if ( isset( $_REQUEST['error'] ) && 'true' === $_REQUEST['error'] )
 			echo $this->generate_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
+		else if ( isset( $_REQUEST['seo-updated'] ) && 'true' === $_REQUEST['seo-updated'] )
+			echo $this->generate_dismissible_notice( $this->page_defaults['option_update_text'], 'updated' );
 
 	}
 

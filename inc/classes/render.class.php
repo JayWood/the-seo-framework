@@ -369,12 +369,33 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( empty( $image ) )
 			$image = $this->get_image_from_cache();
 
+		/**
+		 * Always output
+		 *
+		 * @since 2.1.1
+		 */
+		$output = '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
+
+		//* Fetch Product images.
+		$woocommerce_product_images = $this->render_woocommerce_product_og_image();
+
+		$output = $output . $woocommerce_product_images;
+
+		return $output;
+	}
+
+	/**
+	 * Render more OG images to choose from.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The rendered OG Image.
+	 */
+	public function render_woocommerce_product_og_image() {
+
+		$output = '';
+
 		if ( $this->is_wc_product() ) {
-
-			$output = '';
-
-			if ( $image )
-				$output .= '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
 
 			$images = $this->get_image_from_woocommerce_gallery();
 
@@ -386,17 +407,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 					if ( $img )
 						$output .= '<meta property="og:image" content="' . esc_attr( $img ) . '" />' . "\r\n";
 				}
-			} else if ( empty( $output ) ) {
-				//* Always add empty if none is found.
-				$output .= '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
 			}
-		} else {
-			/**
-			 * Always output
-			 *
-			 * @since 2.1.1
-			 */
-			$output = '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
 		}
 
 		return $output;
