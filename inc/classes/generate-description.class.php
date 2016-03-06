@@ -268,9 +268,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				$args = $this->reparse_description_args( $args );
 				$term = $args['term'];
 
-				$description = empty( $term->admeta['description'] ) ? $description : $term->admeta['description'];
+				if ( isset( $term->admeta['description'] ) )
+					$description = empty( $term->admeta['description'] ) ? $description : $term->admeta['description'];
 
-				$flag = $this->is_checked( $term->admeta['saved_flag'] );
+				$flag = isset( $term->admeta['saved_flag'] ) ? $this->is_checked( $term->admeta['saved_flag'] ) : false;
 
 				if ( false === $flag && empty( $description ) && isset( $term->meta['description'] ) )
 					$description = empty( $term->meta['description'] ) ? $description : $term->meta['description'];
@@ -278,9 +279,11 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 			if ( $this->is_tax() ) {
 				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
-				$description = empty( $term->admeta['description'] ) ? $description : wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['description'] ) );
 
-				$flag = $this->is_checked( $term->admeta['saved_flag'] );
+				if ( isset( $term->admeta['description'] ) )
+					$description = empty( $term->admeta['description'] ) ? $description : wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['description'] ) );
+
+				$flag = isset( $term->admeta['saved_flag'] ) ? $this->is_checked( $term->admeta['saved_flag'] ) : false;
 
 				if ( false === $flag && empty( $description ) && isset( $term->meta['description'] ) )
 					$description = empty( $term->meta['description'] ) ? $description : $term->meta['description'];
@@ -701,10 +704,28 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			$excerptlength_cache[$page_id][$term_id] = (int) mb_strlen( $excerpt );
 
 		//* Fetch the length from cache.
-		$excerptlength = $excerptlength_cache[$page_id][$term_id];
+		$excerpt_length = $excerptlength_cache[$page_id][$term_id];
 
 		//* Trunculate if the excerpt is longer than the max char length
-		if ( $excerptlength > $max_char_length ) {
+		$excerpt = $this->trim_excerpt( $excerpt, $excerpt_length, $max_char_length );
+
+		return (string) $excerpt;
+	}
+
+	/**
+	 * Trim the excerpt.
+	 *
+	 * @param string $excerpt The untrimmed excerpt.
+	 * @param int $excerpt_length The current excerpt length.
+	 * @param int $max_char_length At what point to shave off the excerpt.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string The trimmed excerpt.
+	 */
+	protected function trim_excerpt( $excerpt, $excerpt_length, $max_char_length ) {
+
+		if ( $excerpt_length > $max_char_length ) {
 
 			//* Cut string to fit $max_char_length.
 			$subex = mb_substr( $excerpt, 0, $max_char_length );
@@ -731,9 +752,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			//* Add three dots if there's no full stop at the end of the excerpt.
 			if ( ! in_array( $last_char, $stops ) )
 				$excerpt .= '...';
+
 		}
 
-		return (string) $excerpt;
+		return $excerpt;
 	}
 
 }

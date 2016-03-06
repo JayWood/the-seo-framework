@@ -524,6 +524,21 @@ class AutoDescription_Core {
 	}
 
 	/**
+	 * The minimum role required to
+	 *
+	 * Applies filter 'the_seo_framework_settings_capability' : string
+	 * This filter changes the minimum role for viewing and editing the plugin's settings.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 *
+	 * @return string The minimum required capability for SEO Settings.
+	 */
+	public function settings_capability() {
+		return (string) apply_filters( 'the_seo_framework_settings_capability', 'manage_options' );
+	}
+
+	/**
 	 * Returns the SEO Settings page URL.
 	 *
 	 * @since 2.6.0

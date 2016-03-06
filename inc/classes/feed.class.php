@@ -33,18 +33,38 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 		parent::__construct();
 
 		add_filter( 'the_content_feed', array( $this, 'the_content_feed' ), 10, 2 );
+
+		//* Only add the feed link to the excerpt if we're only building excerpts.
+		if ( $this->rss_uses_excerpt() )
+			add_filter( 'the_excerpt_rss', array( $this, 'the_content_feed' ), 10, 1 );
+
+	}
+
+	/**
+	 * Determines whether the WordPress excerpt RSS feed option is used.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool
+	 */
+	public function rss_uses_excerpt() {
+		return (bool) get_option( 'rss_use_excerpt' );
 	}
 
 	/**
 	 * Changes feed's content.
 	 *
+	 * @param $content The feed's content.
+	 * @param $feed_type The feed type (not used in excerpted content)
+	 *
 	 * @since 2.5.2
 	 */
-	public function the_content_feed( $content, $feed_type ) {
+	public function the_content_feed( $content, $feed_type = null ) {
 
 		if ( $content ) {
 
-			if ( $this->get_option( 'excerpt_the_feed' ) ) {
+			//* Don't alter already-excerpts or descriptions.
+			if ( $this->get_option( 'excerpt_the_feed' ) && isset( $feed_type ) ) {
 				//* Strip all code and lines.
 				$excerpt = $this->get_excerpt_by_id( $content );
 
@@ -56,28 +76,11 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 				$max_len = (int) apply_filters( 'the_seo_framework_max_content_feed_length', 400 );
 
 				//* Generate excerpt.
-				if ( $excerpt_len > $max_len ) {
-					// Cut string to fit $max_char_length.
-					$subex = mb_substr( $excerpt, 0, $max_len );
-					// Split words in array. Boom.
-					$exwords = explode( ' ', $subex );
-					// Calculate if last word exceeds.
-					$excut = - ( mb_strlen( $exwords[ count( $exwords ) - (int) 1 ] ) );
-
-					if ( $excut < (int) 0 ) {
-						//* Cut out exceeding word.
-						$excerpt = mb_substr( $subex, 0, $excut );
-					} else {
-						// We're all good here, continue.
-						$excerpt = $subex;
-					}
-
-					$excerpt = rtrim( $excerpt ) . '...';
-				}
+				$this->trim_excerpt( $excerpt, $excerpt_len, $max_len );
 
 				$h2_output = '';
 
-				if ( 0 === mb_strpos( $content, '<h2>' ) ) {
+				if ( 0 === strpos( $content, '<h2>' ) ) {
 					//* Add the h2 title back
 					$h2_end = mb_strpos( $content, '</h2>' );
 
@@ -103,6 +106,7 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 			}
 
 			if ( $this->get_option( 'source_the_feed' ) ) {
+
 				//* Fetch permalink and add it to the content.
 				$permalink = $this->the_url();
 

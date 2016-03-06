@@ -1617,13 +1617,13 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		if ( '' === $this->permalink_structure() ) {
 
 			$permalink_settings_url = esc_url( admin_url( 'options-permalink.php' ) );
-			$here = '<a href="' . $permalink_settings_url  . '" target="_blank" title="' . __( 'Permalink settings', 'autodescription' ) . '">' . _x( 'here', 'The sitemap can be found %s.', 'autodescription' ) . '</a>';
+			$here = '<a href="' . $permalink_settings_url  . '" target="_blank" title="' . __( 'Permalink Settings', 'autodescription' ) . '">' . _x( 'here', 'The sitemap can be found %s.', 'autodescription' ) . '</a>';
 
 			?>
 			<h4><?php _e( "You're using the default permalink structure.", 'autodescription' ); ?></h4>
 			<p><span class="description"><?php _e( "This means we can't output the sitemap through the WordPress rewrite rules.", 'autodescription' ); ?></span></p>
 			<hr>
-			<p><span class="description"><?php printf( _x( "Change your permalink settings %s (Recommended: 'postname').", '%s = here', 'autodescription' ), $here ); ?></span></p>
+			<p><span class="description"><?php printf( _x( "Change your Permalink Settings %s (Recommended: 'postname').", '%s = here', 'autodescription' ), $here ); ?></span></p>
 			<?php
 
 		} else {
@@ -1893,6 +1893,15 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</label>
 		</p>
 		<?php
+
+		if ( $this->rss_uses_excerpt() ) {
+			$reading_settings_url = esc_url( admin_url( 'options-reading.php' ) );
+			$reading_settings = '<a href="' . $reading_settings_url  . '" target="_blank" title="' . __( 'Reading Settings', 'autodescription' ) . '">' . __( 'Reading Settings', 'autodescription' ) . '</a>';
+
+			?><p><span class="description"><?php
+				printf( _x( "Note: The feed is already converted into an excerpt through the %s.", '%s = Reading Settings', 'autodescription' ), $reading_settings );
+			?></span></p><?php
+		}
 
 		do_action( 'the_seo_framework_feed_metabox_after' );
 

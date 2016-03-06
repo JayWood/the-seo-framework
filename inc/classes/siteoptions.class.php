@@ -352,16 +352,19 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	/**
 	 * Updates option from default options at plugin update.
 	 *
-	 * @since 2.6.0
-	 *
 	 * Applies filters 'the_seo_framework_update_options_at_update' : bool
 	 *
-	 * @ignore
+	 * @since 2.6.0
 	 * @access private
+	 *
 	 *
 	 * @return void early if already has been updated.
 	 */
 	public function site_updated_plugin_option() {
+
+		//* If current user isn't allowed to update options, don't do anything.
+		if ( ! current_user_can( $this->settings_capability() ) )
+			return;
 
 		$plugin_updated = $this->plugin_updated;
 
@@ -381,19 +384,19 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		foreach ( $default_options as $key => $value ) {
 			if ( ! isset( $options[$key] ) ) {
-				$options[$key] = isset( $default_options[$key] ) ? $default_options[$key] : '';
-				$updated = true;
+				if ( isset( $default_options[$key] ) && ! empty( $default_options[$key] ) ) {
+					$options[$key] = $default_options[$key];
+					$updated = true;
+				}
 			}
 		}
 
 		//* Stop this madness from happening again until next update.
 		$options[$plugin_updated] = 1;
 
-		if ( update_option( $this->settings_field, $options ) && $updated ) {
-			if ( $this->load_options && is_super_admin() ) {
-				//* Output notice only to super admin.
-				$this->pre_output_site_updated_plugin_notice();
-			}
+		//* Updated the options. Check for updated flag and see if settings pages are loaded.
+		if ( update_option( $this->settings_field, $options ) && $updated && $this->load_options ) {
+			$this->pre_output_site_updated_plugin_notice();
 		}
 
 	}

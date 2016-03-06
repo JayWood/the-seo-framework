@@ -585,6 +585,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Neatly styled sitemaps, I hope you like it!
 	* All admin notices are now dismissible.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
+	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -623,6 +624,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Sanitation of URLs where query args must be removed is now compatible on any (odd) server configuration.
 	* Post State "No Search" additions check is now only done on singular pages within the admin dashboard.
 	* The Term SEO Box is removed if another popular SEO plugin is detected.
+	* Feed excerpt generation time.
 * **Fixed:**
 	/
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
@@ -634,11 +636,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The removal of title additions now correctly reflect on the title counter length when JavaScript is disabled.
 	* The removal of title additions are now also reflecting its setting on the placeholders within categories and tags.
 	* Some deprecated functions gave a fatal error or warning, this has been resolved.
-	* TODO When Reading Settings' Feed Options are set to summary, the backlink is still shown when enabled.
-	* TODO When Reading Settings' Feed Options are set to summary, the excerpt generation is disabled.
+	* When Reading Settings' Feed Options are set to summary, the backlink is now still shown when enabled.
 	* Screen Options showed an SEO column, while there isn't any in pages, posts and terms.
 	* TODO Sitemap's content was affected by minification plugins.
-	* TODO `og:image` and `twitter:image` weren't falling back on the Site Icon on MultiSite.
 	* On Touching the SEO bar, the pointer could be misplaced.
 	* When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
 	* Double subdirectory generation in special Site Address URL configurations.
