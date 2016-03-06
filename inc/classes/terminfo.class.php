@@ -102,7 +102,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			return $term[$id];
 
 		//* Return null if no term can be set.
-		if ( false === $this->is_category() )
+		if ( false === $this->is_archive() )
 			return false;
 
 		if ( $this->is_admin() ) {
@@ -164,6 +164,86 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 		$args['term'] = $term;
 
 		return $args;
+	}
+
+	/**
+	 * Fetch Tax labels
+	 *
+	 * @param string $tax_type the Taxonomy type.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @staticvar object $labels
+	 *
+	 * @return object|null with all the labels as member variables
+	 */
+	public function get_tax_labels( $tax_type ) {
+
+		static $labels = null;
+
+		if ( isset( $labels ) )
+			return $labels;
+
+		$tax_object = get_taxonomy( $tax_type );
+
+		if ( is_object( $tax_object ) )
+			return $labels = (object) $tax_object->labels;
+
+		//* Nothing found.
+		return null;
+	}
+
+	/**
+	 * Get the current screen term labels.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @staticvar string $term_name : Caution: This function only runs once per screen and doesn't check the term type more than once.
+	 *
+	 * @param object $term The Taxonomy Term object.
+	 * @param bool $singular Whether to fetch a singular or plural name.
+	 * @param bool $fallback Whether to fallback on a generic name.
+	 *
+	 * @return string the Term name.
+	 */
+	protected function get_the_term_name( $term, $singular = true, $fallback = true ) {
+
+		static $term_name = array();
+
+		if ( isset( $term_name[$singular] ) )
+			return $term_name[$singular];
+
+		if ( $term && is_object( $term ) ) {
+			$tax_type = $term->taxonomy;
+
+			static $term_labels = null;
+
+			/**
+			 * Dynamically fetch the term name.
+			 *
+			 * @since 2.3.1
+			 */
+			if ( is_null( $term_labels ) )
+				$term_labels = $this->get_tax_labels( $tax_type );
+
+			if ( $singular ) {
+				if ( isset( $term_labels->singular_name ) )
+					return $term_name[$singular] = $term_labels->singular_name;
+			} else {
+				if ( isset( $term_labels->name ) )
+					return $term_name[$singular] = $term_labels->name;
+			}
+		}
+
+		if ( $fallback ) {
+			//* Fallback to Page as it is generic.
+			if ( $singular )
+				return $term_name[$singular] = __( 'Page', 'autodescription' );
+
+			return $term_name[$singular] = __( 'Pages', 'autodescription' );
+		}
+
+		return $term_name[$singular] = '';
 	}
 
 }

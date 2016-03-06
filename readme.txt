@@ -650,7 +650,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	/
 	* Shortlink URL from home page, as it's quite useless and self referring there.
 	* Yahoo Pinging option and initiation, as they've moved to Bing (oops).
-	* Pinging of sitemap on post alteration.
 
 **For developers:**
 

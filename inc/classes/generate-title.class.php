@@ -63,7 +63,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	public function title( $title = '', $sep = '', $seplocation = '', $args = array() ) {
 
 		//* Use WordPress default feed title.
-		if ( is_feed() )
+		if ( $this->is_feed() )
 			return trim( $title );
 
 		$args = $this->reparse_title_args( $args );
@@ -598,10 +598,10 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		$args = $this->reparse_title_args( $args );
 
 		$title = '';
-		$term_id = $args['term_id'];
+		$id = $args['term_id'];
 
 		if ( $this->is_archive() ) {
-			if ( ( $term_id && $args['taxonomy'] ) || $this->is_category( $term_id ) || $this->is_tag( $term_id ) || $this->is_tax( $term_id ) ) {
+			if ( ( $id && $args['taxonomy'] ) || $this->is_category() || $this->is_tag() || $this->is_tax() ) {
 				$title = $this->title_for_terms( $args, false );
 			} else {
 				$term = get_queried_object();
@@ -618,7 +618,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		//* Fetch the post title if no title is found.
 		if ( empty( $title ) )
-			$title = $this->post_title_from_ID( $term_id );
+			$title = $this->post_title_from_ID( $id );
 
 		//* You forgot to enter a title "anywhere"!
 		if ( empty( $title ) )
@@ -778,12 +778,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			if ( empty( $title ) )
 				$title = $this->get_the_real_archive_title( $term );
 
-		} else if ( $this->is_tax() ) {
-
-			if ( ! isset( $term ) )
+		} else {
+			if ( ! isset( $term ) && $this->is_tax() )
 				$term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 
-			if ( $args['get_custom_field'] ) {
+			if ( $args['get_custom_field'] && isset( $term ) ) {
 				$title = empty( $term->admeta['doctitle'] ) ? $title : wp_kses_stripslashes( wp_kses_decode_entities( $term->admeta['doctitle'] ) );
 
 				$flag = $this->is_checked( $term->admeta['saved_flag'] );
@@ -829,7 +828,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $this->is_blog_page( $id ) ) {
 			//* Posts page title.
 			$title = $this->get_custom_field( '_genesis_title', $id ) ? $this->get_custom_field( '_genesis_title', $id ) : get_the_title( $id );
-		} else if ( $this->is_singular( $id ) ) {
+		} else if ( $this->is_singular() ) {
 			//* Get title from custom field, empty it if it's not there to override the default title
 			$title = $this->get_custom_field( '_genesis_title', $id ) ? $this->get_custom_field( '_genesis_title', $id ) : $title;
 		} else if ( $this->is_archive() || ( $id && $taxonomy ) ) {
@@ -837,10 +836,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$term = get_term( $id, $taxonomy, OBJECT, 'raw' );
 			$title = isset( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : $title;
 		}
-
-		//* Fetch Title from WordPress page title input.
-		if ( empty( $title ) )
-			$title = $this->post_title_from_ID( $id );
 
 		if ( $escape ) {
 			$title = wptexturize( $title );
@@ -862,8 +857,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function get_the_real_archive_title( $term = null ) {
 
-		if ( is_null( $term ) )
+		if ( empty( $term ) )
 			$term = get_queried_object();
+
+		if ( empty( $term ) )
+			return '';
 
 		/**
 		 * Applies filters the_seo_framework_the_archive_title : {
@@ -883,7 +881,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 */
 		$use_prefix = $this->use_archive_prefix( $term );
 
-		if ( $this->is_category() || $this->is_tag() ) {
+		if ( $this->is_category() || $this->is_tag() || $this->is_tax() ) {
 			$title = $this->single_term_title( '', false, $term );
 			/* translators: Front-end output. 1: Taxonomy singular name, 2: Current taxonomy term */
 			$title = $use_prefix ? sprintf( __( '%1$s: %2$s', 'autodescription' ), $this->get_the_term_name( $term ), $title ) : $title;
@@ -941,13 +939,12 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = post_type_archive_title( '', false );
 			/* translators: Front-end output. */
 			$title = $use_prefix ? sprintf( __( 'Archives: %s' ), $title ) : $title;
-		} else if ( $this->is_tax() ) {
+		} else if ( isset( $term ) ) {
 			$title = $this->single_term_title( '', false, $term );
 
 			if ( $use_prefix ) {
-				$tax = get_taxonomy( get_queried_object()->taxonomy );
 				/* translators: Front-end output. 1: Taxonomy singular name, 2: Current taxonomy term */
-				$title = sprintf( __( '%1$s: %2$s', 'autodescription' ), $tax->labels->singular_name, $title );
+				$title = sprintf( __( '%1$s: %2$s', 'autodescription' ),  $this->get_the_term_name( $term, true, false ), $title );
 			}
 		} else {
 			/* translators: Front-end output. */
@@ -991,7 +988,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			* @param string $term_name Tag name for archive being displayed.
 			*/
 			$term_name = apply_filters( 'single_tag_title', $term->name );
-		} else if ( $this->is_tax() ) {
+		} else if ( $this->is_tax() || ( $this->is_admin() && isset( $term->name ) ) ) {
 			/**
 			* Filter the custom taxonomy archive page title.
 			*
@@ -1001,11 +998,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			*/
 			$term_name = apply_filters( 'single_term_title', $term->name );
 		} else {
-			return;
+			return '';
 		}
 
 		if ( empty( $term_name ) )
-			return;
+			return '';
 
 		if ( $display )
 			echo $prefix . $term_name;
@@ -1028,7 +1025,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		$title_special = '';
 
-		if ( $this->is_singular( $id ) )
+		if ( $this->is_singular() )
 			$title_special = $this->title_from_special_fields();
 
 		if ( $title_special ) {

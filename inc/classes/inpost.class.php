@@ -211,21 +211,14 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			}
 		} else if ( is_object( $object ) ) {
 
-			$tax_type = $object->taxonomy;
+			//* Singular name.
+			$type = $this->get_the_term_name( $object, true, false );
 
-			/**
-			 * Dynamically fetch the term name.
-			 *
-			 * @since 2.3.1
-			 */
-			$term_labels = $this->get_tax_labels( $tax_type );
+			//* Plural name.
+			if ( empty( $type ) )
+				$type = $this->get_the_term_name( $object, false, false );
 
-			if ( isset( $term_labels ) ) {
-				$type = isset( $term_labels->singular_name ) ? $term_labels->singular_name : null;
-				$type = is_null( $type ) && isset( $term_labels->name ) ? $term_labels->name : $type;
-			}
-
-			if ( ! isset( $type ) ) {
+			if ( empty( $type ) ) {
 				// Fallback to Page as it is generic.
 				$type = __( 'Page', 'autodescription' );
 			}
