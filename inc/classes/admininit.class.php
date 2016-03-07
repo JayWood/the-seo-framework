@@ -80,6 +80,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		$enqueue_hooks = array(
 			'edit.php',
 			'post.php',
+			'post-new.php',
 			'edit-tags.php',
 			'edit-tags.php',
 			'term.php',
@@ -257,25 +258,27 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 					$additions = '';
 					$tagline = false;
 				}
-			} else if ( 'term.php' === $this->page_hook ) {
+			} else if ( $this->is_archive() ) {
 				//* Category or Tag.
 				global $current_screen;
 
 				if ( isset( $current_screen->taxonomy ) ) {
 
-					$term_id = absint( $_REQUEST['term_id'] );
+					$term_id = isset( $_REQUEST['term_id'] ) ? absint( $_REQUEST['term_id'] ) : '';
 
-					$generated_doctitle_args = array(
-						'term_id' => $term_id,
-						'taxonomy' => $current_screen->taxonomy,
-						'placeholder' => true,
-						'meta' => true,
-						'get_custom_field' => false,
-						'notagline' => true
-					);
+					if ( $term_id ) {
+						$generated_doctitle_args = array(
+							'term_id' => $term_id,
+							'taxonomy' => $current_screen->taxonomy,
+							'placeholder' => true,
+							'meta' => true,
+							'get_custom_field' => false,
+							'notagline' => true
+						);
 
-					$title = $this->title( '', '', '', $generated_doctitle_args );
-					$additions = $title_add_additions ? $blog_name : '';
+						$title = $this->title( '', '', '', $generated_doctitle_args );
+						$additions = $title_add_additions ? $blog_name : '';
+					}
 				}
 
 			} else {

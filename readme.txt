@@ -586,6 +586,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* All admin notices are now dismissible.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
+	* The blog page is now also shown within the Sitemap.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -594,6 +595,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The SEO Bar's balloon is now also flat and square.
 	* The SEO Bar T/D and G letters have a space removed between them to make it a little more appealing on smaller screens.
 	* The SEO Bar now has a maximum width of 220px instead of 260px.
+	* TODO The SEO Bar's description notification will have a higher tolerance for repeated words that are less than 4 characters (4 instead of 3).
 	* Description "good" detection length range has been extended to 137 minimum instead of 145, to eliminate over-optimization.
 	* LD+Json markup now uses double quotes instead of single.
 	* LD+Json Sitelinks Search Box script now excludes the Alternative Name, as it's optional and non-configurable (yet).
@@ -625,6 +627,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Post State "No Search" additions check is now only done on singular pages within the admin dashboard.
 	* The Term SEO Box is removed if another popular SEO plugin is detected.
 	* Feed excerpt generation time.
+	* Sitemap generation time.
 * **Fixed:**
 	/
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
@@ -638,7 +641,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Some deprecated functions gave a fatal error or warning, this has been resolved.
 	* When Reading Settings' Feed Options are set to summary, the backlink is now still shown when enabled.
 	* Screen Options showed an SEO column, while there isn't any in pages, posts and terms.
-	* TODO Sitemap's content was affected by minification plugins.
+	* Fixed: Sometimes, The SEO Bar's word counter would pick up non-existing words.
+	* TODO Sometimes, on WooCommerce product tag search within the dashboard, Products showed the status of NoIndex and No Search. (/wp-admin/edit.php?product_tag=women&post_type=product)
 	* On Touching the SEO bar, the pointer could be misplaced.
 	* When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
 	* Double subdirectory generation in special Site Address URL configurations.
@@ -680,6 +684,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `the_seo_framework_is_settings_page()` function.
 	* Extra `$post_id` arguments, see **Filter notes** for more information below.
 	* TODO Multibyte support for paged URLs (urlencode) ?? Is this needed ??.
+	* Untitled Term Name when using WordPress core archive title filters when returning falsy.
 * **Changed:**
 	/
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
@@ -743,6 +748,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use $args['id'] instead.
 	* `AutoDescription_Debug::echo_debug_information()` function, replaced by `AutoDescription_Debug::get_debug_information()`.
 	* `AutoDescription_DoingItRight::seo_column()` function, replaced by `AutoDescription_DoingItRight::seo_bar()` to eliminate naming confusion.
+	* `AutoDescription_Sitemaps::setup_sitemap_transient()` function, replaced by `AutoDescription_Sitemaps::setup_sitemap()` to eliminate naming confusion.
 * **Removed:**
 	/
 	* Open Graph plugins check from Canonical URL output, these are unrelated.

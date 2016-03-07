@@ -284,9 +284,24 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 	 * @since 2.6.0
 	 */
 	public function ping_yahoo() {
-		$this->_deprecated_function( 'AutoDescription_Sitemaps::' . __FUNCTION__, '2.6.0', 'AutoDescription_DoingItRight::ping_bing()' );
+		$this->_deprecated_function( 'AutoDescription_Sitemaps::' . __FUNCTION__, '2.6.0', 'AutoDescription_Sitemaps::ping_bing()' );
 
 		$this->ping_bing();
+	}
+
+	/**
+	 * Create sitemap.xml content transient.
+	 *
+	 * @param string|bool $content required The sitemap transient content.
+	 *
+	 * @since 2.2.9
+	 * @deprecated
+	 * @since 2.6.0
+	 */
+	public function setup_sitemap_transient( $sitemap_content ) {
+		$this->_deprecated_function( 'AutoDescription_Sitemaps::' . __FUNCTION__, '2.6.0', 'AutoDescription_Sitemaps::setup_sitemap()' );
+
+		return $this->setup_sitemap( $sitemap_content );
 	}
 
 }

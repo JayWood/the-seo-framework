@@ -970,39 +970,44 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( ! $term )
 			return;
 
-		if ( $this->is_category() ) {
-			/**
-			* Filter the category archive page title.
-			*
-			* @since 2.0.10 WP CORE
-			*
-			* @param string $term_name Category name for archive being displayed.
-			*/
-			$term_name = apply_filters( 'single_cat_title', $term->name );
-		} else if ( $this->is_tag() ) {
-			/**
-			* Filter the tag archive page title.
-			*
-			* @since 2.3.0 WP CORE
-			*
-			* @param string $term_name Tag name for archive being displayed.
-			*/
-			$term_name = apply_filters( 'single_tag_title', $term->name );
-		} else if ( $this->is_tax() || ( $this->is_admin() && isset( $term->name ) ) ) {
-			/**
-			* Filter the custom taxonomy archive page title.
-			*
-			* @since 3.1.0 WP CORE
-			*
-			* @param string $term_name Term name for archive being displayed.
-			*/
-			$term_name = apply_filters( 'single_term_title', $term->name );
-		} else {
-			return '';
+		$term_name = '';
+
+		if ( isset( $term->name ) ) {
+			if ( $this->is_category() ) {
+				/**
+				* Filter the category archive page title.
+				*
+				* @since 2.0.10 WP CORE
+				*
+				* @param string $term_name Category name for archive being displayed.
+				*/
+				$term_name = apply_filters( 'single_cat_title', $term->name );
+			} else if ( $this->is_tag() ) {
+				/**
+				* Filter the tag archive page title.
+				*
+				* @since 2.3.0 WP CORE
+				*
+				* @param string $term_name Tag name for archive being displayed.
+				*/
+				$term_name = apply_filters( 'single_tag_title', $term->name );
+			} else if ( $this->is_tax() || $this->is_admin() ) {
+				/**
+				* Filter the custom taxonomy archive page title.
+				*
+				* @since 3.1.0 WP CORE
+				*
+				* @param string $term_name Term name for archive being displayed.
+				*/
+				$term_name = apply_filters( 'single_term_title', $term->name );
+			} else {
+				return '';
+			}
 		}
 
+		//* Impossible through WordPress interface. Possible through filters.
 		if ( empty( $term_name ) )
-			return '';
+			$term_name = $this->untitled();
 
 		if ( $display )
 			echo $prefix . $term_name;
