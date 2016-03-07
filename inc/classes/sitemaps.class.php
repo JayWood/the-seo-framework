@@ -121,8 +121,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 * Don't do anything if a sitemap plugin is active.
 			 * On sitemap plugin activation, the sitemap plugin should flush the
 			 * rewrite rules. If it doesn't, then this plugin's sitemap will be called.
-			 *
-			 * @todo expand detection list.
 			 */
 			if ( $this->has_sitemap_plugin() )
 				return;
@@ -130,8 +128,8 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			add_rewrite_rule( 'sitemap\.xml$', 'index.php?the_seo_framework_sitemap=xml', 'top' );
 
 			$this->wpmudev_domainmap_flush_fix( false );
-
 		}
+
 	}
 
 	/**
@@ -154,7 +152,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 *
 	 * @since 2.2.9
 	 *
-	 * @return void|mixed SiteMAp XML file.
+	 * @return void|header+string SiteMap XML file.
 	 */
 	public function maybe_output_sitemap() {
 
@@ -174,24 +172,31 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	}
 
 	/**
+	 * Destroy all filters.
+	 *
+	 * @since 2.6.0
+	 */
+	protected function remove_all_filters() {
+		global $wp_filter, $merged_filters;
+
+		$wp_filter = array();
+		$merged_filters = array();
+	}
+
+	/**
 	 * Output sitemap.xml 'file' and header.
 	 *
 	 * @since 2.2.9
 	 */
 	protected function output_sitemap() {
 
+		if ( ! headers_sent() )
+			header( 'Content-type: text/xml; charset=utf-8' );
+
 		//* Fetch sitemap content.
 		$xml_content = $this->get_sitemap_content();
 
-		$setheader = true;
-
-		//* Don't crash the system when debugging
-		if ( $this->the_seo_framework_debug && headers_sent() )
-			$setheader = false;
-
-		if ( $setheader )
-			header( 'Content-type: text/xml; charset=utf-8' );
-
+		//* Echo and add trailing line.
 		echo $xml_content . "\r\n";
 
 		// We're done now.
@@ -207,7 +212,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	protected function get_sitemap_content() {
 
-		$timer_start = microtime( true );
+		if ( $this->the_seo_framework_debug ) $timer_start = microtime( true );
 
 		/**
 		 * Re-use the variable, eliminating database requests
@@ -223,7 +228,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		$content  = '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
 		$content .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\r\n";
-		$content .= $this->setup_sitemap_transient( $sitemap_content );
+		$content .= $this->setup_sitemap( $sitemap_content );
 		$content .= '</urlset>';
 
 		$content .= $cached_content;
@@ -246,9 +251,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 *
 	 * @param string|bool $content required The sitemap transient content.
 	 *
-	 * @since 2.2.9
+	 * @since 2.6.0
 	 */
-	public function setup_sitemap_transient( $sitemap_content ) {
+	public function setup_sitemap( $sitemap_content ) {
 
 		if ( false === $sitemap_content ) {
 			//* Transient doesn't exist yet.
@@ -376,9 +381,15 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 * We can't get specific on the home page, unfortunately.
 		 */
 		$sitemaps_modified = $this->is_option_checked( 'sitemaps_modified' );
-		$page_lastmod = $sitemaps_modified || $this->get_option( 'page_modify_time' ) ? true : false;
-		$post_lastmod = $sitemaps_modified || $this->get_option( 'post_modify_time' ) ? true : false;
-		$home_lastmod = $sitemaps_modified || $this->get_option( 'home_modify_time' ) ? true : false;
+		if ( $sitemaps_modified ) {
+			$page_lastmod = true;
+			$post_lastmod = true;
+			$home_lastmod = true;
+		} else {
+			$page_lastmod = $this->is_option_checked( 'page_modify_time' );
+			$post_lastmod = $this->is_option_checked( 'post_modify_time' );
+			$home_lastmod = $page_lastmod ? $page_lastmod : $this->is_option_checked( 'home_modify_time' );
+		}
 
 		/**
 		 * Generation time output
@@ -394,9 +405,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		if ( $latest_pages_amount > 0 ) {
 
-			$page_on_front = (int) get_option( 'page_on_front' );
-			$page_for_posts_option = (int) get_option( 'page_for_posts' );
-			$page_show_on_front = $this->has_page_on_front();
+			$id_on_front = $this->has_page_on_front() ? (int) get_option( 'page_on_front' ) : (int) get_option( 'page_for_posts' );
 
 			/**
 			 * This can be heavy.
@@ -407,35 +416,33 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 					if ( '' === $excluded || ! isset( $excluded[$post_id] ) ) {
 						//* Is this the front page?
-						$page_is_front = ( $page_id === $page_on_front ) ? true : false;
+						$page_is_front = ( $page_id === $id_on_front ) ? true : false;
 
 						//* Fetch the noindex option, per page.
 						$noindex = (bool) $this->get_custom_field( '_genesis_noindex', $page_id );
 
 						//* Continue if indexed.
 						if ( false === $noindex ) {
-							//* Don't add the posts page.
-							if ( false === $page_show_on_front || false === ( $page_show_on_front && $page_id === $page_for_posts_option ) ) {
-
-								$content .= "	<url>\r\n";
-								// No need to use static vars.
+							$content .= "	<url>\r\n";
+							if ( $page_is_front ) {
+								$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'home' => true ) ) . "</loc>\r\n";
+							} else {
 								$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $page, 'id' => $page_id ) ) . "</loc>\r\n";
-
-								// Keep it consistent. Only parse if page_lastmod is true.
-								if ( $page_lastmod && ( ! $page_is_front || ( $home_lastmod && $page_is_front ) ) ) {
-									$page_modified_gmt = $page->post_modified_gmt;
-
-									if ( $page_modified_gmt !== '0000-00-00 00:00:00' )
-										$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $page_modified_gmt, false ) . "</lastmod>\r\n";
-								}
-
-								// Give higher priority to the home page.
-								$priority_page = $page_is_front ? 1 : 0.9;
-
-								$content .= '		<priority>' . number_format( $priority_page, 1 ) . "</priority>\r\n";
-								$content .= "	</url>\r\n";
-
 							}
+
+							// Keep it consistent. Only parse if page_lastmod is true.
+							if ( $page_lastmod || ( $page_is_front && $home_lastmod ) ) {
+								$page_modified_gmt = $page->post_modified_gmt;
+
+								if ( $page_modified_gmt !== '0000-00-00 00:00:00' )
+									$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $page_modified_gmt, false ) . "</lastmod>\r\n";
+							}
+
+							// Give higher priority to the home page.
+							$priority_page = $page_is_front ? 1 : 0.9;
+
+							$content .= '		<priority>' . number_format( $priority_page, 1 ) . "</priority>\r\n";
+							$content .= "	</url>\r\n";
 						}
 					}
 				}

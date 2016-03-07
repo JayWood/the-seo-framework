@@ -260,33 +260,6 @@ class AutoDescription_Core {
 	}
 
 	/**
-	 * Fetch Tax labels
-	 *
-	 * @param string $tax_type the Taxonomy type.
-	 *
-	 * @since 2.3.1
-	 *
-	 * @staticvar object $labels
-	 *
-	 * @return object|null with all the labels as member variables
-	 */
-	public function get_tax_labels( $tax_type ) {
-
-		static $labels = null;
-
-		if ( isset( $labels ) )
-			return $labels;
-
-		$tax_object = get_taxonomy( $tax_type );
-
-		if ( is_object( $tax_object ) )
-			return $labels = (object) $tax_object->labels;
-
-		//* Nothing found.
-		return null;
-	}
-
-	/**
 	 * Wether to allow external redirect through the 301 redirect option.
 	 *
 	 * Applies filters the_seo_framework_allow_external_redirect : bool
@@ -476,51 +449,18 @@ class AutoDescription_Core {
 	}
 
 	/**
-	 * Get the current screen term labels.
+	 * The minimum role required to
+	 *
+	 * Applies filter 'the_seo_framework_settings_capability' : string
+	 * This filter changes the minimum role for viewing and editing the plugin's settings.
 	 *
 	 * @since 2.6.0
+	 * @access private
 	 *
-	 * @staticvar string $term_name : Caution: This function only runs once per screen and doesn't check the term type more than once.
-	 *
-	 * @param object $term The Taxonomy Term object.
-	 * @param bool $singular Whether to fetch a singular or plural name.
-	 *
-	 * @return string the Term name.
+	 * @return string The minimum required capability for SEO Settings.
 	 */
-	protected function get_the_term_name( $term, $singular = true ) {
-
-		static $term_name = array();
-
-		if ( isset( $term_name[$singular] ) )
-			return $term_name[$singular];
-
-		if ( $term && is_object( $term ) ) {
-			$tax_type = $term->taxonomy;
-
-			static $term_labels = null;
-
-			/**
-			 * Dynamically fetch the term name.
-			 *
-			 * @since 2.3.1
-			 */
-			if ( is_null( $term_labels ) )
-				$term_labels = $this->get_tax_labels( $tax_type );
-
-			if ( $singular ) {
-				if ( isset( $term_labels->singular_name ) )
-					return $term_name[$singular] = $term_labels->singular_name;
-			} else {
-				if ( isset( $term_labels->name ) )
-					return $term_name[$singular] = $term_labels->name;
-			}
-		}
-
-		//* Fallback to Page as it is generic.
-		if ( $singular )
-			return $term_name[$singular] = __( 'Page', 'autodescription' );
-
-		return $term_name[$singular] = __( 'Pages', 'autodescription' );
+	public function settings_capability() {
+		return (string) apply_filters( 'the_seo_framework_settings_capability', 'manage_options' );
 	}
 
 	/**

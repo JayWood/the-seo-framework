@@ -101,21 +101,23 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		 * Now casts to array
 		 * @since 2.3.3
 		 */
-		if ( '' !== $the_id && $this->is_blog_page( $the_id ) ) {
-			$args = array(
-				'posts_per_page'	=> 1,
-				'offset'			=> 0,
-				'category'			=> '',
-				'category_name'		=> '',
-				'orderby'			=> 'date',
-				'order'				=> 'DESC',
-				'post_type'			=> 'post',
-				'post_status'		=> 'publish',
-			);
+		if (  '' !== $the_id ) {
+			if ( $this->is_blog_page( $the_id ) ) {
+				$args = array(
+					'posts_per_page'	=> 1,
+					'offset'			=> 0,
+					'category'			=> '',
+					'category_name'		=> '',
+					'orderby'			=> 'date',
+					'order'				=> 'DESC',
+					'post_type'			=> 'post',
+					'post_status'		=> 'publish',
+				);
 
-			$post = get_posts( $args );
-		} else if ( '' !== $the_id ) {
-			$post = get_post( $the_id, ARRAY_A );
+				$post = get_posts( $args );
+			} else if ( '' !== $the_id ) {
+				$post = get_post( $the_id, ARRAY_A );
+			}
 		} else if ( '' !== $tt_id ) {
 			/**
 			 * Match the descriptions in admin as on the front end.

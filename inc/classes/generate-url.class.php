@@ -307,6 +307,11 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 					if ( '' === $this->permalink_structure() ) {
 						$path = $this->the_url_path_default_permalink_structure( $post );
 					} else {
+
+						//* Don't slash draft shortlinks.
+						if ( isset( $post->post_status ) && ( 'auto-draft' === $post->post_status || 'draft' === $post->post_status ) )
+							$this->url_slashit = false;
+
 						$path = $this->get_relative_url( $post, $args['external'], $post_id );
 					}
 				}
@@ -363,7 +368,6 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 * @since 2.4.2
 		 */
 		$path = $this->set_url_scheme( $permalink, 'relative' );
-
 
 		return $path;
 	}
@@ -751,18 +755,21 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 */
 	public function the_url_path_default_permalink_structure( $post = null ) {
 
+		//* Don't slash it.
+		$this->url_slashit = false;
+
 		if ( ! $this->is_singular() ) {
 			//* We're on a taxonomy
 			$object = get_queried_object();
 
 			if ( is_object( $object ) ) {
-				if ( is_category() ) {
+				if ( $this->is_category() ) {
 					$id = $object->term_id;
 					$path = '?cat=' . $id;
-				} else if ( is_tag() ) {
+				} else if ( $this->is_tag() ) {
 					$name = $object->name;
 					$path = '?tag=' . $id;
-				} else if ( is_date() ) {
+				} else if ( $this->is_date() ) {
 					global $wp_query;
 
 					$query = $wp_query->query;
@@ -772,10 +779,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 					$day = $query->day ? '&day=' . $query->day : '';
 
 					$path = '?year=' . $year . $month . $day;
-				} else if ( is_author() ) {
+				} else if ( $this->is_author() ) {
 					$name = $object->author_name;
 					$path = '?author=' . $name;
-				} else if ( is_tax() ) {
+				} else if ( $this->is_tax() ) {
 					$name = $object->taxonomy;
 					$path = '?taxonomy=' . $name;
 				} else {

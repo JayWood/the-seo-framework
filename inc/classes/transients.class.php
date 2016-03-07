@@ -73,6 +73,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		//* Delete Sitemap and Description transients on post publish/delete.
 		add_action( 'publish_post', array( $this, 'delete_transients_post' ) );
 		add_action( 'delete_post', array( $this, 'delete_transients_post' ) );
+		add_action( 'post_updated', array( $this, 'delete_transients_post' ) );
 
 		add_action( 'edit_term', array( $this, 'delete_auto_description_transients_term' ), 10, 3 );
 		add_action( 'delete_term', array( $this, 'delete_auto_description_transients_term' ), 10, 4 );
@@ -382,6 +383,8 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 * Delete transient on post save.
 	 *
 	 * @since 2.2.9
+	 *
+	 * @param int $post_id The Post ID that has been updated.
 	 *
 	 * @return bool|null True when sitemap is flushed. False on revision. Null
 	 * when sitemaps are deactivated.

@@ -124,10 +124,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	/**
 	 * Adds menu links under "settings" in the wp-admin dashboard
 	 *
-	 * Applies filter 'the_seo_framework_settings_capability' : string
-	 * This filter changes the minimum role for viewing and editing the plugin's settings.
-	 *
 	 * @since 2.2.2
+	 *
 	 * @return void
 	 */
 	public function add_menu_link() {
@@ -135,7 +133,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$menu = array(
 			'pagetitle'		=> __( 'SEO Settings', 'autodescription' ),
 			'menutitle'		=> __( 'SEO', 'autodescription' ),
-			'capability'	=> (string) apply_filters( 'the_seo_framework_settings_capability', 'manage_options' ),
+			'capability'	=> $this->settings_capability(),
 			'menu_slug'		=> 'autodescription-settings',
 			'callback'		=> array( $this, 'admin' ),
 			'icon'			=> 'dashicons-search',

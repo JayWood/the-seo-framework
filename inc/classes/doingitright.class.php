@@ -320,7 +320,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 		$args = array();
 		$args['class'] = $classes[$color];
-		$args['width'] = $classes['ad-100'];
+		$args['width'] = $classes['100%'];
 		$args['notice'] = $context;
 		$args['indicator'] = $symbol;
 
