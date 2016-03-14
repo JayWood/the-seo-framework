@@ -201,7 +201,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 	 * Echos output.
 	 */
 	public function html_output() {
-		global $blog_id, $paged, $page;
+		global $paged, $page;
 
 		/**
 		 * Start the timer here. I know it doesn't calculate the initiation of
@@ -210,6 +210,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 		 * This function takes the most time anyway.
 		 */
 		$plugin_start = microtime( true );
+		$memory_start = $this->the_seo_framework_debug ? $this->profile( false, false, 'memory', 'html_output' ) : 0;
 
 		/**
 		 * Cache key buster
@@ -240,7 +241,18 @@ class AutoDescription_Init extends AutoDescription_Query {
 			$before_actions = $this->header_actions( '', true );
 
 			//* Limit processing on 404 or search
-			if ( ! is_404() && ! is_search() ) {
+			if ( $this->is_404() || $this->is_search() ) {
+				$output	= $this->og_locale()
+						. $this->og_type()
+						. $this->og_title()
+						. $this->og_url()
+						. $this->og_sitename()
+						. $this->canonical()
+						. $this->google_site_output()
+						. $this->bing_site_output()
+						. $this->pint_site_output()
+						;
+			} else {
 				$output	= $this->the_description()
 						. $this->og_image()
 						. $this->og_locale()
@@ -264,17 +276,6 @@ class AutoDescription_Init extends AutoDescription_Query {
 						. $this->canonical()
 						. $this->paged_urls()
 						. $this->ld_json()
-						. $this->google_site_output()
-						. $this->bing_site_output()
-						. $this->pint_site_output()
-						;
-			} else {
-				$output	= $this->og_locale()
-						. $this->og_type()
-						. $this->og_title()
-						. $this->og_url()
-						. $this->og_sitename()
-						. $this->canonical()
 						. $this->google_site_output()
 						. $this->bing_site_output()
 						. $this->pint_site_output()
@@ -303,7 +304,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 		$indicatorbefore = '';
 		$indicatorafter = '';
 
-		if ( true === $indicator ) {
+		if ( $indicator ) {
 			$timer = (bool) apply_filters( 'the_seo_framework_indicator_timing', true );
 			$sybre = (bool) apply_filters( 'sybre_waaijer_<3', true );
 
@@ -317,8 +318,9 @@ class AutoDescription_Init extends AutoDescription_Query {
 			 * Calculate the plugin load time.
 			 * @since 2.4.0
 			 */
-			if ( true === $timer ) {
-				$indicatorafter = '<!-- ' . $end . $me . ' | ' . number_format( microtime( true ) - $plugin_start, 5 ) . 's -->' . "\r\n";
+			if ( $timer ) {
+				$memory = $this->the_seo_framework_debug ? ' | ' . number_format( $this->profile( false, true, 'memory', 'html_output' ) / 1024, 2 ) . ' kiB': '';
+				$indicatorafter = '<!-- ' . $end . $me . ' | ' . number_format( microtime( true ) - $plugin_start, 5 ) . 's' . $memory . ' -->' . "\r\n";
 			} else {
 				$indicatorafter = '<!-- ' . $end . $me . ' -->' . "\r\n";
 			}

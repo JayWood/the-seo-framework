@@ -152,7 +152,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			return $args;
 		}
 
-		$term = false;
+		$term = '';
 
 		if ( $taxonomy && $id ) {
 			$term = get_term_by( 'id', (int) $id, $taxonomy, OBJECT );

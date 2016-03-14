@@ -373,7 +373,9 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( $this->is_front_page() || $args['is_home'] || $this->is_static_frontpage( $args['id'] ) )
 			return $this->generate_home_page_description( $args['get_custom_field'] );
 
-		$args = $this->get_term_for_args( $args, $args['id'], $args['taxonomy'] );
+		if ( ! isset( $args['term'] ) )
+			$args = $this->get_term_for_args( $args, $args['id'], $args['taxonomy'] );
+
 		$term = $args['term'];
 
 		$title_on_blogname = $this->generate_description_additions( $args['id'], $term, false );
@@ -383,7 +385,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		$sep = $title_on_blogname['sep'];
 
 		//* Whether to add "on blogname"
-		$description_additions = $this->get_option( 'description_blogname' );
+		$blogname_addition = $this->get_option( 'description_blogname' );
 
 		/**
 		 * Setup transient.
@@ -409,7 +411,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			 *
 			 * Default to 200 when $args['social'] as there are no additions.
 			 */
-			$max_char_length_normal = $description_additions ? (int) 149 - mb_strlen( html_entity_decode( $title . $on . $blogname ) ) : (int) 151 - mb_strlen( html_entity_decode( $title ) );
+			$max_char_length_normal = $blogname_addition ? (int) 149 - mb_strlen( html_entity_decode( $title . $on . $blogname ) ) : (int) 151 - mb_strlen( html_entity_decode( $title ) );
 			$max_char_length_social = 200;
 
 			//* Generate Excerpts.
@@ -443,7 +445,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			/**
 			 * @since 2.5.2
 			 */
-			$excerpt_exists = empty( $excerpt['social'] ) ? false : true;
+			$excerpt_exists = ! empty( $excerpt['social'] );
 
 			if ( $excerpt_exists ) {
 				$description = $excerpt['social'];
@@ -451,10 +453,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
 			}
 		} else {
-			$excerpt_exists = empty( $excerpt['normal'] ) ? false : true;
+			$excerpt_exists = ! empty( $excerpt['normal'] );
 
-			if ( true === $excerpt_exists ) {
-				if ( $description_additions ) {
+			if ( $excerpt_exists ) {
+				if ( $blogname_addition ) {
 					$description = (string) sprintf( '%s %s %s %s %s', $title, $on, $blogname, $sep, $excerpt['normal'] );
 				} else {
 					$description = (string) sprintf( '%s %s %s', $title, $sep, $excerpt['normal'] );
@@ -505,20 +507,25 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	/**
 	 * Whether to add description additions.
 	 *
+	 * @param int $id The current page or post ID.
+	 * @param object|emptystring $term The current Term.
+	 *
 	 * Applies filters the_seo_framework_add_description_additions : boolean
 	 * @staticvar bool $cache
 	 * @since 2.6.0
 	 *
 	 * @return bool
 	 */
-	public function add_description_additions() {
+	public function add_description_additions( $id = '', $term = '' ) {
 
 		static $cache = null;
+
+		//* @TODO add options.
 
 		if ( isset( $cache ) )
 			return $cache;
 
-		return $cache = (bool) apply_filters( 'the_seo_framework_add_description_additions', true );
+		return $cache = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
 	}
 
 	/**
@@ -567,11 +574,11 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		static $title = array();
 		static $on = null;
 
-		if ( $page_on_front || $this->add_description_additions() ) {
+		if ( $page_on_front || $this->add_description_additions( $id, $term ) ) {
 			if ( ! isset( $title[$id] ) )
 				$title[$id] = $this->generate_description_title( $id, $term, $page_on_front );
 
-			if ( ! isset( $on ) ) {
+			if ( is_null( $on ) ) {
 				/* translators: Front-end output. */
 				$on = _x( 'on', 'Placement. e.g. Post Title "on" Blog Name', 'autodescription' );
 			}

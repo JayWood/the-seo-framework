@@ -31,12 +31,12 @@
 //* Debug. Not to be used on production websites as it dumps and/or disables all kinds of stuff everywhere.
 //if ( is_admin() ) { // Warning: This indicated the Admin Area.
 //	if ( is_super_admin() ) { // AntiWarning: This indicated the user capability.
-//		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
+		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_MORE', true );
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
 //		define( 'THE_SEO_FRAMEWORK_PROFILE', true );
 //		define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
-		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
+//		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
 //	}
 //}
 

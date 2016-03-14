@@ -81,7 +81,7 @@ class AutoDescription_Core {
 			'post', 'page',
 			'product',
 			'forum', 'topic',
-			'jetpack-testimonial', 'jetpack-portfolio'
+			'jetpack-testimonial', 'jetpack-portfolio',
 		);
 
 		$post_types = (array) apply_filters( 'the_seo_framework_supported_post_types', $defaults );

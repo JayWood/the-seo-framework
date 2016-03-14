@@ -102,13 +102,11 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	/**
 	 * Adds SEO Meta boxes beneath every page/post edit screen
 	 *
-	 * High priority, this box is seen right below the post/page edit screen.
-	 *
 	 * @since 2.0.0
 	 *
-	 * Rewritten to reduce resource usage. It now supports not only set Posts
-	 * and Pages, but all kinds of types.
-	 * @since 2.3.5
+	 * High priority, this box is seen right below the post/page edit screen.
+	 * Applies filters 'the_seo_framework_metabox_priority' : string
+	 * @since 2.6.0
 	 */
 	public function add_inpost_seo_box() {
 
@@ -130,15 +128,16 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 					$singular_name = isset( $labels->singular_name ) ? $labels->singular_name : $labels->name;
 
 					//* Title and type are used interchangeably.
-					$title = $type = $singular_name;
+					$title = $singular_name;
+					$args = array( $title, 'is_post_page' );
 
-					$args = array( $type, 'is_post_page' );
-
-					// Metabox HTML class/id
+					//* Metabox HTML class/id
 					$id = 'theseoframework-inpost-box';
+					$context = 'normal';
+					$priority = (string) apply_filters( 'the_seo_framework_metabox_priority', 'low' );
 
 					// Note: Pass on the object $this
-					add_meta_box( $id, sprintf( __( '%s SEO Settings', 'autodescription' ), $title ), array( &$this, 'pre_seo_box' ), $screen, 'normal', 'high', $args );
+					add_meta_box( $id, sprintf( __( '%s SEO Settings', 'autodescription' ), $title ), array( $this, 'pre_seo_box' ), $screen, $context, 'high', $args );
 				}
 			}
 		}
@@ -188,7 +187,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 *
 	 * Note: Passed through object $object by reference
 	 */
-	public function inpost_seo_box( &$object, $args ) {
+	public function inpost_seo_box( $object, $args ) {
 
 		//* Determines if it's inside a meta box or within a taxonomy page.
 		$is_term = false;

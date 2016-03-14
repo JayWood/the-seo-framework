@@ -275,6 +275,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 				$h = 1500;
 			} else if ( $w > $h ) {
 				//* Landscape
+				// var_dump( ) test this.
 				$h = $this->proportionate_dimensions( $h, $w, $w = 1500 );
 			} else if ( $h > $w ) {
 				//* Portrait

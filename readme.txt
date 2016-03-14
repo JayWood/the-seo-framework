@@ -587,6 +587,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
 	* The blog page is now also shown within the Sitemap.
+	* TODO Front Page pagination index options.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -602,6 +603,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Short explanatory text on Canonical question mark title within the inpost SEO metabox is displayed rather than the HTML output.
 	* When a Post ID can't be found for the SEO Bar, a more elegant notification is displayed.
 	* Moved SEO Bar before bbPress Reply Created.
+	* The sitemap, theme doing it right, description and LD+Json transient keys have been invalidated.
 * **Updated:**
 	/
 	* Several sentences to have a better English structure to what they do.
@@ -650,6 +652,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The SEO Bar within Terms minor pixel overflow on small screens.
 	* Unneeded Page navigation confirmation warning when deleting post.
 	* Pinging the Search Engines of sitemap changes now won't happen on post creation.
+	* TODO External URL's work now in custom 301 redirect.
+	* TODO Archive rel next/prev pagination links now also work on the Blog Page.
+	* TODO The Home Page can't get assigned `noindex` anymore through wrong customizer settings and believing it to be empty.
 * **Removed:**
 	/
 	* Shortlink URL from home page, as it's quite useless and self referring there.
@@ -685,6 +690,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Extra `$post_id` arguments, see **Filter notes** for more information below.
 	* TODO Multibyte support for paged URLs (urlencode) ?? Is this needed ??.
 	* Untitled Term Name when using WordPress core archive title filters when returning falsy.
+	* Debugging now shows memory usage and processing time.
+	* When debugging is enabled, the memory usage is also shown in the plugin indicator within HTML.
 * **Changed:**
 	/
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
@@ -767,8 +774,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(bool) the_seo_framework_update_options_at_update`
 		* TODO `(string) the_seo_framework_pre_add_title`
 		* TODO `(string) the_seo_framework_pro_add_title`
-		* TODO `(string) the_seo_framework_metabox_priority`
-		* TODO `(bool) the_seo_framework_seo_bar_pill`
+		* `(string) the_seo_framework_metabox_priority`
+		* `(bool) the_seo_framework_seo_bar_pill`
 	* **Altered:**
 		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
 		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
@@ -804,7 +811,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(array) the_seo_framework_sitemaps_settings_tabs`, added `$args` parameter.
 	* **Removed:**
 		/
-		* TODO `(bool) the_seo_framework_seo_bar_squared`. Replaced by `(bool) the_seo_framework_seo_bar_pill`.
+		* `(bool) the_seo_framework_seo_bar_squared`. Replaced by `(bool) the_seo_framework_seo_bar_pill`.
 * **Constant Notes:**
 	* **New:**
 		* `(bool) THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS`. Note: Does not disable transients for pinging search engines

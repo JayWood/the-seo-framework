@@ -327,7 +327,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	}
 
 	/**
-	 * Detect the blog page.
+	 * Detect the separated blog page.
 	 *
 	 * @param int $id the Page ID.
 	 *

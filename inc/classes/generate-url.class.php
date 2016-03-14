@@ -500,7 +500,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			if ( ! isset( $gli_exists ) )
 				$gli_exists = function_exists( 'wpml_get_language_information' );
 
-			if ( true === $gli_exists ) {
+			if ( $gli_exists ) {
 
 				if ( '' === $post_id )
 					$post_id = $this->get_the_real_ID();
