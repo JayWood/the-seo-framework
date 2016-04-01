@@ -68,7 +68,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 *
 	 * @var string The Updated option name.
 	 */
-	protected $plugin_updated;
+	protected $o_plugin_updated;
 
 	/**
 	 * Holds the update notification.
@@ -109,7 +109,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function initialize_defaults() {
 
-		$this->plugin_updated = 'updated_' . str_replace( '.', '', THE_SEO_FRAMEWORK_VERSION );
+		$this->o_plugin_updated = 'updated_' . str_replace( '.', '', THE_SEO_FRAMEWORK_VERSION );
 
 		/**
 		 * Switch when RTL is active;
@@ -243,7 +243,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'source_the_feed'		=> 1,	// Add backlink at the end of the feed
 
 			// Cache
-			$this->plugin_updated 	=> 1,	// Plugin update cache.
+			$this->o_plugin_updated => 1,	// Plugin update cache.
 		);
 
 	}
@@ -350,6 +350,19 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	}
 
 	/**
+	 * Updates special hidden values to default on settings save.
+	 *
+	 * @since 2.6.0
+	 */
+	protected function update_hidden_options_to_default() {
+
+		//* Disables the New SEO Settings Updated notification.
+		$plugin_updated = $this->o_plugin_updated;
+		$_POST[THE_SEO_FRAMEWORK_SITE_OPTIONS][$plugin_updated] = 1;
+
+	}
+
+	/**
 	 * Updates option from default options at plugin update.
 	 *
 	 * Applies filters 'the_seo_framework_update_options_at_update' : bool
@@ -366,7 +379,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		if ( ! current_user_can( $this->settings_capability() ) )
 			return;
 
-		$plugin_updated = $this->plugin_updated;
+		$plugin_updated = $this->o_plugin_updated;
 
 		/**
 		 * Prevent this function from running more than once after update.
@@ -434,7 +447,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function site_updated_plugin_notice() {
 
-		$notice = $this->page_defaults['option_update_text'];
+		$notice = $this->page_defaults['plugin_update_text'];
 
 		$settings_url = $this->seo_settings_page_url();
 		$link = sprintf( '<a href="%s" title="%s" target="_self">%s</a>', $settings_url, __( 'SEO Settings', 'autodescription' ), __( 'here', 'autodescription' ) );

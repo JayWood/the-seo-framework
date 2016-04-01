@@ -1285,17 +1285,20 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $this->is_404() || $this->is_admin() )
 			return $title;
 
-		global $page, $paged;
+		$page = $this->page();
+		$paged = $this->paged();
+		
+		if ( $page && $paged ) {
+			/**
+			 * @since 2.4.3
+			 * Adds page numbering within the title.
+			 */
+			if ( $paged >= 2 || $page >= 2 ) {
+				$sep = $this->get_title_separator();
 
-		/**
-		 * @since 2.4.3
-		 * Adds page numbering within the title.
-		 */
-		if ( $paged >= 2 || $page >= 2 ) {
-			$sep = $this->get_title_separator();
-
-			/* translators: Front-end output. */
-			$title .= " $sep " . sprintf( __( 'Page %s', 'autodescription' ), max( $paged, $page ) );
+				/* translators: Front-end output. */
+				$title .= " $sep " . sprintf( __( 'Page %s', 'autodescription' ), max( $paged, $page ) );
+			}
 		}
 
 		return $title;

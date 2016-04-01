@@ -41,7 +41,7 @@
 //}
 
 /**
- * CDN Cache buster. 3 point.
+ * CDN Cache buster. 3 to 4 point.
  * Not many caching plugins use CDN in dashboard. What a shame. Firefox does cache.
  *
  * @since 1.0.0

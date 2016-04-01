@@ -59,7 +59,7 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 		);
 
 		$query_vars = isset( $wp_query->query_vars ) ? $wp_query->query_vars : '';
-		$paged = isset( $query_vars['paged'] ) ? (int) $query_vars['paged'] : 0;
+		$paged = $this->paged();
 		/**
 		 * Check the Robots SEO settings, set noindex for paged archives.
 		 * @since 2.2.4
@@ -67,20 +67,20 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 		if ( $paged > 1 )
 			$meta['noindex'] = $this->get_option( 'paged_noindex' ) ? 'noindex' : $meta['noindex'];
 
-		/**
-		 * Check if archive is empty, set noindex for those.
-		 *
-		 * @todo maybe create option
-		 * @since 2.2.8
-		 */
-		if ( isset( $wp_query->post_count ) && 0 === $wp_query->post_count )
-			$meta['noindex'] = 'noindex';
-
 		//* Check home page SEO settings, set noindex, nofollow and noarchive
 		if ( $this->is_front_page() ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'homepage_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'homepage_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'homepage_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+		} else {
+			/**
+			 * Check if archive is empty, set noindex for those.
+			 *
+			 * @todo maybe create option
+			 * @since 2.2.8
+			 */
+			if ( isset( $wp_query->post_count ) && 0 === $wp_query->post_count )
+				$meta['noindex'] = 'noindex';
 		}
 
 		if ( $this->is_category() || $this->is_tag() ) {

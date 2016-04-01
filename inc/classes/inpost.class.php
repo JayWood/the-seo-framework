@@ -105,7 +105,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 * @since 2.0.0
 	 *
 	 * High priority, this box is seen right below the post/page edit screen.
-	 * Applies filters 'the_seo_framework_metabox_priority' : string
+	 * Applies filters 'the_seo_framework_metabox_priority' : string : Accepts 'high', 'default', 'low'
 	 * @since 2.6.0
 	 */
 	public function add_inpost_seo_box() {
@@ -134,10 +134,10 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 					//* Metabox HTML class/id
 					$id = 'theseoframework-inpost-box';
 					$context = 'normal';
-					$priority = (string) apply_filters( 'the_seo_framework_metabox_priority', 'low' );
+					$priority = (string) apply_filters( 'the_seo_framework_metabox_priority', 'high' );
 
 					// Note: Pass on the object $this
-					add_meta_box( $id, sprintf( __( '%s SEO Settings', 'autodescription' ), $title ), array( $this, 'pre_seo_box' ), $screen, $context, 'high', $args );
+					add_meta_box( $id, sprintf( __( '%s SEO Settings', 'autodescription' ), $title ), array( $this, 'pre_seo_box' ), $screen, $context, $priority, $args );
 				}
 			}
 		}

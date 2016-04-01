@@ -613,10 +613,11 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			$term = $wp_query->get_queried_object();
 		}
 
-		global $wp_rewrite, $paged;
+		$paged = $this->paged();
 
 		$taxonomy = $term->taxonomy;
 
+		global $wp_rewrite;
 		$termlink = $wp_rewrite->get_extra_permastruct( $taxonomy );
 
 		$slug = $term->slug;
@@ -1008,7 +1009,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		if ( $this->get_option( 'prev_next_archives' ) && ! is_singular() ) {
 
-			$paged = get_query_var( 'paged' ) ? (int) get_query_var( 'paged' ) : 1;
+			$paged = $this->paged();
 
 			if ( 'prev' === $prev_next )
 				$prev = $paged > 1 ? get_previous_posts_page_link() : $prev;
@@ -1018,7 +1019,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		} else if ( $this->get_option( 'prev_next_posts' ) && is_singular() ) {
 
-			$page = (int) get_query_var( 'page' );
+			$page = $this->page();
 			$numpages = substr_count( $wp_query->post->post_content, '<!--nextpage-->' ) + 1;
 
 			if ( ! $page && $numpages ) {

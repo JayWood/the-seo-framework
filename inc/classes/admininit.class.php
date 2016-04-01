@@ -264,7 +264,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 				if ( isset( $current_screen->taxonomy ) ) {
 
-					$term_id = isset( $_REQUEST['term_id'] ) ? absint( $_REQUEST['term_id'] ) : '';
+					$term_id = $this->get_admin_term_id();
 
 					if ( $term_id ) {
 						$generated_doctitle_args = array(

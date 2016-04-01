@@ -201,8 +201,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 	 * Echos output.
 	 */
 	public function html_output() {
-		global $paged, $page;
-
+		
 		/**
 		 * Start the timer here. I know it doesn't calculate the initiation of
 		 * the plugin, but it will make the code smelly if I were to do so.
@@ -226,8 +225,8 @@ class AutoDescription_Init extends AutoDescription_Query {
 		 * Give each paged pages/archives a different cache key.
 		 * @since 2.2.6
 		 */
-		$page = isset( $page ) ? (string) $page : '0';
-		$paged = isset( $paged ) ? (string) $paged : '0';
+		$page = (string) $this->page();
+		$paged = (string) $this->paged();
 
 		$cache_key = 'seo_framework_output_' . $key . '_' . $paged . '_' . $page;
 
