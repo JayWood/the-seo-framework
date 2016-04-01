@@ -106,10 +106,6 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 		if ( empty( $image ) && ( $all_allowed || ! in_array( 'icon', $args['disallowed'] ) ) )
 			$image = $this->site_icon();
 
-		//* 6. If there still is no image, try the "site avatar" from WPMUdev Avatars
-		if ( empty( $image ) && ( $all_allowed || ! in_array( 'wpmudev-avatars', $args['disallowed'] ) ) )
-			$image = $this->get_image_from_wpmudev_avatars();
-
 		/**
 		 * Escape in Generation.
 		 * @since 2.5.2
@@ -275,6 +271,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 				$h = 1500;
 			} else if ( $w > $h ) {
 				//* Landscape
+				// var_dump( ) test this.
 				$h = $this->proportionate_dimensions( $h, $w, $w = 1500 );
 			} else if ( $h > $w ) {
 				//* Portrait
@@ -331,80 +328,6 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	}
 
 	/**
-	 * Fetches site image from WPMUdev Avatars.
-	 *
-	 * @since 2.3.0
-	 *
-	 * @return string|null the image url.
-	 */
-	public function get_image_from_wpmudev_avatars() {
-
-		$image = '';
-
-		$plugins = array( 'classes' => array( 'Avatars' ) );
-
-		if ( $this->detect_plugin( $plugins ) ) {
-			global $ms_avatar;
-
-			$path = '';
-
-			if ( isset( $ms_avatar->blog_avatar_dir ) ) {
-				global $blog_id;
-
-				$size = '256';
-
-				if ( method_exists( $ms_avatar, 'encode_avatar_folder' ) ) {
-					$file = $ms_avatar->blog_avatar_dir . $ms_avatar->encode_avatar_folder( $blog_id ) . '/blog-' . $blog_id . '-' . $size . '.png';
-				} else {
-					return '';
-				}
-
-				if ( false !== $file && is_file( $file ) ) {
-
-					$upload_dir = wp_upload_dir();
-					$upload_url = $upload_dir['baseurl'];
-
-					/**
-					 * Isn't there a more elegant core option? =/
-					 * I'm basically backwards enginering the wp_upload_dir
-					 * function to get the base url without /sites/blogid or /blogid.
-					 */
-					if ( is_multisite() && ! ( is_main_network() && is_main_site() && defined( 'MULTISITE' ) ) ) {
-						if ( ! get_site_option( 'ms_files_rewriting' ) ) {
-							if ( defined( 'MULTISITE' ) ) {
-								$upload_url = str_replace( '/sites/' . $blog_id, '', $upload_url );
-							} else {
-								// This should never run.
-								$upload_url = str_replace( '/' . $blog_id, '', $upload_url );
-							}
-						} else if ( defined( 'UPLOADS' ) && ! ms_is_switched() ) {
-							/**
-							 * Special cases. UPLOADS is defined.
-							 * Where UPLOADS is defined AND we're on the main blog AND
-							 * WPMUdev avatars is used AND file is uploaded on main blog AND
-							 * no header image is set AND no favicon is uploaded.
-							 *
-							 * So yeah: I'm not sure what to do here so I'm just gonna fall back to default.
-							 * I'll wait for a bug report.
-							 */
-							$upload_url = str_replace( '/sites/' . $blog_id, '', $upload_url );
-						}
-					}
-
-					// I think I should've used get_site_url...
-					$avatars_url = trailingslashit( trailingslashit( $upload_url ) . basename( dirname( $ms_avatar->blog_avatar_dir ) ) );
-					$path = preg_replace( '/' . preg_quote( dirname( $ms_avatar->blog_avatar_dir ) . '/', '/') . '/', $avatars_url, $file );
-
-				}
-			}
-
-			$image = empty( $path ) ? '' : $path;
-		}
-
-		return $image;
-	}
-
-	/**
 	 * Fetches site icon brought in WordPress 4.3.0
 	 *
 	 * @param string $size The icon size, accepts 'full' and pixel values
@@ -427,7 +350,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 			}
 
 		} else if ( is_int( $size ) && function_exists( 'has_site_icon' ) && $this->wp_version( '4.3.0', '>=' ) ) {
-			//* Also uses (MultiSite) filters.
+			//* Also applies (MultiSite) filters.
 			$icon = get_site_icon_url( $size );
 		}
 

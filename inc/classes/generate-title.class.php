@@ -172,7 +172,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		}
 
 		//* Return early if it's only a default args request.
-		if ( $get_defaults )
+		if ( $defaults )
 			return $defaults;
 
 		//* Array merge doesn't support sanitation. We're simply type casting here.
@@ -194,17 +194,16 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Reparse title args.
 	 *
 	 * @param array $args required The passed arguments.
-	 * @param int $line the line number the function is called.
 	 *
 	 * @since 2.6.0
 	 * @return array $args parsed args.
 	 */
-	public function reparse_title_args( $args = array(), $line = 0 ) {
+	public function reparse_title_args( $args = array() ) {
 
 		$default_args = $this->parse_title_args( '', '', true );
 
 		if ( is_array( $args ) ) {
-			 if ( empty( $args ) ) {
+			if ( empty( $args ) ) {
 				$args = $default_args;
 			} else {
 				$args = $this->parse_title_args( $args, $default_args );
@@ -215,7 +214,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$args = $default_args;
 		}
 
-		return $args;
+		return $default_args;
 	}
 
 	/**
@@ -1286,17 +1285,20 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $this->is_404() || $this->is_admin() )
 			return $title;
 
-		global $page, $paged;
+		$page = $this->page();
+		$paged = $this->paged();
+		
+		if ( $page && $paged ) {
+			/**
+			 * @since 2.4.3
+			 * Adds page numbering within the title.
+			 */
+			if ( $paged >= 2 || $page >= 2 ) {
+				$sep = $this->get_title_separator();
 
-		/**
-		 * @since 2.4.3
-		 * Adds page numbering within the title.
-		 */
-		if ( $paged >= 2 || $page >= 2 ) {
-			$sep = $this->get_title_separator();
-
-			/* translators: Front-end output. */
-			$title .= " $sep " . sprintf( __( 'Page %s', 'autodescription' ), max( $paged, $page ) );
+				/* translators: Front-end output. */
+				$title .= " $sep " . sprintf( __( 'Page %s', 'autodescription' ), max( $paged, $page ) );
+			}
 		}
 
 		return $title;

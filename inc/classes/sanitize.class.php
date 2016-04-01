@@ -63,6 +63,9 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		if ( ! isset( $_POST ) || empty( $_POST ) || ! isset( $_POST[THE_SEO_FRAMEWORK_SITE_OPTIONS] ) || ! is_array( $_POST[THE_SEO_FRAMEWORK_SITE_OPTIONS] ) )
 			return;
 
+		//* Update hidden options.
+		$this->update_hidden_options_to_default();
+
 		$this->autodescription_add_option_filter(
 			's_title_separator',
 			$this->settings_field,
@@ -817,30 +820,41 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			 *
 			 * @requires WP 4.1.0 and up to prevent adding upon itself.
 			 */
-			if ( false === $allow_external )
+			if ( ! $allow_external )
 				$url = ltrim( wp_make_link_relative( $url ), '/' );
 
-			//* URL pattern without path
-			$pattern 	= 	'/'
-						.	'((((http)(s)?)?)\:)?' 	// 1: maybe http: https:
-						. 	'(\/\/)?'				// 2: maybe slash slash
-						. 	'((www.)?)'				// 3: maybe www.
-						.	'(.*\.[a-zA-Z0-9]*)'	// 4: any legal domain with tld
-						.	'(?:\/)'				// 5: trailing slash
-						.	'/'
-						;
+			//* Find a path.
+			if ( _wp_can_use_pcre_u() ) {
+				//* URL pattern excluding path.
+				$pattern 	= 	'/'
+							.	'((((http)(s)?)?)\:)?' 	// 1: maybe http: https:
+							. 	'(\/\/)?'				// 2: maybe slash slash
+							. 	'((www.)?)'				// 3: maybe www.
+							.	'(.*\.[a-zA-Z0-9]*)'	// 4: any legal domain with tld
+							.	'(?:\/)?'				// 5: trailing slash
+							.	'/'
+							;
+
+				$is_path = ! preg_match( $pattern, $url );
+			} else {
+				$parsed_url = parse_url( $url );
+
+				if ( ! isset( $parsed_url['host'] ) && isset( $parsed_url['path'] ) ) {
+					$is_path = true;
+				} else {
+					$is_path = false;
+				}
+			}
 
 			//* If link is relative, make it full again
-			if ( _wp_can_use_pcre_u() && 1 !== preg_match( $pattern, $url ) ) {
+			if ( $is_path ) {
 
 				//* The url is a relative path
 				$path = $url;
 
-				$ismapped = '0';
-
 				//* Do some extra work on domain mapping
 				if ( $this->is_domainmapping_active() ) {
-					global $wpdb,$blog_id;
+					global $wpdb, $blog_id;
 
 					$mapped_key = 'wpmudev_mapped_domain_' . $blog_id;
 
@@ -852,9 +866,6 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 					}
 
 					if ( $mapped_domain ) {
-						//* Set that the domain is mapped
-						$ismapped = '1';
-
 						$scheme_key = 'wpmudev_mapped_scheme_' . $blog_id;
 
 						//* Fetch scheme
@@ -872,34 +883,34 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 							$scheme = 'http';
 						}
 
-						// Put it all together
+						//* Put it all together.
 						$url = trailingslashit( $scheme_full . $mapped_domain ) . $path;
 					}
 				}
 
 				//* Non-mapped URL
-				if ( '1' !== $ismapped ) {
-					$url = home_url( add_query_arg( array(), $path ) );
+				if ( ! isset( $scheme ) ) {
+					$url = $this->the_home_url_from_cache( true ) . ltrim( $path, ' /' );
 					$scheme = is_ssl() ? 'https' : 'http';
 				}
 
-				$scheme = $scheme ? $scheme : '';
+				$scheme = isset( $scheme ) ? $scheme : '';
 
-				$url = esc_url_raw( $url, $scheme );
-
+				$url = $this->set_url_scheme( $url, $scheme );
 			}
 		}
 
 		/**
 		 * Applies filters the_seo_framework_301_noqueries : bool remove query args from 301
+		 * @since 2.5.0
 		 */
 		$noqueries = (bool) apply_filters( 'the_seo_framework_301_noqueries', true );
 
 		/**
 		 * Remove queries from the URL
 		 *
-		 * Returns plain home url if $allow_external is set to false and only a query has been supplied
-		 * But that's okay. The url was rogue anyway :)
+		 * Returns plain Home URL if $allow_external is set to false and only a query has been supplied
+		 * But that's okay. The URL was rogue anyway :)
 		 */
 		if ( $noqueries ) {
 			/**
@@ -909,11 +920,9 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			 * @since 2.2.4
 			 */
 			$new_value = $this->s_url( $url );
-
 		} else {
 			/**
-			 * Allow query string parameters. Warning: don't trust anyone :)
-			 * XSS safe.
+			 * Allow query string parameters. XSS safe.
 			 */
 			$new_value = esc_url_raw( $url );
 		}
@@ -921,4 +930,5 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 		//* Save url
 		return $new_value;
 	}
+
 }

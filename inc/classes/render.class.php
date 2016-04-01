@@ -133,7 +133,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		static $seplocation_param_cache = null;
 
 		if ( ! isset( $setup_cache ) ) {
-			if ( doing_filter( 'wp_title' ) || doing_filter( 'pre_get_document_title' ) ) {
+			if ( doing_filter( 'pre_get_document_title' ) || doing_filter( 'wp_title' ) ) {
 				$title_param_cache = $title;
 				$sep_param_cache = $sep;
 				$seplocation_param_cache = $seplocation;
@@ -143,7 +143,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		}
 
 		/**
-		 * If the theme is doing it right, override parameters.
+		 * If the theme is doing it right, override parameters to speed things up.
 		 *
 		 * @since 2.4.0
 		 */
@@ -327,11 +327,11 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		$type = (string) apply_filters( 'the_seo_framework_ogtype_output', '', $this->get_the_real_ID() );
 
 		if ( empty( $type ) ) {
-			if ( is_single() && '' !== $this->get_image_from_cache() ) {
+			if ( $this->is_single() && '' !== $this->get_image_from_cache() ) {
 				$type = 'article';
-			} else if ( is_author() ) {
+			} else if ( $this->is_author() ) {
 				$type = 'profile';
-			} else if ( $this->is_blog_page() || ( is_front_page() && 'page' !== get_option( 'show_on_front' ) ) ) {
+			} else if ( $this->is_blog_page() || ( $this->is_front_page() && ! $this->has_page_on_front() ) ) {
 				$type = 'blog';
 			} else {
 				$type = 'website';

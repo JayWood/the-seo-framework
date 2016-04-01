@@ -595,6 +595,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 * @return bool
 	 */
 	public function current_theme_supports_title_tag() {
+
 		static $supports = null;
 
 		if ( isset( $supports ) )
@@ -630,7 +631,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 */
 	public function tell_title_doing_it_wrong( $title = null, $sep = null, $seplocation = null, $output = true ) {
 
-		if ( true === $output ) {
+		if ( $output ) {
 			//* Prevent error log spam.
 			static $no_spam = null;
 
@@ -662,7 +663,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		}
 
 		//* Echo the HTML comment.
-		if ( true === $output )
+		if ( $output )
 			echo '<!-- Title diw: "' . $title_output . '" : "' . $sep_output . '" : "' . $seplocation_output . '" -->' . "\r\n";
 
 		return;

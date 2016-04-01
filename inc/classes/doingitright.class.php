@@ -967,8 +967,20 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$notice = '';
 		$desc_too_many = '';
 
+		//* Convert description's special characters into PHP readable words.
+		$description = htmlentities( $description, ENT_XHTML );
+
 		//* Count the words.
-		$desc_words = str_word_count( strtolower( $description ), 2 );
+		$html_special_chars = '&0123456789;';
+		$desc_words = str_word_count( strtolower( $description ), 2, $html_special_chars );
+
+		static $bother_me_length = null;
+		/**
+		 * Applies filters 'the_seo_framework_bother_me_desc_length' : int Min Character length to bother you with.
+		 * @since 2.6.0
+		 */
+		if ( is_null( $bother_me_length ) )
+			$bother_me_length = (int) apply_filters( 'the_seo_framework_bother_me_desc_length', 3 );
 
 		if ( is_array( $desc_words ) ) {
 			//* We're going to fetch word based on key, and the last element (as first)
@@ -979,10 +991,19 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 			//* Parse word counting.
 			if ( is_array( $desc_word_count ) ) {
 				foreach ( $desc_word_count as $desc_word => $desc_word_count ) {
-					if ( $desc_word_count >= 3 ) {
-						$position = $word_keys[$desc_word];
+
+					if ( mb_strlen( html_entity_decode( $desc_word ) ) < $bother_me_length ) {
+						$run = $desc_word_count >= 5 ? true : false;
+					} else {
+						$run = $desc_word_count >= 3 ? true : false;
+					}
+
+					if ( $run ) {
+						//* The encoded word is longer or equal to the bother lenght.
 
 						$word_len = mb_strlen( $desc_word );
+
+						$position = $word_keys[$desc_word];
 						$first_word_original = mb_substr( $description, $position, $word_len );
 
 						//* Found words that are used too frequently.

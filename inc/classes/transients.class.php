@@ -142,7 +142,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 *
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
-		$revision = '2';
+		$revision = '3';
 
 		$this->sitemap_transient = 'the_seo_framework_sitemap_' . (string) $revision . '_' . (string) $blog_id;
 		$this->theme_doing_it_right_transient = 'the_seo_framework_tdir_' . (string) $revision . '_' . (string) $blog_id;
@@ -167,7 +167,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 *
 		 * @since 2.3.4
 		 */
-		$revision = '4';
+		$revision = '5';
 
 		/**
 		 * Two different cache keys for two different settings.
@@ -199,7 +199,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 *
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
-		$revision = '3';
+		$revision = '4';
 
 		$this->ld_json_transient = 'the_seo_f' . $revision . '_ldjs_' . $cache_key;
 	}
@@ -546,7 +546,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		if ( is_bool( $dir ) && false === get_transient( $this->theme_doing_it_right_transient ) ) {
 
 			//* Convert $dir to string 1 or 0 as transients can be false on failure.
-			$dir = true === $dir ? '1' : '0';
+			$dir = $dir ? '1' : '0';
 
 			/**
 			 * Expiration time, 3 days.

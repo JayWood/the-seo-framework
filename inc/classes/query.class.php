@@ -221,6 +221,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		global $current_screen;
 
+// var_dump() 4.4 4.5 conflict https://make.wordpress.org/core/2016/03/07/changes-to-the-term-edit-page-in-wordpress-4-5/
 		if ( isset( $current_screen->base ) && ( 'edit-tags' === $current_screen->base || 'term' === $current_screen->base ) )
 			return $cache = true;
 
@@ -246,6 +247,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		global $current_screen;
 
+// var_dump() 4.4 4.5 conflict https://make.wordpress.org/core/2016/03/07/changes-to-the-term-edit-page-in-wordpress-4-5/
 		if ( isset( $current_screen->base ) && ( 'term' === $current_screen->base ) )
 			return $cache = true;
 
@@ -296,6 +298,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		global $current_screen;
 
+//		var_dump() 4.4 4.5 conflict.
 		if ( isset( $current_screen->base ) && ( ( 'edit' === $current_screen->base ) || ( 'edit-tags' === $current_screen->base ) ) )
 			return $cache = true;
 
@@ -327,7 +330,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	}
 
 	/**
-	 * Detect the blog page.
+	 * Detect the separated blog page.
 	 *
 	 * @param int $id the Page ID.
 	 *
@@ -922,6 +925,48 @@ class AutoDescription_Query extends AutoDescription_Compat {
 			return $cache;
 
 		return $cache = $this->is_menu_page( $this->page_id );
+	}
+
+	/**
+	 * The amount of pages.
+	 * Fetches global $page through Query Var.
+	 *
+	 * @staticvar int $page
+	 * @since 2.6.0
+	 *
+	 * @return int $page
+	 */
+	public function page() {
+
+		static $page = null;
+
+		if ( isset( $page ) )
+			return $page;
+
+		$page = get_query_var( 'page' );
+
+		return $page = $page ? (int) $page : 1;
+	}
+
+	/**
+	 * The number of the current page.
+	 * Fetches global $paged through Query Var. Determines
+	 *
+	 * @staticvar int $paged
+	 * @since 2.6.0
+	 *
+	 * @return int $paged
+	 */
+	public function paged() {
+
+		static $paged = null;
+
+		if ( isset( $paged ) )
+			return $paged;
+
+		$paged = get_query_var( 'paged' );
+
+		return $paged = $paged ? (int) $paged : 1;
 	}
 
 }

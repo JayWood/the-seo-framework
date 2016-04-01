@@ -62,15 +62,15 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	public $load_options;
 
 	/**
-	 * Constructor, load parent constructor
-	 *
-	 * Cache various variables
-	 *
-	 * Applies filters the_seo_framework_load_options : Boolean Allows the options page to be removed
+	 * Constructor, load parent constructor and set up variables.
 	 */
 	public function __construct() {
 		parent::__construct();
 
+		/**
+		* Applies filters the_seo_framework_load_options : Boolean Allows the options page to be removed
+		* @since 2.2.2
+		*/
 		$this->load_options = (bool) apply_filters( 'the_seo_framework_load_options', true );
 
 		if ( $this->load_options ) {
@@ -115,7 +115,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				'saved_notice_text'		=> __( 'Settings are saved.', 'autodescription' ),
 				'reset_notice_text'		=> __( 'Settings are reset.', 'autodescription' ),
 				'error_notice_text'		=> __( 'Error saving settings.', 'autodescription' ),
-				'option_update_text'	=> __( 'New SEO Settings have been updated.', 'autodescription' ),
+				'plugin_update_text'	=> __( 'New SEO Settings have been updated.', 'autodescription' ),
 			)
 		);
 
@@ -486,7 +486,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		else if ( isset( $_REQUEST['error'] ) && 'true' === $_REQUEST['error'] )
 			echo $this->generate_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
 		else if ( isset( $_REQUEST['seo-updated'] ) && 'true' === $_REQUEST['seo-updated'] )
-			echo $this->generate_dismissible_notice( $this->page_defaults['option_update_text'], 'updated' );
+			echo $this->generate_dismissible_notice( $this->page_defaults['plugin_update_text'], 'updated' );
 
 	}
 

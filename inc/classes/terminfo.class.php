@@ -110,7 +110,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 				global $current_screen;
 
 				if ( isset( $current_screen->taxonomy ) ) {
-					$term_id = $id ? $id : abs( (int) $_REQUEST['term_id'] );
+					$term_id = $id ? $id : $this->get_admin_term_id();
 					$term[$id] = get_term_by( 'id', $term_id, $current_screen->taxonomy );
 				}
 			}
@@ -152,7 +152,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			return $args;
 		}
 
-		$term = false;
+		$term = '';
 
 		if ( $taxonomy && $id ) {
 			$term = get_term_by( 'id', (int) $id, $taxonomy, OBJECT );
@@ -244,6 +244,30 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 		}
 
 		return $term_name[$singular] = '';
+	}
+
+	/**
+	 * Fetch the Admin Term ID. For WordPress 4.5 up and below.
+	 *
+	 * @since 2.6.0
+	 * @staticvar int $term_id The Term ID.
+	 *
+	 * @return int Term ID.
+	 */
+	public function get_admin_term_id() {
+
+		static $term_id = null;
+
+		if ( isset( $term_id ) )
+			return $term_id;
+
+		if ( isset( $_REQUEST['tag_ID'] ) && $_REQUEST['tag_ID'] ) {
+			$term_id = $_REQUEST['tag_ID'];
+		} else if ( isset( $_REQUEST['term_id'] ) && $_REQUEST['term_id'] ) {
+			$term_id = $_REQUEST['term_id'];
+		}
+
+		return $term_id = $term_id ? abs( (int) $term_id ) : 0;
 	}
 
 }

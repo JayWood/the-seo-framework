@@ -431,7 +431,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	}
 
 	/**
-	 * Debug init. Simplified way of debugging a function.
+	 * Debug init. Simplified way of debugging a function, only works in admin.
 	 *
 	 * @since 2.6.0
 	 *
@@ -447,27 +447,36 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 */
 	protected function debug_init( $class, $method, $store = false ) {
 
-		if ( false === $this->the_seo_framework_debug )
+		if ( false === $this->the_seo_framework_debug || false === $this->is_admin() )
 			return;
 
 		$output = '';
 
 		if ( func_num_args() >= 4 ) {
 
+			//* Cache the args for $store.
 			static $cached_args = array();
 
 			$args = array_slice( func_get_args(), 3 );
+			$key = $class . '_' . $method;
 
 			if ( $store ) {
+				$this->profile( false, false, 'time', $key ) . ' seconds';
+				$this->profile( false, false, 'memory', $key ) . ' bytes';
+
 				$cached_args[$class][$method] = $args;
 				return;
 			} else {
 				if ( isset( $cached_args[$class][$method] ) ) {
+					$args[] = array(
+						'profile' => array(
+							'time' => $this->profile( false, true, 'time', $key ) . ' seconds',
+							'memory' => $this->profile( false, true, 'memory', $key ) . ' bytes'
+						)
+					);
+
 					$args = array_merge( $cached_args[$class][$method], $args );
 					$cached_args[$class][$method] = null;
-
-					//* We created a dimension too many with the merge.
-				//	$args = $args[0];
 				}
 			}
 
@@ -520,52 +529,66 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 *
 	 * @param bool $echo Whether to echo the total plugin time.
 	 * @param bool $from_last Whether to echo the differences from the last timing.
-	 * @param string $class_method From where the timing comes from. Requires $from_last to be false.
+	 * @param string $what Whether to return the time or memory.
+	 * @param string $key When used, it will detach the profiling separately.
 	 *
 	 * @staticvar bool $debug
 	 *
-	 * @return float The timer in seconds.
+	 * @return float The timer in seconds. Or memory in Bytes when $what is 'memory'.
 	 */
-	public function profile( $echo = false, $from_last = false, $class_method = '' ) {
+	public function profile( $echo = false, $from_last = false, $what = 'time', $key = '' ) {
 
 		if ( $this->the_seo_framework_debug ) {
 
-			static $timer_start = 0;
-			static $memory_start = 0;
-			static $plugin_time = 0;
-			static $plugin_memory = 0;
+			static $timer_start = array();
+			static $memory_start = array();
+			static $plugin_time = array();
+			static $plugin_memory = array();
+
+			$timer_start[$key] = isset( $timer_start[$key] ) ? $timer_start[$key] : 0;
+			$memory_start[$key] = isset( $memory_start[$key] ) ? $memory_start[$key] : 0;
+			$plugin_time[$key] = isset( $plugin_time[$key] ) ? $plugin_time[$key] : 0;
+			$plugin_memory[$key] = isset( $plugin_memory[$key] ) ? $plugin_memory[$key] : 0;
 
 			//* Get now.
 			$time_now = microtime( true );
 			$memory_usage_now = memory_get_usage();
 
 			//* Calculate difference.
-			$difference = $time_now - $timer_start;
-			$difference_memory = $memory_usage_now - $memory_start;
+			$difference_time = $time_now - $timer_start[$key];
+			$difference_memory = $memory_usage_now - $memory_start[$key];
 
 			//* Add difference to total.
-			$plugin_time = $plugin_time + $difference;
-			$plugin_memory = $plugin_memory + $difference_memory;
+			$plugin_time[$key] = $plugin_time[$key] + $difference_time;
+			$plugin_memory[$key] = $plugin_memory[$key] + $difference_memory;
 
 			//* Reset timer and memory
-			$timer_start = $time_now;
-			$memory_start = $memory_usage_now;
+			$timer_start[$key] = $time_now;
+			$memory_start[$key] = $memory_usage_now;
 
 			if ( false === $from_last ) {
 				//* Return early if not allowed to echo.
-				if ( false === $echo )
-					return $plugin_time;
+				if ( false === $echo ) {
+					if ( 'time' === $what )
+						return number_format( $plugin_time[$key], 5 );
+
+					return $plugin_memory[$key];
+				}
 
 				//* Convert to string and echo if not returned yet.
-				echo (string) "\r\n" . $plugin_time . "s\r\n";
-				echo (string) ( $plugin_memory / 1024 ) . "kiB\r\n";
+				echo (string) "\r\n" . $plugin_time[$key] . "s\r\n";
+				echo (string) ( $plugin_memory[$key] / 1024 ) . "kiB\r\n";
 			} else {
 				//* Return early if not allowed to echo.
-				if ( false === $echo )
-					return $difference;
+				if ( false === $echo ) {
+					if ( 'time' === $what )
+						return number_format( $difference_time, 5 );
+
+					return $difference_memory;
+				}
 
 				//* Convert to string and echo if not returned yet.
-				echo (string) "\r\n" . $difference . "s\r\n";
+				echo (string) "\r\n" . $difference_time . "s\r\n";
 				echo (string) ( $difference_memory / 1024 ) . "kiB\r\n";
 			}
 
