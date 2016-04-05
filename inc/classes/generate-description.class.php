@@ -520,7 +520,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		static $cache = null;
 
-		//* @TODO add options.
+		//* @TODO add options. (╯°□°）╯︵ ┻━┻ var_dump();
 
 		if ( isset( $cache ) )
 			return $cache;

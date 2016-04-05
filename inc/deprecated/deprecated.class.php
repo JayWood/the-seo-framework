@@ -304,4 +304,24 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 		return $this->setup_sitemap( $sitemap_content );
 	}
 
+	/**
+	 * Detect WordPress language.
+	 * Considers en_UK, en_US, etc.
+	 *
+	 * @param string $str Required, the locale.
+	 * @param bool $use_cache Set to false to bypass the cache.
+	 *
+	 * @staticvar array $locale
+	 * @staticvar string $get_locale
+	 *
+	 * @since 2.3.8
+	 * @deprecated
+	 * @since 2.6.0
+	 */
+	public function is_locale( $str, $use_cache = true ) {
+		$this->_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, '2.6.0', 'AutoDescription_Detect::check_wp_locale()' );
+
+		return $this->check_wp_locale( $str, $use_cache );
+	}
+
 }

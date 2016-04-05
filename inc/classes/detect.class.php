@@ -754,32 +754,37 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 	/**
 	 * Detect WordPress language.
-	 * Considers en_UK, en_US, etc.
+	 * Considers en_UK, en_US, en, etc.
 	 *
-	 * @param string $str Required, the locale.
+	 * @param string $locale Required, the locale.
 	 * @param bool $use_cache Set to false to bypass the cache.
 	 *
 	 * @staticvar array $locale
 	 * @staticvar string $get_locale
 	 *
-	 * @since 2.3.8
+	 * @since 2.6.0
+	 *
+	 * @return bool Whether the locale is in the WordPress locale.
 	 */
-	public function is_locale( $str, $use_cache = true ) {
+	public function check_wp_locale( $locale = '', $use_cache = true ) {
+
+		if ( empty( $locale ) )
+			return false;
 
 		if ( true !== $use_cache )
-			return (bool) strpos( get_locale(), $str );
+			return (bool) strpos( get_locale(), $locale );
 
-		static $locale = array();
+		static $cache = array();
 
-		if ( isset( $locale[$str] ) )
-			return $locale[$str];
+		if ( isset( $cache[$locale] ) )
+			return $cache[$locale];
 
 		static $get_locale = null;
 
 		if ( ! isset( $get_locale ) )
 			$get_locale = get_locale();
 
-		return $locale[$str] = false !== strpos( $get_locale, $str ) ? true : false;
+		return $cache[$locale] = false !== strpos( $get_locale, $locale ) ? true : false;
 	}
 
 	/**

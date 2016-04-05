@@ -77,6 +77,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			'summary_large_image'	=> 'summary-large-image',
 			'photo' 				=> 'photo',
 		);
+
 	}
 
 	/**
@@ -100,14 +101,18 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 * @todo (2.5.3) Rework with radio buttons without WP Core dependancies.
 	 */
 	public function nav_tab_wrapper( $id, $tabs = array(), $version = '2.3.6', $use_tabs = true ) {
+
+		//* Whether tabs are active.
+		$use_tabs = $use_tabs || count( $tabs ) > 1 ? true : false;
+
 		/**
-		 * Start navigation
+		 * Start navigation.
 		 *
 		 * Don't output navigation if $use_tabs is false and the amount of tabs is 1 or lower.
 		 */
-		if ( $use_tabs || count( $tabs ) > (int) 1 ) {
+		if ( $use_tabs ) {
 			?>
-			<h3 class="nav-tab-wrapper hide-if-no-js" id="<?php echo $id; ?>-tabs-js">
+			<div class="seoframework-nav-tab-wrapper hide-if-no-js" id="<?php echo $id; ?>-tabs-wrapper">
 			<?php
 				$count = 1;
 				foreach ( $tabs as $tab => $value ) {
@@ -115,44 +120,65 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					$dashicon = isset( $value['dashicon'] ) ? $value['dashicon'] : '';
 					$name = isset( $value['name'] ) ? $value['name'] : '';
 
+					$checked = 1 === $count ? 'checked' : '';
+					$the_id = $id . '-tab-' . $tab;
+					$the_name = $id . '-tabs';
+
+					$label_class = $checked ? ' seoframework-active-tab' : ''; // maybe
+
 					?>
-					<span>
-						<input type="radio" class="<?php echo $id; ?>-tabs-radio" id="<?php echo $id; ?>-tab-<?php echo $tab ?>" name="<?php echo $id; ?>-tabs" <?php echo $count === abs(1) ? 'checked' : ''; ?>>
-						<label for="<?php echo $id; ?>-tab-<?php echo $tab ?>" class="nav-tab <?php echo $count === abs(1) ? 'nav-tab-active' : '' ?>">
-							<?php echo '' !== $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' dashicons-tabs"></span>' : ''; ?>
-							<?php echo '' !== $name ? '<span class="seoframework-nav-desktop">' . esc_attr( $name ) . '</span>' : ''; ?>
+					<div class="seoframework-tab">
+						<input type="radio" class="seoframework-tabs-radio" id="<?php echo $the_id ?>" name="<?php echo $the_name ?>" <?php echo $checked ?>>
+						<label for="<?php echo $the_id; ?>" class="seoframework-nav-tab">
+							<?php echo $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' seoframework-dashicons-tabs"></span>' : ''; ?>
+							<?php echo $name ? '<span class="seoframework-nav-desktop">' . esc_attr( $name ) . '</span>' : ''; ?>
 						</label>
-					</span>
+					</div>
 					<?php
 
 					$count++;
 				}
 			?>
-			</h3>
+			</div>
 			<?php
 		}
 
 		/**
-		 * Start settings content
+		 * Start Content.
+		 *
+		 * The content is relative to the navigation, and uses CSS to become visible.
 		 */
-		$_count = 1;
+		$count = 1;
 		foreach ( $tabs as $tab => $value ) {
 
-			$dashicon = isset( $value['dashicon'] ) ? $value['dashicon'] : '';
-			$name = isset( $value['name'] ) ? $value['name'] : '';
+			$the_id = $id . '-tab-' . $tab . '-content';
+			$the_name = $id . '-tabs-content';
+
+			//* Current tab for JS.
+			$current = 1 === $count ? ' seoframework-active-tab-content' : '';
 
 			?>
-			<div class="<?php echo $id; ?>-tab-content <?php echo (int) 1 === $_count ? 'checked-tab' : ''; ?> <?php echo (int) 1 !== $_count ? 'hide-if-js' : ''; ?>" id="<?php echo $id; ?>-tab-<?php echo $tab ?>-box">
-				<h3 class="nav-tab-wrapper hide-if-js">
-					<span class="nav-tab nav-tab-active">
-						<?php echo $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' dashicons-tabs"></span>' : ''; ?>
-						<?php
-						// This is no-javascript
-						echo $name ? esc_attr( $name ) : '';
-						?>
-					</span>
-				</h3>
+			<div class="seoframework-tabs-content <?php echo $the_name . $current; ?>" id="<?php echo $the_id; ?>" >
 			<?php
+
+				//* No-JS tabs.
+				if ( $use_tabs ) {
+					$dashicon = isset( $value['dashicon'] ) ? $value['dashicon'] : '';
+					$name = isset( $value['name'] ) ? $value['name'] : '';
+
+					?>
+					<div class="hide-if-js">
+						<hr>
+						<div class="seoframework-tab seoframework-tab-no-js">
+							<span class="seoframework-nav-tab seoframework-active-tab">
+								<?php echo $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' seoframework-dashicons-tabs"></span>' : ''; ?>
+								<?php echo $name ? '<span>' . esc_attr( $name ) . '</span>' : ''; ?>
+							</span>
+						</div>
+					</div>
+					<?php
+				}
+
 				$callback = isset( $value['callback'] ) ? $value['callback'] : '';
 
 				if ( $callback ) {
@@ -161,12 +187,13 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					echo $output;
 				}
 
-			?>
+				?>
 			</div>
 			<?php
 
-			$_count++;
+			$count++;
 		}
+
 	}
 
 	/**
@@ -269,27 +296,13 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 *
 	 * @see $this->description_metabox()	Callback for Description Settings box.
 	 */
-	public function description_metabox() {
-		global $wpdb,$blog_id;
+	public function description_metabox( $args = array() ) {
+		global $wpdb, $blog_id;
 
 		do_action( 'the_seo_framework_description_metabox_before' );
 
-		$language = $this->google_language();
-
-		//* Let's use the same separators as for the title.
-		$description_separator = $this->title_separator;
-
-		$recommended = ' class="recommended" title="' . __( 'Recommended', 'autodescription' ) . '"';
-
 		$blogname = $this->get_blogname();
-
-		$sep_option = $this->get_field_value( 'description_separator' );
-		$sep_from_options = $this->get_option( 'description_separator' );
-
-		// Let's set a default.
-		$sep_option = $sep_from_options ? $sep_option : 'pipe';
-
-		$sep = array_search( $sep_option, array_flip( $description_separator ), false );
+		$sep = $this->get_separator( 'description', true );
 
 		/**
 		 * Generate example.
@@ -322,6 +335,59 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="hide-if-js"><?php echo $this->code_wrap( $example_nojs ); ?></p>
 
 		<hr>
+		<?php
+
+		/**
+		 * Parse tabs content
+		 *
+		 * @param array $default_tabs { 'id' = The identifier =>
+		 *			array(
+		 *				'name' 		=> The name
+		 *				'callback' 	=> The callback function, use array for method calling (accepts $this, but isn't used here for optimization purposes)
+		 *				'dashicon'	=> Desired dashicon
+		 *			)
+		 * }
+		 *
+		 * @since 2.2.2
+		 */
+		$default_tabs = array(
+			'general' => array(
+				'name' 		=> __( 'General', 'autodescription' ),
+				'callback'	=> array( 'AutoDescription_Metaboxes', 'description_metabox_general_tab' ),
+				'dashicon'	=> 'admin-generic',
+			),
+			'additions' => array(
+				'name'		=> __( 'Additions', 'autodescription' ),
+				'callback'	=> array( 'AutoDescription_Metaboxes', 'description_metabox_additions_tab' ),
+				'dashicon'	=> 'plus',
+			),
+		);
+
+		/**
+		 * Applies filters the_seo_framework_social_settings_tabs : array see $default_tabs
+		 *
+		 * Used to extend Social tabs
+		 */
+		$defaults = (array) apply_filters( 'the_seo_framework_description_settings_tabs', $default_tabs, $args );
+
+		$tabs = wp_parse_args( $args, $defaults );
+
+		$this->nav_tab_wrapper( 'description', $tabs, '2.6.0' );
+
+		do_action( 'the_seo_framework_description_metabox_after' );
+	}
+
+	public function description_metabox_general_tab() {
+
+		//* Let's use the same separators as for the title.
+		$description_separator = $this->title_separator;
+		$sep_option = $this->get_option( 'description_separator' ) ? $this->get_field_value( 'description_separator' ) : 'pipe';
+
+		$recommended = ' class="recommended" title="' . __( 'Recommended', 'autodescription' ) . '"';
+
+		?>
+		<h4><?php printf( __( 'Automated Description Settings', 'autodescription' ) ); ?></h4>
+		<p><span class="description"><?php printf( __( "The meta description can be used to determine the text used under the title on Search Engine results pages.", 'autodescription' ) ); ?></span></p>
 
 		<fieldset>
 			<legend><h4><?php _e( 'Description Excerpt Separator', 'autodescription' ); ?></h4></legend>
@@ -333,6 +399,14 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</p>
 			<span class="description"><?php _e( 'If the Automated Description consists of two parts (title and excerpt), then the separator will go in between them.', 'autodescription' ); ?></span>
 		</fieldset>
+		<?php
+	}
+
+	public function description_metabox_additions_tab() {
+		?>
+		<h4><?php printf( __( 'Additions Description Settings', 'autodescription' ) ); ?></h4>
+		<p><span class="description"><?php printf( __( "To create a more organic description, a small introduction can be added before the description.", 'autodescription' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( "The introduction consists of the title and optionally the blogname.", 'autodescription' ) ); ?></span></p>
 
 		<hr>
 
@@ -344,8 +418,6 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</label>
 		</p>
 		<?php
-
-		do_action( 'the_seo_framework_description_metabox_after' );
 	}
 
 	/**
@@ -385,7 +457,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			'noarchive' =>  array(
 				'value' => 'noarchive',
 				'name'	=> __( 'NoArchive', 'autodescription'),
-				'desc'	=> __( 'These options prevent caching of the selected archives. If you enable this, search engines will not create a cached copy of the selected archives.', 'autodescription' ),
+				'desc'	=> __( 'These options prevent caching of the selected archives. If you enable this, Search Engines will not create a cached copy of the selected archives.', 'autodescription' ),
 			),
 		);
 
@@ -454,7 +526,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	protected function robots_metabox_general_tab() {
 		?>
 		<h4><?php printf( __( 'Open Directory Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php printf( __( "Sometimes, search engines use resources from certain Directories to find titles and descriptions for your content. You generally don't want them to do so. Turn these options on to prevent them from doing so.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( "Sometimes, Search Engines use resources from certain Directories to find titles and descriptions for your content. You generally don't want them to do so. Turn these options on to prevent them from doing so.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
 		<p><span class="description"><?php printf( __( "The Open Directory Project and the Yahoo! Directory may contain outdated SEO values. Therefore, it's best to leave these options checked.", 'autodescription' ) ); ?></span></p>
 
 		<p class="fields">
@@ -474,7 +546,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<h4><?php printf( __( 'Paginated Archive Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php printf( __( "Indexing the second or later page of any archive might cause duplication errors. Search engines look down upon them; therefore, it's recommended to disable indexing of those pages.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( "Indexing the second or later page of any archive might cause duplication errors. Search Engines look down upon them; therefore, it's recommended to disable indexing of those pages.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'paged_noindex' ); ?>">
 				<input type="checkbox" name="<?php $this->field_name( 'paged_noindex' ); ?>" id="<?php $this->field_id( 'paged_noindex' ); ?>" <?php $this->is_conditional_checked( 'paged_noindex' ); ?> value="1" <?php checked( $this->get_field_value( 'paged_noindex' ) ); ?> />
@@ -852,7 +924,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p>
 			<textarea name="<?php $this->field_name( 'homepage_description' ); ?>" class="large-text" id="<?php $this->field_id( 'homepage_description' ); ?>" rows="3" cols="70"  placeholder="<?php echo $description_placeholder ?>"><?php echo esc_textarea( $home_description ); ?></textarea>
 			<br>
-			<span class="description"><?php _e( 'The meta description can be used to determine the text used under the title on search engine results pages.', 'autodescription' ); ?></span>
+			<span class="description"><?php _e( 'The meta description can be used to determine the text used under the title on Search Engine results pages.', 'autodescription' ); ?></span>
 			<?php
 			if ( $description_from_post_message ) {
 				echo '<br><span class="description">' . $description_from_post_message . '</span>';
@@ -1658,7 +1730,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					'dashicon'	=> 'backup',
 				),
 				'notify' => array(
-					'name'		=> _x( 'Ping', 'Ping or notify search engine', 'autodescription' ),
+					'name'		=> _x( 'Ping', 'Ping or notify Search Engine', 'autodescription' ),
 					'callback'	=> array( 'AutoDescription_Metaboxes', 'sitemaps_metabox_notify_tab' ),
 					'dashicon'	=> 'megaphone',
 				),
@@ -1774,8 +1846,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php printf( __( 'Robots.txt Settings', 'autodescription' ) ) ?></h4>
-		<p><span><?php printf( __( 'The robots.txt file is the first thing Search Engines look for. If you add the sitemap location in the robots.txt file, then search engines will look for and index the sitemap.', 'autodescription' ) ); ?></span></p>
-		<p><span><?php printf( __( 'If you do not add the sitemap location to the robots.txt file, you will need to notify search engines manually through the Webmaster Console provided by the search engines.', 'autodescription' ) ); ?></span></p>
+		<p><span><?php printf( __( 'The robots.txt file is the first thing Search Engines look for. If you add the sitemap location in the robots.txt file, then Search Engines will look for and index the sitemap.', 'autodescription' ) ); ?></span></p>
+		<p><span><?php printf( __( 'If you do not add the sitemap location to the robots.txt file, you will need to notify Search Engines manually through the Webmaster Console provided by the Search Engines.', 'autodescription' ) ); ?></span></p>
 
 		<hr>
 

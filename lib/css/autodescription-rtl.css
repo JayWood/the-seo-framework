@@ -412,50 +412,66 @@ span.ad-seo .explanation-desc div {
 	white-space: pre;
 }
 
-.autodescription-metaboxes #social-tabs-js,
-.autodescription-metaboxes #robots-tabs-js,
-.autodescription-metaboxes #knowledge-tabs-js,
-.autodescription-metaboxes #sitemaps-tabs-js,
-.autodescription-metaboxes .inside .nav-tab-wrapper {
+/**
+ * Start Tabs.
+ */
+.autodescription-metaboxes .seoframework-tab-no-js,
+.autodescription-metaboxes .seoframework-nav-tab-wrapper {
 	position: relative;
 	clear: both;
-	margin: 0 auto;
 	width: 100%;
-	padding: 8px 14px 0px;
-	margin: -4px -14px -4px;
+	display: inline-block;
+	border-bottom: 1px solid #ccc;
+	line-height: inherit;
+	padding: 8px 12px 0;
+	margin: -4px -12px;
 }
 
-.autodescription-metaboxes #social-tabs-js .nav-tab-active,
-.autodescription-metaboxes #robots-tabs-js .nav-tab-active,
-.autodescription-metaboxes #knowledge-tabs-js .nav-tab-active,
-.autodescription-metaboxes #sitemaps-tabs-js .nav-tab-active {
-	background-color: inherit; /* Compatible with EM Dashboard */
-	border-bottom-color: #fff;
+.autodescription-metaboxes .seoframework-nav-tab {
+	float: right;
+	border: 1px solid #ccc;
+	margin-right: .5em;
+	margin-bottom: -1px;
+	padding: 5px 14px;
+	font-size: 12px;
+	line-height: 16px;
+	background: #f1f1f1;
+	color: #555;
+	font-weight: 600;
 }
 
-.autodescription-metaboxes .dashicons-tabs,
-.autodescription-metaboxes .dashicons-before:before {
+.autodescription-metaboxes .seoframework-dashicons-tabs {
 	font-size: initial;
 	display: inline;
-	vertical-align: text-bottom;
+	vertical-align: text-top;
 }
 
-.autodescription-metaboxes .social-tabs-radio,
-.autodescription-metaboxes .robots-tabs-radio,
-.autodescription-metaboxes .knowledge-tabs-radio,
-.autodescription-metaboxes .sitemaps-tabs-radio {
+.autodescription-metaboxes .seoframework-tabs-radio {
 	display: none;
 	width: 0;
 	height: 0;
 	position: absolute;
+	left: -9001px;
 }
 
-.autodescription-metaboxes .social-tab-content.checked-tab,
-.autodescription-metaboxes .robots-tab-content.checked-tab,
-.autodescription-metaboxes .knowledge-tab-content.checked-tab
-.autodescription-metaboxes .sitemaps-tab-content.checked-tab {
+.autodescription-metaboxes .seoframework-tabs-radio:checked + label,
+.autodescription-metaboxes .seoframework-active-tab {
+	background-color: inherit;
+	border-bottom-color: #fff;
+	color: #000;
+}
+
+body.js .autodescription-metaboxes .seoframework-tabs-content {
+	display: none;
+}
+
+body.js .autodescription-metaboxes .seoframework-tabs-content.seoframework-active-tab-content {
 	display: block;
 }
+
+/**
+ * End tabs.
+ */
 
 .autodescription-metaboxes .seoframework-default-selected {
 	border-color: #1c9d38;

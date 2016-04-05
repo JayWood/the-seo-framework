@@ -445,7 +445,7 @@ class AutoDescription_Core {
 		if ( isset( $lowercase[$noun] ) )
 			return $lowercase[$noun];
 
-		return $lowercase[$noun] = $this->is_locale( 'de' ) ? $noun : strtolower( $noun );
+		return $lowercase[$noun] = $this->check_wp_locale( 'de' ) ? $noun : strtolower( $noun );
 	}
 
 	/**

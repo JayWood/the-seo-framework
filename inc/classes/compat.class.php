@@ -34,6 +34,9 @@ class AutoDescription_Compat extends AutoDescription_Debug {
 		//* Genesis compat.
 		add_action( 'init', array( $this, 'genesis_compat' ) );
 		add_filter( 'genesis_detect_seo_plugins', array( $this, 'no_more_genesis_seo' ), 10 );
+
+		//* Headway compat.
+		add_filter( 'headway_seo_disabled', '__return_true' );
 	}
 
 	/**

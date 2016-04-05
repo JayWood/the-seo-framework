@@ -16,6 +16,8 @@ An automated, advanced, accessible, unbranded and extremely fast SEO solution fo
 
 **The lightning fast all in one automated SEO optimization plugin for WordPress**
 
+***Easy for beginners, awesome for experts. WordPress SEO for Everyone.***
+
 > <strong>This plugin strongly helps you create better SEO value for your content.</strong><br>
 > But at the end of the day, it all depends on how entertaining or well-constructed your content or product is.
 >
@@ -415,10 +417,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Elastic WPML URL generation.
 * Improved editorial translations.
 * Automatic option merging.
+* New AJAX integration when adding tags.
 * Personalized error handling for developers.
 * More than 150 new functions for developers.
 * WP Query Admin synchronization for developers.
-* Just AJAX integration when adding tags.
+* Automated setting navigation tabs for developers.
 
 **Feature highlights visualized:**
 /
@@ -566,7 +569,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Removal commas if the excerpt ends with one in the automated description.
 	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
 	* Article Modified Time now also works for WooCommerce products. TODO test and compare
-	* TODO Headway compatibility. Done by removing of the SEO features and their output to prevent SEO conflict when filters are used.
+	* Headway compatibility. Done by using one of their SEO plugin detection filters which disables their SEO functionality.
 	* Runway Framework theme compatibility.
 	* Yandex sitemap pinging support.
 	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s.
@@ -616,7 +619,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
 	* Massively improved URL generation time by adding more layers of cache on often used and also heavy scripts.
-	* Massively improved LD-json script generation time.
+	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more effecient ones.
+	* Metabox setting tabs no longer rely on WordPress Core admin navigation tabs.
+	* JavaScript caching and advanced optimizations for better browser performance through Google Closure Compiler.
 * **Improved:**
 	/
 	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
@@ -653,11 +658,13 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Link relationship on the second Page was pointing to itself.
 	* The SEO Bar within Terms minor pixel overflow on small screens.
 	* Unneeded Page navigation confirmation warning when deleting post.
-	* Extra check for scalar types in cache key generation on global variables.
+	* Global page and paged variables could've been overwritten by the theme resulting in a crash. This can't happen anymore.
 	* Pinging the Search Engines of sitemap changes now won't happen on post creation.
-	* External URL's to a root domain without slash now work correctly in custom 301 redirect.
+	* External URLs to a root domain without slash now work correctly in custom 301 redirect.
 	* Servers that don't support PCRE will now have 301 redirects parsed correctly.
 	* Archive rel next/prev pagination links now also work on the Blog Page.
+	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily. Yes, I'm this dedicated in breaking stuff.
+	* TODO is this true? When an external Sitemap plugin is active, the Sitemap Tab is no longer shown when Javascript is disabled.
 * **Removed:**
 	/
 	* Shortlink URL from Homepage, as it's quite useless and self referring there.
@@ -720,6 +727,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Generate_Title` and all its contents.
 	* Functions have been put in their respective aptly named classes where applicable.
 	* Debugging has been modified to clean up the code greatly.
+	* Metabox Setting Navigation Tabs, now your tabs are automatically styled and integrated when using the `AutoDescription_Metaboxes::nav_tab_wrapper()` function. It's also less "search-and-destroy" and thus easier on the browser.
 * **Improved:**
 	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Hertz!).
 	* Cached the SEO bar translations.
@@ -743,7 +751,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* This plugin's admin CSS and JS are now registered and cached prior to enqueueing. This speeds things up if multiple script calling hooks are used.
 	* The Term SEO box initialization now only happens on the term edit screens.
 * **Fixed:**
-	* `the_seo_framework_dot_version` now checks for four dot versions if applicable.
+	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
 	* `AutoDescription_Generate_Image::get_image()` now returns something when the third parameter is set to false.
 	* The SEO Bar column initialization filter used to be called as an action and mixed echoing and returning. It's now a consistent filter, as WP core suggests.
@@ -753,12 +761,14 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* JavaScript undefined TypeError on mobile screens and Microsoft Edge.
 	* `The_SEO_Framework_Load::call_function()` contained wrong error handling.
 	* `The_SEO_Framework_Load::call_function()` now converts and checks for `$this` correctly. Evidently speeding up the plugin greatly.
+	* `The_SEO_Framework_Load::call_function()` now doesn't return a fatal error anymore if class and method isn't found when the class is referred to as string.
 * **Deprecated:**
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
-	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use $args['id'] instead.
-	* `AutoDescription_Debug::echo_debug_information()` function, replaced by `AutoDescription_Debug::get_debug_information()`.
+	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use `$args['id']` instead.
+	* `AutoDescription_Debug::echo_debug_information()` function, replaced by `AutoDescription_Debug::get_debug_information()` and refactored.
 	* `AutoDescription_DoingItRight::seo_column()` function, replaced by `AutoDescription_DoingItRight::seo_bar()` to eliminate naming confusion.
 	* `AutoDescription_Sitemaps::setup_sitemap_transient()` function, replaced by `AutoDescription_Sitemaps::setup_sitemap()` to eliminate naming confusion.
+	* `AutoDescription_Detect::is_locale()` function, replaced by `AutoDescription_Detect::check_wp_locale()` to eliminate naming confusion.
 * **Removed:**
 	/
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
@@ -780,6 +790,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(string) the_seo_framework_metabox_priority`
 		* `(bool) the_seo_framework_seo_bar_pill`
 		* `(int) the_seo_framework_bother_me_desc_length`
+		* `(array) the_seo_framework_description_settings_tabs`
 	* **Altered:**
 		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
 		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
