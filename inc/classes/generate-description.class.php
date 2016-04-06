@@ -55,6 +55,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		$args = $this->reparse_description_args( $args );
+
+		//* Add the term to the arguments, if any.
 		$args = $this->get_term_for_args( $args, $args['id'], $args['taxonomy'] );
 
 		if ( $args['get_custom_field'] && empty( $description ) ) {
@@ -133,12 +135,11 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * Reparse description args.
 	 *
 	 * @param array $args required The passed arguments.
-	 * @param int $line the line number the function is called.
 	 *
 	 * @since 2.6.0
 	 * @return array $args parsed args.
 	 */
-	public function reparse_description_args( $args = array(), $line = 0 ) {
+	public function reparse_description_args( $args = array() ) {
 
 		$default_args = $this->parse_description_args( '', '', true );
 
@@ -172,6 +173,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * @return string|mixed The description, might be unsafe for html output.
 	 */
 	public function description_from_custom_field( $args = array(), $escape = true ) {
+
 		/**
 		 * Parse args.
 		 * @since 2.5.0
@@ -182,12 +184,14 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		$description = $this->get_custom_homepage_description( $args );
 
 		//* Singular Description.
-		$description = empty( $description ) && empty( $args['taxonomy'] ) ? $this->get_custom_singular_description( $args['id'] ) : $description;
+		if ( empty( $description ) && empty( $args['taxonomy'] ) )
+			$description = $this->get_custom_singular_description( $args['id'] );
 
 		//* Archive Description.
-		$description = empty( $description ) ? $this->get_custom_archive_description( $args ) : $description;
+		if ( empty( $description ) )
+			$description = $this->get_custom_archive_description( $args );
 
-		if ( $escape && '' !== $description ) {
+		if ( $escape && $description ) {
 			$description = wptexturize( $description );
 			$description = convert_chars( $description );
 			$description = esc_html( $description );
@@ -301,7 +305,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	}
 
 	/**
-	 * Generate description from content
+	 * Generate description from content.
 	 *
 	 * @since 2.3.3
 	 *
@@ -326,14 +330,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		$autodescription = (bool) apply_filters( 'the_seo_framework_enable_auto_description', true );
-		if ( false === $autodescription )
+		if ( ! $autodescription )
 			return '';
-
-		/**
-		 * Parse args.
-		 * @since 2.5.0
-		 */
-		$args = $this->reparse_description_args( $args );
 
 		$description = $this->generate_the_description( $args );
 
@@ -369,8 +367,14 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 */
 	protected function generate_the_description( $args ) {
 
+		/**
+		 * Parse args.
+		 * @since 2.5.0
+		 */
+		$args = $this->reparse_description_args( $args );
+
 		//* Home Page description
-		if ( $this->is_front_page() || $args['is_home'] || $this->is_static_frontpage( $args['id'] ) )
+		if ( $args['is_home'] || $this->is_front_page() || $this->is_static_frontpage( $args['id'] ) )
 			return $this->generate_home_page_description( $args['get_custom_field'] );
 
 		if ( ! isset( $args['term'] ) )
@@ -505,7 +509,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	}
 
 	/**
-	 * Whether to add description additions.
+	 * Whether to add description additions. (╯°□°）╯︵ ┻━┻
 	 *
 	 * @param int $id The current page or post ID.
 	 * @param object|emptystring $term The current Term.
@@ -520,7 +524,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		static $cache = null;
 
-		//* @TODO add options. (╯°□°）╯︵ ┻━┻ var_dump();
+		//* @TODO add options.  var_dump();
 
 		if ( isset( $cache ) )
 			return $cache;
@@ -630,8 +634,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				 * We're on the blog page now.
 				 * @since 2.2.8
 				 */
-				$custom_title = $this->get_custom_field( '_genesis_title', $id );
-				$title = $custom_title ? $custom_title : $this->title( '', '', '', array( 'term_id' => $id, 'placeholder' => true, 'notagline' => true, 'description_title' => true, 'escape' => false ) );
+				$title = $this->title( '', '', '', array( 'term_id' => $id, 'notagline' => true, 'description_title' => true, 'escape' => false ) );
 
 				// @TODO create option.
 				/* translators: Front-end output. */
@@ -648,8 +651,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				}
 			} else {
 				//* We're on a page now.
-				$custom_title = $this->get_custom_field( '_genesis_title', $id );
-				$title = '' !== $custom_title ? $custom_title : $this->title( '', '', '', array( 'term_id' => $id, 'placeholder' => true, 'notagline' => true, 'description_title' => true, 'escape' => false ) );
+				$title = $this->title( '', '', '', array( 'term_id' => $id, 'notagline' => true, 'description_title' => true, 'escape' => false ) );
 			}
 		}
 

@@ -656,7 +656,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
 	* Double subdirectory generation in special Site Address URL configurations.
 	* Link relationship on the second Page was pointing to itself.
-	* The SEO Bar within Terms minor pixel overflow on small screens.
+	* The SEO Bar within Terms had a minor pixel overflow on small screens.
 	* Unneeded Page navigation confirmation warning when deleting post.
 	* Global page and paged variables could've been overwritten by the theme resulting in a crash. This can't happen anymore.
 	* Pinging the Search Engines of sitemap changes now won't happen on post creation.
@@ -665,6 +665,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Archive rel next/prev pagination links now also work on the Blog Page.
 	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily. Yes, I'm this dedicated in breaking stuff.
 	* TODO is this true? When an external Sitemap plugin is active, the Sitemap Tab is no longer shown when Javascript is disabled.
+	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
 * **Removed:**
 	/
 	* Shortlink URL from Homepage, as it's quite useless and self referring there.
@@ -708,7 +709,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
 	* `AutoDescription_Core::get_the_real_ID()` now returns 0 instead of false if no ID is found.
 	* `AutoDescription_Generate_Title::build_title_notagline()` is now protected.
-	* `AutoDescription_Generate_Title::get_placeholder_title()` is now protected.
 	* `AutoDescription_Generate_Title::title_for_terms()` now uses `array $args` for parameters.
 	* `AutoDescription_Generate_Title::generate_title()` now uses `array $args` for parameters.
 	* CSS and JS file identifiers have their duplicated `css` or `js` removed. So `autodescription-css-css` is now `autodescription-css`, and so forth.
@@ -763,16 +763,19 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `The_SEO_Framework_Load::call_function()` now converts and checks for `$this` correctly. Evidently speeding up the plugin greatly.
 	* `The_SEO_Framework_Load::call_function()` now doesn't return a fatal error anymore if class and method isn't found when the class is referred to as string.
 * **Deprecated:**
+	/
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
 	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use `$args['id']` instead.
 	* `AutoDescription_Debug::echo_debug_information()` function, replaced by `AutoDescription_Debug::get_debug_information()` and refactored.
 	* `AutoDescription_DoingItRight::seo_column()` function, replaced by `AutoDescription_DoingItRight::seo_bar()` to eliminate naming confusion.
 	* `AutoDescription_Sitemaps::setup_sitemap_transient()` function, replaced by `AutoDescription_Sitemaps::setup_sitemap()` to eliminate naming confusion.
 	* `AutoDescription_Detect::is_locale()` function, replaced by `AutoDescription_Detect::check_wp_locale()` to eliminate naming confusion.
+	* TODO `AutoDescription_Generate_Title::get_placeholder_title()` is now removed, use `AutoDescription_Generate_Title::title()` instead with the argument `notagline`.
 * **Removed:**
 	/
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
 	* Filter/Constant/Action change PHP comments from 2.3.0 to clean up code.
+	* Title generation `get_custom_field` argument. Use `get_custom_field` and/or `notagline` instead.
 * **Other:**
 	* Cleaned up code, massively.
 * **Filter Notes:**
@@ -788,6 +791,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* TODO `(string) the_seo_framework_pre_add_title`
 		* TODO `(string) the_seo_framework_pro_add_title`
 		* `(string) the_seo_framework_metabox_priority`
+		* `(int) the_seo_framework_term_metabox_priority`
 		* `(bool) the_seo_framework_seo_bar_pill`
 		* `(int) the_seo_framework_bother_me_desc_length`
 		* `(array) the_seo_framework_description_settings_tabs`

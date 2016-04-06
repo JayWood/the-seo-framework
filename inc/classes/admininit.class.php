@@ -82,7 +82,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 			'post.php',
 			'post-new.php',
 			'edit-tags.php',
-			'edit-tags.php',
 			'term.php',
 		);
 
@@ -95,9 +94,9 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 			 * @uses $this->post_type_supports_custom_seo()
 			 * @since 2.3.9
 			 */
-			if ( $this->post_type_supports_custom_seo() ) {
+			if ( $this->post_type_supports_custom_seo() )
 				$this->init_admin_scripts();
-			}
+
 		}
 
 	}
@@ -243,10 +242,9 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 				//* We're on post.php
 				$generated_doctitle_args = array(
 					'term_id' => $post_id,
-					'placeholder' => true,
+					'notagline' => true,
 					'meta' => true,
 					'get_custom_field' => false,
-					'notagline' => true
 				);
 
 				$title = $this->title( '', '', '', $generated_doctitle_args );
@@ -270,10 +268,9 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 						$generated_doctitle_args = array(
 							'term_id' => $term_id,
 							'taxonomy' => $current_screen->taxonomy,
-							'placeholder' => true,
+							'notagline' => true,
 							'meta' => true,
-							'get_custom_field' => false,
-							'notagline' => true
+							'get_custom_field' => false
 						);
 
 						$title = $this->title( '', '', '', $generated_doctitle_args );

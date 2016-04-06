@@ -1499,7 +1499,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 
 		<?php
-		if ( $this->wp_version( '4.3.0', '>=' ) ) :
+		if ( $this->wp_version( '4.2.999', '>=' ) ) :
 		?>
 			<hr>
 

@@ -317,11 +317,37 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 	 * @since 2.3.8
 	 * @deprecated
 	 * @since 2.6.0
+	 *
+	 * @return bool
 	 */
 	public function is_locale( $str, $use_cache = true ) {
 		$this->_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, '2.6.0', 'AutoDescription_Detect::check_wp_locale()' );
 
 		return $this->check_wp_locale( $str, $use_cache );
+	}
+
+	/**
+	 * Build the title based on input, without tagline.
+	 * Note: Not escaped.
+	 *
+	 * @param string $title The Title to return
+	 * @param array $args : accepted args : {
+	 * 		@param int term_id The Taxonomy Term ID
+	 * 		@param bool placeholder Generate placeholder, ignoring options.
+	 * 		@param bool page_on_front Page on front condition for example generation
+	 * }
+	 *
+	 * @since 2.4.0
+	 * @deprecated
+	 * @since 2.6.0
+	 *
+	 * @return string Title without tagline.
+	 */
+	public function get_placeholder_title( $title = '', $args = array() ) {
+		$this->_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, '2.6.0', 'AutoDescription_Generate_Title::title()` with the argument $args[\'notagline\']' );
+
+		$args['notagline'] = true;
+		return $this->title( $title, '', '', $args );
 	}
 
 }

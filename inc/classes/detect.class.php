@@ -475,17 +475,20 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 * @param string $version the three part version to compare to WordPress
 	 * @param string $compare the comparing operator, default "$version >= Current WP Version"
 	 *
-	 * @staticvar array $compare_cache
+	 * @staticvar array $cache
 	 * @since 2.3.8
 	 *
 	 * @return bool wp version is "compare" to
 	 */
 	public function wp_version( $version = '4.3.0', $compare = '>=' ) {
 
-		static $compare_cache = array();
+		static $cache = array();
 
-		if ( isset( $compare_cache[$version][$compare] ) )
-			return $compare_cache[$version][$compare];
+		if ( empty( $compare ) )
+			$compare = '>=';
+
+		if ( isset( $cache[$version][$compare] ) )
+			return $cache[$version][$compare];
 
 		global $wp_version;
 
@@ -493,13 +496,10 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( 3 === strlen( $wp_version ) )
 			$wp_version = $wp_version . '.0';
 
-		if ( empty( $compare ) )
-			$compare = '>=';
-
 		if ( version_compare( $wp_version, $version, $compare ) )
-			return $compare_cache[$version][$compare] = true;
+			return $cache[$version][$compare] = true;
 
-		return $compare_cache[$version][$compare] = false;
+		return $cache[$version][$compare] = false;
 	}
 
 	/**
@@ -835,28 +835,11 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	public function post_type_supports_custom_seo( $post_type = '' ) {
 
 		if ( '' === $post_type ) {
-
-			static $post_type = null;
-
-			//* Detect post type if empty or not set.
-			if ( is_null( $post_type ) || empty( $post_type ) ) {
-				global $current_screen;
-
-				if ( isset( $current_screen->post_type ) ) {
-					static $post_page = null;
-
-					if ( ! isset( $post_page ) )
-						$post_page = (array) get_post_types( array( 'public' => true ) );
-
-					//* Smart var. This elemenates the need for a foreach loop, reducing resource usage.
-					$post_type = isset( $post_page[ $current_screen->post_type ] ) ? $current_screen->post_type : '';
-				}
-			}
-
-			//* No post type has been found.
-			if ( empty( $post_type ) )
-				return false;
+			$post_type = $this->get_current_post_type();
 		}
+
+		if ( empty( $post_type ) )
+			return false;
 
 		static $supported = array();
 
@@ -873,6 +856,43 @@ class AutoDescription_Detect extends AutoDescription_Render {
 			return $supported[$post_type] = true;
 
 		return $supported[$post_type] = false;
+	}
+
+	/**
+	 * Returns Post Type from current screen.
+	 *
+	 * @param bool $public Whether to only get Public Post types.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool|string The Post Type
+	 */
+	public function get_current_post_type( $public = true ) {
+
+		static $post_type = null;
+
+		//* Detect post type if empty or not set.
+		if ( is_null( $post_type ) || empty( $post_type ) ) {
+			global $current_screen;
+
+			if ( isset( $current_screen->post_type ) ) {
+				static $post_page = array();
+
+				$args = $public ? array( 'public' => true ) : array();
+
+				if ( ! isset( $post_page[$public] ) )
+					$post_page[$public] = (array) get_post_types( $args );
+
+				//* Smart var. This elemenates the need for a foreach loop, reducing resource usage.
+				$post_type = isset( $post_page[$public][ $current_screen->post_type ] ) ? $current_screen->post_type : '';
+			}
+		}
+
+		//* No post type has been found.
+		if ( empty( $post_type ) )
+			return false;
+
+		return $post_type;
 	}
 
 	/**

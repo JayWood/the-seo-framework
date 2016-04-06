@@ -352,7 +352,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 								$output .= "\r\n";
 							} else if ( is_array( $v ) ) {
 								$output .= $this->debug_key_wrapper( $k ) . ' => ';
-								$output .= $this->debug_value_wrapper( 'Debug message: Three+ dimensional array.' );
+								$output .= $this->debug_value_wrapper( 'Debug message: Three+ dimensional array' );
 								$output .= ',';
 							} else {
 								$output .= $this->debug_key_wrapper( $k ) . ' => ';
@@ -467,6 +467,20 @@ class AutoDescription_Debug extends AutoDescription_Core {
 				$cached_args[$class][$method] = $args;
 				return;
 			} else {
+
+				/**
+				 * Generate human-readable debug keys and echo it when it's called.
+				 * Matched value is found within the $output.
+				 *
+				 * @staticvar int $loop
+				 */
+				static $loop = 0;
+				$loop++;
+				$debug_key = '<p>[Debug key: ' . $loop . ' - ' . $method . ']</p>';
+
+				echo $debug_key;
+				$output .= $debug_key;
+
 				if ( isset( $cached_args[$class][$method] ) ) {
 					$args[] = array(
 						'profile' => array(
@@ -482,7 +496,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 
 			if ( $args ) {
 
-				$output = $class . '::' . $method . "\r\n";
+				$output .= $class . '::' . $method . "\r\n";
 
 				foreach ( $args as $num => $a ) {
 					if ( is_array( $a ) ) {
@@ -523,6 +537,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 
 	/**
 	 * Count the timings and memory usage.
+	 * Memory usage fetching is unreliable, i.e. Opcode.
 	 *
 	 * @since 2.6.0
 	 * @access private
@@ -538,7 +553,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 */
 	public function profile( $echo = false, $from_last = false, $what = 'time', $key = '' ) {
 
-		if ( $this->the_seo_framework_debug ) {
+		if ( $this->the_seo_framework_profile ) {
 
 			static $timer_start = array();
 			static $memory_start = array();

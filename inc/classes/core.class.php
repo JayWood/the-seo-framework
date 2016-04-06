@@ -31,7 +31,7 @@ class AutoDescription_Core {
 	 */
 	public function __construct() {
 
-		add_action( 'init', array( $this, 'post_type_support' ) );
+		add_action( 'current_screen', array( $this, 'post_type_support' ), 0 );
 
 		/**
 		 * Add plugin links to the plugin activation page.
