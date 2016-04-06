@@ -927,7 +927,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function favicon() {
 
-		if ( $this->wp_version( '4.3.0', '<' ) ) {
+		if ( $this->wp_version( '4.2.999', '<=' ) ) {
 			$output = '<link rel="icon" type="image/x-icon" href="' . esc_url( $this->site_icon( 16 ) ) . '" sizes="16x16" />' . "\r\n";
 			$output .= '<link rel="icon" type="image/x-icon" href="' . esc_url( $this->site_icon( 192 ) ) . '" sizes="192x192" />' . "\r\n";
 			$output .= '<link rel="apple-touch-icon-precomposed" href="' . esc_url( $this->site_icon( 180 ) ) . '" />' . "\r\n";

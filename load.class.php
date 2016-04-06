@@ -130,10 +130,21 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	public $script_debug = false;
 
 	/**
-	 * Constructor, load parent constructor
+	 * Constructor, setup debug vars and then load parent constructor.
 	 */
 	public function __construct() {
+		//* Setup debug vars before initializing parents.
+		$this->init_debug_vars();
+
 		parent::__construct();
+	}
+
+	/**
+	 * Initializes public debug variables for the class to use.
+	 *
+	 * @since 2.6.0
+	 */
+	public function init_debug_vars() {
 
 		$this->the_seo_framework_debug = defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG ? true : $this->the_seo_framework_debug;
 		if ( $this->the_seo_framework_debug ) {
@@ -150,6 +161,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 
 		$this->script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? true : $this->script_debug;
 		$this->the_seo_framework_use_transients = defined( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS' ) && THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS ? false : $this->the_seo_framework_use_transients;
+
 	}
 
 	/**
@@ -163,6 +175,9 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	 * @since 2.2.2
 	 *
 	 * @return mixed $output The function called.
+	 *
+	 * @NOTE _doing_it_wrong notices go towards the callback. Unless this
+	 * function is used wrongfully. Then the notice is about this function.
 	 *
 	 * @param array|string $params The arguments passed to the function.
 	 * @since 2.2.4
@@ -208,10 +223,9 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( array( $this, $method ), $args );
 					}
 				} else {
-					$this->_doing_it_wrong( (string) get_class( $this ) . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
+					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
 				}
 			} else {
-				// This doesn't work in Apache configurations.
 				if ( method_exists( $class, $method ) ) {
 					if ( empty( $args ) ) {
 						// Static calling
@@ -221,16 +235,21 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( array( $class, $method ), $args );
 					}
 				} else {
-					$this->_doing_it_wrong( (string) get_class( $class ) . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
+					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
 				}
 			}
 		} else if ( is_string( $class ) && is_string( $method ) ) {
-			if ( empty( $args ) ) {
-				// Static calling
-				$output = call_user_func( array( $class, $method ) );
+			//* This could be combined with the one above.
+			if ( method_exists( $class, $method ) ) {
+				if ( empty( $args ) ) {
+					// Static calling
+					$output = call_user_func( array( $class, $method ) );
+				} else {
+					// Static calling
+					$output = call_user_func_array( array( $class, $method ), $args );
+				}
 			} else {
-				// Static calling
-				$output = call_user_func_array( array( $class, $method ), $args );
+				$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
 			}
 		} else if ( is_string( $class ) ) {
 			//* Class is function.
@@ -242,7 +261,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 				$output = call_user_func_array( $func, $args );
 			}
 		} else {
-			$this->_doing_it_wrong( (string) $callback, __( "Function needs to be called as a string.", 'autodescription' ), $version );
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, __( "Function needs to be called as a string.", 'autodescription' ), $version );
 		}
 
 		return $output;

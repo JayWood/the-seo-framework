@@ -70,10 +70,9 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		/**
 		 * Return early if the request is the Title only (without tagline/blogname).
-		 * Admin only.
 		 */
-		if ( $args['notagline'] && false === $args['get_custom_field'] && $this->is_admin() )
-			return $this->build_title_notagline( $title, $args );
+		if ( $args['notagline'] )
+			return $this->build_title_notagline( $args );
 
 		/**
 		 * Add doing it wrong notice for better SEO consistency.
@@ -139,7 +138,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * 		@param int term_id The Taxonomy Term ID when taxonomy is also filled in. Else post ID.
 	 * 		@param string taxonomy The Taxonomy name.
 	 * 		@param bool page_on_front Page on front condition for example generation.
-	 * 		@param bool placeholder Generate placeholder, ignoring options.
 	 * 		@param bool notagline Generate title without tagline.
 	 * 		@param bool meta Ignore doing_it_wrong. Used in og:title/twitter:title
 	 * 		@param bool get_custom_field Do not fetch custom title when false.
@@ -158,13 +156,12 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 				'term_id' 			=> $this->get_the_real_ID(),
 				'taxonomy' 			=> '',
 				'page_on_front'		=> false,
-				'placeholder'		=> false,
 				'notagline' 		=> false,
 				'meta' 				=> true,
 				'get_custom_field'	=> true,
 				'description_title'	=> false,
 				'is_front_page'		=> false,
-				'escape'			=> true
+				'escape'			=> true,
 			);
 
 			//* @since 2.5.0
@@ -172,14 +169,13 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		}
 
 		//* Return early if it's only a default args request.
-		if ( $defaults )
+		if ( $get_defaults )
 			return $defaults;
 
 		//* Array merge doesn't support sanitation. We're simply type casting here.
 		$args['term_id'] 			= isset( $args['term_id'] ) 			? (int) $args['term_id'] 			: $defaults['term_id'];
 		$args['taxonomy'] 			= isset( $args['taxonomy'] ) 			? (string) $args['taxonomy'] 		: $defaults['taxonomy'];
 		$args['page_on_front'] 		= isset( $args['page_on_front'] ) 		? (bool) $args['page_on_front'] 	: $defaults['page_on_front'];
-		$args['placeholder'] 		= isset( $args['placeholder'] ) 		? (bool) $args['placeholder'] 		: $defaults['placeholder'];
 		$args['notagline'] 			= isset( $args['notagline'] ) 			? (bool) $args['notagline'] 		: $defaults['notagline'];
 		$args['meta'] 				= isset( $args['meta'] ) 				? (bool) $args['meta'] 				: $defaults['meta'];
 		$args['get_custom_field'] 	= isset( $args['get_custom_field'] ) 	? (bool) $args['get_custom_field'] 	: $defaults['get_custom_field'];
@@ -214,13 +210,12 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$args = $default_args;
 		}
 
-		return $default_args;
+		return $args;
 	}
 
 	/**
 	 * Build the title based on input, without tagline.
 	 *
-	 * @param string $title The Title to return
 	 * @param array $args : accepted args : {
 	 * 		@param int term_id The Taxonomy Term ID
 	 * 		@param bool placeholder Generate placeholder, ignoring options.
@@ -231,11 +226,9 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *
 	 * @return string Title without tagline.
 	 */
-	protected function build_title_notagline( $title = '', $args = array() ) {
+	protected function build_title_notagline( $args = array() ) {
 
-		$args = $this->reparse_title_args( $args );
-
-		$title = $this->get_placeholder_title( $title, $args );
+		$title = $this->get_notagline_title( $args );
 
 		if ( empty( $title ) )
 			$title = $this->untitled();
@@ -255,38 +248,27 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Build the title based on input, without tagline.
 	 * Note: Not escaped.
 	 *
-	 * @param string $title The Title to return
 	 * @param array $args : accepted args : {
 	 * 		@param int term_id The Taxonomy Term ID
 	 * 		@param bool placeholder Generate placeholder, ignoring options.
 	 * 		@param bool page_on_front Page on front condition for example generation
 	 * }
 	 *
-	 * @since 2.4.0
+	 * @since 2.6.0
 	 *
 	 * @return string Title without tagline.
 	 */
-	protected function get_placeholder_title( $title = '', $args = array() ) {
+	protected function get_notagline_title( $args = array() ) {
 
-		$args = $this->reparse_title_args( $args );
+		$title = '';
 
-		/**
-		 * Detect if placeholder is being generated.
-		 * @since 2.2.4
-		 */
-		if ( $args['placeholder'] && empty( $title ) ) {
-			$id = $args['term_id'];
+		if ( $args['get_custom_field'] )
+			$title = $this->get_custom_field_title( $title, $args['term_id'], $args['taxonomy'] );
 
-			if ( $args['page_on_front'] ) {
-				$title = get_the_title( get_option( 'page_on_front' ) );
-			} else if ( $args['taxonomy'] ) {
-				$term = get_term( $id, $args['taxonomy'], OBJECT, 'raw' );
+		if ( empty( $title ) )
+			$title = (string) $this->generate_title( $args, false );
 
-				$title = $this->get_the_real_archive_title( $term );
-			} else {
-				$title = $this->post_title_from_ID( $id, $title );
-			}
-		}
+		$title = 'hi';
 
 		return $title;
 	}
@@ -429,7 +411,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = trim( $title ) . " $sep ";
 		}
 
-		if ( false === $args['description_title'] )
+		if ( ! $args['description_title'] )
 			$title = $this->add_title_protection( $title, $args['term_id'] );
 
 		if ( $args['escape'] ) {
@@ -526,7 +508,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 *
 		 * @since 2.4.1
 		 */
-		if ( false === $args['description_title'] ) {
+		if ( ! $args['description_title'] ) {
 			$title = $this->add_title_protection( $title, $args['term_id'] );
 			$title = $this->add_title_pagination( $title );
 
@@ -1287,7 +1269,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		$page = $this->page();
 		$paged = $this->paged();
-		
+
 		if ( $page && $paged ) {
 			/**
 			 * @since 2.4.3

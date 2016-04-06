@@ -221,7 +221,6 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		global $current_screen;
 
-// var_dump() 4.4 4.5 conflict https://make.wordpress.org/core/2016/03/07/changes-to-the-term-edit-page-in-wordpress-4-5/
 		if ( isset( $current_screen->base ) && ( 'edit-tags' === $current_screen->base || 'term' === $current_screen->base ) )
 			return $cache = true;
 
@@ -247,9 +246,13 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		global $current_screen;
 
-// var_dump() 4.4 4.5 conflict https://make.wordpress.org/core/2016/03/07/changes-to-the-term-edit-page-in-wordpress-4-5/
-		if ( isset( $current_screen->base ) && ( 'term' === $current_screen->base ) )
-			return $cache = true;
+		if ( $this->wp_version( '4.4.9999', '>=' ) ) {
+			if ( isset( $current_screen->base ) && ( 'term' === $current_screen->base ) )
+				return $cache = true;
+		} else {
+			if ( isset( $current_screen->base ) && ( 'edit-tags' === $current_screen->base ) )
+				return $cache = true;
+		}
 
 		return $cache = false;
 	}
@@ -298,7 +301,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		global $current_screen;
 
-//		var_dump() 4.4 4.5 conflict.
+		//* @NOTE USE WITH CAUTION - WP 4.5 & < 4.5 conflict.
 		if ( isset( $current_screen->base ) && ( ( 'edit' === $current_screen->base ) || ( 'edit-tags' === $current_screen->base ) ) )
 			return $cache = true;
 

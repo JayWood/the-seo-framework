@@ -29,14 +29,14 @@
  */
 
 //* Debug. Not to be used on production websites as it dumps and/or disables all kinds of stuff everywhere.
-//if ( is_admin() ) { // Warning: This indicated the Admin Area.
+//if ( is_admin() ) { // Warning: This indicates the Admin Area.
 //	if ( is_super_admin() ) { // AntiWarning: This indicated the user capability.
-		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
+//		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_MORE', true );
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
 //		define( 'THE_SEO_FRAMEWORK_PROFILE', true );
 //		define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
-//		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
+		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
 //	}
 //}
 
@@ -107,19 +107,17 @@ define( 'THE_SEO_FRAMEWORK_DIR_PATH_CLASS', THE_SEO_FRAMEWORK_DIR_PATH . '/inc/c
  */
 define( 'THE_SEO_FRAMEWORK_DIR_PATH_FUNCT', THE_SEO_FRAMEWORK_DIR_PATH . '/inc/functions/' );
 
+add_action( 'plugins_loaded', 'the_seo_framework_locale_init', 10 );
 /**
  * Plugin locale 'autodescription'
  *
  * File located in plugin folder autodescription/language/
  *
  * @since 1.0.0
- *
- * @return void
  */
 function the_seo_framework_locale_init() {
 	load_plugin_textdomain( 'autodescription', false, basename( dirname( __FILE__ ) ) . '/language/' );
 }
-add_action( 'plugins_loaded', 'the_seo_framework_locale_init', 10 );
 
 /**
  * Load plugin files

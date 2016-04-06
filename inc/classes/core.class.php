@@ -31,7 +31,7 @@ class AutoDescription_Core {
 	 */
 	public function __construct() {
 
-		add_action( 'init', array( $this, 'post_type_support' ) );
+		add_action( 'current_screen', array( $this, 'post_type_support' ), 0 );
 
 		/**
 		 * Add plugin links to the plugin activation page.
@@ -445,7 +445,7 @@ class AutoDescription_Core {
 		if ( isset( $lowercase[$noun] ) )
 			return $lowercase[$noun];
 
-		return $lowercase[$noun] = $this->is_locale( 'de' ) ? $noun : strtolower( $noun );
+		return $lowercase[$noun] = $this->check_wp_locale( 'de' ) ? $noun : strtolower( $noun );
 	}
 
 	/**

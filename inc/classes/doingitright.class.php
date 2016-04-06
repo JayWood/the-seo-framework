@@ -87,7 +87,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	}
 
 	/**
-	 * AJAX wrapper for init_columns
+	 * AJAX wrapper for $this->init_columns
 	 *
 	 * @since 2.6.0
 	 */
