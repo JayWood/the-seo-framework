@@ -619,7 +619,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
 	* Massively improved URL generation time by adding more layers of cache on often used and also heavy scripts.
-	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more effecient ones.
+	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more efficient ones.
 	* Metabox setting tabs no longer rely on WordPress Core admin navigation tabs.
 	* JavaScript caching and advanced optimizations for better browser performance through Google Closure Compiler.
 * **Improved:**

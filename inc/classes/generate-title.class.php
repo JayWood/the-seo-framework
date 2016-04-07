@@ -268,8 +268,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( empty( $title ) )
 			$title = (string) $this->generate_title( $args, false );
 
-		$title = 'hi';
-
 		return $title;
 	}
 
