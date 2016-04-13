@@ -128,6 +128,27 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	}
 
 	/**
+	 * Escapes and beautifies title.
+	 *
+	 * @param string $title The title to escape and beautify.
+	 * @param bool $trim Whether to trim the title from whitespaces.
+	 *
+	 * @since 2.5.2
+	 *
+	 * @return string Escaped and beautified title.
+	 */
+	public function escape_title( $title = '', $trim = true ) {
+
+		$title = wptexturize( $title );
+		$title = convert_chars( $title );
+		$title = esc_html( $title );
+		$title = capital_P_dangit( $title );
+		$title = $trim ? trim( $title ) : $title;
+
+		return $title;
+	}
+
+	/**
 	 * Parse and sanitize title args.
 	 *
 	 * @param array $args required The passed arguments.
@@ -233,13 +254,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( empty( $title ) )
 			$title = $this->untitled();
 
-		if ( $args['escape'] ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-			$title = trim( $title );
-		}
+		if ( $args['escape'] )
+			$title = $this->escape_title( $title );
 
 		return $title;
 	}
@@ -267,8 +283,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		if ( empty( $title ) )
 			$title = (string) $this->generate_title( $args, false );
-
-		$title = 'hi';
 
 		return $title;
 	}
@@ -414,12 +428,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( ! $args['description_title'] )
 			$title = $this->add_title_protection( $title, $args['term_id'] );
 
-		if ( $args['escape'] ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-		}
+		if ( $args['escape'] )
+			$title = $this->escape_title( $title, false );
 
 		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'title_output' => $title ) );
 
@@ -529,13 +539,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			}
 		}
 
-		if ( $args['escape'] ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-			$title = trim( $title );
-		}
+		if ( $args['escape'] )
+			$title = $this->escape_title( $title );
 
 		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'title_output' => $title ) );
 
@@ -605,12 +610,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( empty( $title ) )
 			$title = $this->untitled();
 
-		if ( $escape ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-		}
+		if ( $escape )
+			$title = $this->escape_title( $title, false );
 
 		return $title;
 	}
@@ -667,12 +668,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		$blogname = $this->title_for_home( '', $get_custom_field, false );
 		$seplocation = $this->get_home_title_seplocation( $seplocation );
 
-		if ( $escape ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-		}
+		if ( $escape )
+			$title = $this->escape_title( $title, false );
 
 		return array(
 			'title' => $title,
@@ -712,12 +709,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = $custom_field ? (string) $custom_field : $title;
 		}
 
-		if ( $escape ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-		}
+		if ( $escape )
+			$title = $this->escape_title( $title, false );
 
 		return (string) $title;
 	}
@@ -776,12 +769,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 
 		}
 
-		if ( $escape ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-		}
+		if ( $escape )
+			$title = $this->escape_title( $title, false );
 
 		return (string) $title;
 	}
@@ -818,12 +807,8 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = isset( $term->admeta['doctitle'] ) ? $term->admeta['doctitle'] : $title;
 		}
 
-		if ( $escape ) {
-			$title = wptexturize( $title );
-			$title = convert_chars( $title );
-			$title = esc_html( $title );
-			$title = capital_P_dangit( $title );
-		}
+		if ( $escape )
+			$title = $this->escape_title( $title, false );
 
 		return (string) $title;
 	}

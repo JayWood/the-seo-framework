@@ -87,6 +87,18 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			$this->settings_field,
 			array(
 				'homepage_description',
+				'description_custom',
+			)
+		);
+
+		$this->autodescription_add_option_filter(
+			's_title',
+			$this->settings_field,
+			array(
+				'homepage_title',
+				'homepage_title_tagline',
+
+				'knowledge_name',
 			)
 		);
 
@@ -113,12 +125,14 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				'home_title_location',
 			)
 		);
+
 		$this->autodescription_add_option_filter(
 			's_one_zero',
 			$this->settings_field,
 			array(
 				'title_rem_additions',
 
+				'description_additions',
 				'description_blogname',
 
 				'noodp',
@@ -201,10 +215,6 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			's_no_html',
 			$this->settings_field,
 			array(
-				'homepage_title',
-				'homepage_title_tagline',
-
-				'knowledge_name',
 			)
 		);
 
@@ -410,6 +420,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			's_title_separator' 		=> array( $this, 's_title_separator' 		),
 			's_description_separator' 	=> array( $this, 's_description_separator' 	),
 			's_description' 			=> array( $this, 's_description' 			),
+			's_title' 					=> array( $this, 's_title' 					),
 			's_knowledge_type'			=> array( $this, 's_knowledge_type'			),
 			's_one_zero' 				=> array( $this, 's_one_zero' 				),
 			's_one_zero_flush_rewrite'	=> array( $this, 's_one_zero_flush_rewrite'	),
@@ -494,7 +505,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.5.0
 	 *
-	 * @param string $new_value The Description
+	 * @param string $new_value The Description.
+	 *
 	 * @return string One line sanitized description.
 	 */
 	protected function s_description( $new_value ) {
@@ -511,9 +523,26 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				$new_lines[] = trim( $line ) . ' ';
 		}
 
-		$output = trim( implode( $new_lines ) );
+		$description = trim( implode( $new_lines ) );
 
-		return (string) strip_tags( $output );
+		return (string) strip_tags( $description );
+	}
+
+	/**
+	 * Returns a sanitized and trimmed title.
+	 *
+	 * @since 2.5.2
+	 *
+	 * @param string $new_value The Title
+	 *
+	 * @return string Sanitized and trimmed title.
+	 */
+	protected function s_title( $new_value ) {
+
+		$title = esc_html( $new_value );
+		$title = trim( $title );
+
+		return (string) strip_tags( $title );
 	}
 
 	/**
@@ -521,7 +550,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.8
 	 *
-	 * @param mixed $new_value Should be identical to any of the $person_organization values
+	 * @param mixed $new_value Should be identical to any of the $person_organization values.
+	 *
 	 * @return string title Knowledge type option
 	 */
 	protected function s_knowledge_type( $new_value ) {
@@ -539,7 +569,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param mixed $new_value Should ideally be a string 'left' or 'right' passed in
+	 * @param mixed $new_value Should ideally be a string 'left' or 'right' passed in.
+	 *
 	 * @return string left or right
 	 */
 	protected function s_left_right( $new_value ) {
@@ -561,7 +592,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.5.2
 	 *
-	 * @param mixed $new_value Should ideally be a string 'left' or 'right' passed in
+	 * @param mixed $new_value Should ideally be a string 'left' or 'right' passed in.
+	 *
 	 * @return string left or right
 	 */
 	protected function s_left_right_home( $new_value ) {
@@ -585,7 +617,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param mixed $new_value Should ideally be a 1 or 0 integer passed in
+	 * @param mixed $new_value Should ideally be a 1 or 0 integer passed in.
+	 *
 	 * @return integer 1 or 0.
 	 */
 	protected function s_one_zero( $new_value ) {
@@ -601,7 +634,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.9
 	 *
-	 * @param mixed $new_value Should ideally be a 1 or 0 integer passed in
+	 * @param mixed $new_value Should ideally be a 1 or 0 integer passed in.
+	 *
 	 * @return integer 1 or 0.
 	 */
 	protected function s_one_zero_flush_rewrite( $new_value ) {
@@ -631,11 +665,14 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 * Also flushes the sitemap.
 	 *
 	 * @since 2.2.9
+	 * @staticvar bool $flushed
 	 *
-	 * @param mixed $new_value Should ideally be a 1 or 0 integer passed in
+	 * @param mixed $new_value Should ideally be a 1 or 0 integer passed in.
+	 *
 	 * @return integer 1 or 0.
 	 */
 	protected function s_one_zero_flush_sitemap( $new_value ) {
+
 		static $flushed = null;
 
 		if ( ! isset( $flushed ) )
@@ -652,6 +689,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 * @since 2.2.2
 	 *
 	 * @param mixed $new_value Should ideally be a positive integer.
+	 *
 	 * @return integer Positive integer.
 	 */
 	protected function s_absint( $new_value ) {
@@ -663,7 +701,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param string $new_value String, possibly with HTML in it
+	 * @param string $new_value String, possibly with HTML in it.
+	 *
 	 * @return string String without HTML in it.
 	 */
 	protected function s_no_html( $new_value ) {
@@ -675,7 +714,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.5.2
 	 *
-	 * @param string $new_value String, possibly with HTML and spaces in it
+	 * @param string $new_value String, possibly with HTML and spaces in it.
+	 *
 	 * @return string String without HTML and breaks in it.
 	 */
 	protected function s_no_html_space( $new_value ) {
@@ -695,14 +735,18 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 		$this->delete_front_ld_json_transient();
 
-		$removed_queries = strtok( $new_value, '?' );
-		$url = $removed_queries ? $removed_queries : $new_value;
+		/**
+		 * If queries have been tokenized, take the value before the query args.
+		 * Otherwise it's empty, so take the current value.
+		 */
+		$no_query_url = strtok( $new_value, '?' );
+		$url = $no_query_url ? $no_query_url : $new_value;
 
 		return esc_url_raw( $url );
 	}
 
 	/**
-	 * Makes URLs safe
+	 * Makes URLs safe and removes query args.
 	 *
 	 * @since 2.2.8
 	 *
@@ -722,7 +766,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param string $new_value String, an email address, possibly unsafe
+	 * @param string $new_value String, an email address, possibly unsafe.
+	 *
 	 * @return string String a safe email address
 	 */
 	protected function s_email_address( $new_value ) {
@@ -734,7 +779,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param string $new_value String with potentially unsafe HTML in it
+	 * @param string $new_value String with potentially unsafe HTML in it.
+	 *
 	 * @return string String with only safe HTML in it
 	 */
 	protected function s_safe_html( $new_value ) {
@@ -747,7 +793,8 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param string $new_value String with potentially wrong Twitter username
+	 * @param string $new_value String with potentially wrong Twitter username.
+	 *
 	 * @return string String with 'correct' Twitter username
 	 */
 	protected function s_twitter_name( $new_value ) {
@@ -778,6 +825,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 * @since 2.5.2
 	 *
 	 * @param string $new_value String with potentially wrong option value.
+	 *
 	 * @return string Sanitized twitter card type.
 	 */
 	protected function s_twitter_card( $new_value ) {
@@ -803,7 +851,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.4
 	 *
-	 * @param string $new_value String with potentially unwanted redirect url
+	 * @param string $new_value String with potentially unwanted redirect URL.
 	 *
 	 * @return string The Sanitized Redirect URL
 	 */
@@ -852,48 +900,29 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				//* The url is a relative path
 				$path = $url;
 
-				//* Do some extra work on domain mapping
-				if ( $this->is_domainmapping_active() ) {
-					global $wpdb, $blog_id;
+				//* Try WPMUdev Domain Mapping.
+				$wpmu_url = $this->the_url_wpmudev_domainmap( $path, true );
+				if ( $wpmu_url && is_array( $wpmu_url ) ) {
+					$url = $wpmu_url[0];
+					$scheme = $wpmu_url[1];
+				}
 
-					$mapped_key = 'wpmudev_mapped_domain_' . $blog_id;
-
-					//* Check if the domain is mapped
-					$mapped_domain = $this->object_cache_get( $mapped_key );
-					if ( false === $mapped_domain ) {
-						$mapped_domain = $wpdb->get_var( $wpdb->prepare( "SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d", $blog_id ) );
-						$this->object_cache_set( $mapped_key, $mapped_domain, 3600 );
-					}
-
-					if ( $mapped_domain ) {
-						$scheme_key = 'wpmudev_mapped_scheme_' . $blog_id;
-
-						//* Fetch scheme
-						$mappedscheme = $this->object_cache_get( $scheme_key );
-						if ( false === $mappedscheme ) {
-							$mappedscheme = $wpdb->get_var( $wpdb->prepare( "SELECT scheme FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d", $blog_id ) );
-							$this->object_cache_set( $scheme_key, $mappedscheme, 3600 );
-						}
-
-						if ( '1' === $mappedscheme ) {
-							$scheme_full = 'https://';
-							$scheme = 'https';
-						} else {
-							$scheme_full = 'http://';
-							$scheme = 'http';
-						}
-
-						//* Put it all together.
-						$url = trailingslashit( $scheme_full . $mapped_domain ) . $path;
+				//* Try Donncha Domain Mapping.
+				if ( ! isset( $scheme ) ) {
+					$dm_url = $this->the_url_donncha_domainmap( $path, true );
+					if ( $dm_url && is_array( $dm_url ) ) {
+						$url = $dm_url[0];
+						$scheme = $dm_url[1];
 					}
 				}
 
-				//* Non-mapped URL
+				//* Everything else.
 				if ( ! isset( $scheme ) ) {
 					$url = $this->the_home_url_from_cache( true ) . ltrim( $path, ' /' );
 					$scheme = is_ssl() ? 'https' : 'http';
 				}
 
+				//* When nothing is found, fall back on WP defaults (is_ssl).
 				$scheme = isset( $scheme ) ? $scheme : '';
 
 				$url = $this->set_url_scheme( $url, $scheme );

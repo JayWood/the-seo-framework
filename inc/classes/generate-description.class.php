@@ -75,6 +75,22 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * Beautify.
 		 * @since 2.3.4
 		 */
+		$description = $this->escape_description( $description );
+
+		return $description;
+	}
+
+	/**
+	 * Escapes and beautifies description.
+	 *
+	 * @param string $description The description to escape and beautify.
+	 *
+	 * @since 2.5.2
+	 *
+	 * @return string Escaped and beautified description.
+	 */
+	public function escape_description( $description = '' ) {
+
 		$description = wptexturize( $description );
 		$description = convert_chars( $description );
 		$description = esc_html( $description );
@@ -192,11 +208,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			$description = $this->get_custom_archive_description( $args );
 
 		if ( $escape && $description ) {
-			$description = wptexturize( $description );
-			$description = convert_chars( $description );
-			$description = esc_html( $description );
-			$description = capital_P_dangit( $description );
-			$description = trim( $description );
+			$description = $this->escape_description( $description );
 		}
 
 		return $description;
@@ -335,13 +347,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		$description = $this->generate_the_description( $args );
 
-		if ( $escape ) {
-			$description = wptexturize( $description );
-			$description = convert_chars( $description );
-			$description = esc_html( $description );
-			$description = capital_P_dangit( $description );
-			$description = trim( $description );
-		}
+		if ( $escape )
+			$description = $this->escape_description( $description );
 
 		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'description' => $description ) );
 
@@ -515,6 +522,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * @param object|emptystring $term The current Term.
 	 *
 	 * Applies filters the_seo_framework_add_description_additions : boolean
+	 *
 	 * @staticvar bool $cache
 	 * @since 2.6.0
 	 *
@@ -524,12 +532,13 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		static $cache = null;
 
-		//* @TODO add options.  var_dump();
-
 		if ( isset( $cache ) )
 			return $cache;
 
-		return $cache = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
+		$option = (bool) $this->get_option( 'description_additions' );
+		$filter = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
+
+		return $cache = $option && $filter ? true : false;
 	}
 
 	/**

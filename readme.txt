@@ -14,9 +14,7 @@ An automated, advanced, accessible, unbranded and extremely fast SEO solution fo
 
 = The SEO Framework =
 
-**The lightning fast all in one automated SEO optimization plugin for WordPress**
-
-***Easy for beginners, awesome for experts. WordPress SEO for Everyone.***
+**Easy for beginners, awesome for experts. WordPress SEO for Everyone.**
 
 > <strong>This plugin strongly helps you create better SEO value for your content.</strong><br>
 > But at the end of the day, it all depends on how entertaining or well-constructed your content or product is.
@@ -405,6 +403,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Intelligently nested schema.org breadcrumbs.
 * Definite schema.org website name.
 * Better Automated Description sentence endings.
+* Vibrant character counters for when you need extra visual assistance.
 * TODO New Automated Description options.
 * TODO New Archive title prefix options.
 * Modernized and Smarter SEO bar, with many more conditional checks.
@@ -593,7 +592,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
 	* The blog page is now also shown within the Sitemap.
 	* TODO Front Page pagination index options.
-	* TODO Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
+	* Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
+	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -619,7 +619,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
 	* Massively improved URL generation time by adding more layers of cache on often used and also heavy scripts.
-	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more effecient ones.
+	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more efficient ones.
 	* Metabox setting tabs no longer rely on WordPress Core admin navigation tabs.
 	* JavaScript caching and advanced optimizations for better browser performance through Google Closure Compiler.
 * **Improved:**
@@ -637,6 +637,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The Term SEO Box is removed if another popular SEO plugin is detected.
 	* Feed excerpt generation time.
 	* Sitemap generation time.
+	* The custom title is now trimmed from whitespace in the Home Page Settings metabox.
+	* WPMUdev Domain Mapping database values are now all fetched in one query instead of two.
 * **Fixed:**
 	/
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
@@ -666,6 +668,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily. Yes, I'm this dedicated in breaking stuff.
 	* TODO is this true? When an external Sitemap plugin is active, the Sitemap Tab is no longer shown when Javascript is disabled.
 	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
+	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
 * **Removed:**
 	/
 	* Shortlink URL from Homepage, as it's quite useless and self referring there.
@@ -750,6 +753,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `og:image` quality has been upped to 82 from 70. This is according to the [new WordPress 4.5.0 standards](https://make.wordpress.org/core/2016/02/22/proposal-increase-the-default-image-compression-in-wordpress/).
 	* This plugin's admin CSS and JS are now registered and cached prior to enqueueing. This speeds things up if multiple script calling hooks are used.
 	* The Term SEO box initialization now only happens on the term edit screens.
+	* Automated Description Example now uses ID's rather than classes for better JavaScript performance.
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
@@ -834,10 +838,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * **Constant Notes:**
 	* **New:**
 		* `(bool) THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS`. Note: Does not disable transients for pinging search engines
-		* `(bool) THE_SEO_FRAMEWORK_PROFILE`. Profiles the plugin (in the future, maybe).
+		* `(bool) THE_SEO_FRAMEWORK_PROFILE`. Profiles the plugin when debugging has been enabled
 		* `(bool) THE_SEO_FRAMEWORK_PROFILE_SPECIFIC`. Profiles the plugin more specifically (in the future, maybe).
 * **Notes:**
 	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
+	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace of The SEO Framework.
 
 = Full changelog =
 

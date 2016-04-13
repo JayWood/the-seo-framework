@@ -91,20 +91,50 @@ table.wp-list-table .column-price {
 	text-overflow: ellipsis;
 }
 
+/* START Character Counters */
+
+span.theseoframework-counter {
+	font-weight: 600;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 span.ad-count-bad {
 	color: #dd3811;
-	font-weight: 600;
 }
 
 span.ad-count-okay {
 	color: #ffa700;
-	font-weight: 600;
 }
 
 span.ad-count-good {
 	color: #0cc34b;
-	font-weight: 600;
 }
+
+span.tsf-counter-one {
+	color: #fff;
+	padding: 3px;
+	border-radius: 58px;
+	padding: 3px 1px 3px;
+	min-width: 29px;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+}
+span.tsf-counter-one.ad-count-bad {
+	background-color: #dd3811;
+}
+span.tsf-counter-one.ad-count-okay {
+	background-color: #ffa700;
+}
+span.tsf-counter-one.ad-count-good {
+	background-color: #0cc34b;
+}
+
+/* END Character Counters */
 
 #ad_seo {
 	width: 18%;

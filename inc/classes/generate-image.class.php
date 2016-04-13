@@ -133,7 +133,6 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	 * 				string 'featured'
 	 * 				string 'header'
 	 * 				string 'icon'
-	 * 				string 'wpmudev-avatars'
 	 *			)
 	 * 		}
 	 * }

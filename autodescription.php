@@ -29,8 +29,8 @@
  */
 
 //* Debug. Not to be used on production websites as it dumps and/or disables all kinds of stuff everywhere.
-//if ( is_admin() ) { // Warning: This indicates the Admin Area.
-//	if ( is_super_admin() ) { // AntiWarning: This indicated the user capability.
+//if ( is_admin() ) { // Warning: This indicates the wp-admin Area.
+//	if ( is_super_admin() ) { // AntiWarning: This indicates the user capability.
 //		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_MORE', true );
 //		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
@@ -46,7 +46,7 @@
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-DEV' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-DEV1' );
 
 /**
  * Plugin options filter

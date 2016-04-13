@@ -66,6 +66,9 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		$this->js_name = 'autodescription';
 		$this->css_name = 'autodescription';
 
+		//* Admin AJAX for counter options.
+		add_action( 'wp_ajax_the_seo_framework_update_counter', array( $this, 'the_counter_visualized' ) );
+
 	}
 
 	/**
@@ -211,6 +214,13 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		$home_tagline = $this->get_option( 'homepage_title_tagline' );
 		$title_location = $this->get_option( 'title_location' );
 		$title_add_additions = $this->add_title_additions();
+		$counter_type = $this->get_option( 'counter_type' );
+
+		//* Enunciate the lenghts of Titles and Descriptions.
+		$good = __( 'Good', 'autodescription' );
+		$okay = __( 'Okay', 'autodescription' );
+		$bad = __( 'Bad', 'autodescription' );
+		$unknown = __( 'Unknown', 'autodescription' );
 
 		$separator = $this->get_separator( 'title', true );
 
@@ -309,6 +319,11 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 			'titleLocation' => $title_location,
 			'isRTL' => $rtl,
 			'isHome' => $ishome,
+			'counterType' => $counter_type,
+			'good' => $good,
+			'okay' => $okay,
+			'bad' => $bad,
+			'unknown' => $unknown,
 		);
 	}
 
@@ -415,6 +430,36 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 		wp_redirect( esc_url_raw( $url ) );
 		exit;
+	}
+
+
+	/**
+	 * Handles counter option update on AJAX request.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 */
+	public function the_counter_visualized() {
+
+		if ( $this->is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			//* If current user isn't allowed to edit posts, don't do anything.
+			if ( ! current_user_can( 'publish_posts' ) )
+				return;
+
+			$options = $this->get_all_options();
+
+			//* Count up, reset to 0 if needed. We have 4 options: 0, 1, 2, 3
+			// We're not accepting any $_POST values. Keeping it clean.
+			$options['counter_type'] = $options['counter_type'] + 1;
+			if ( $options['counter_type'] > 3 )
+				$options['counter_type'] = 0;
+
+			update_option( $this->settings_field, $options );
+
+			//* Kill PHP.
+			exit;
+		}
+
 	}
 
 }

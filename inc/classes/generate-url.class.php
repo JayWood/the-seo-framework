@@ -821,29 +821,61 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	public function the_url_wpmudev_domainmap( $path, $get_scheme = false ) {
 
 		if ( $this->is_domainmapping_active() ) {
-			global $wpdb,$blog_id;
+			global $wpdb, $blog_id;
 
-			$mapped_key = 'wpmudev_mapped_domain_' . $blog_id;
+			/**
+			 * Cache revisions. Hexadecimal.
+			 *
+			 * @since 2.6.0
+			 */
+			$revision = '1';
+
+			$cache_key = 'wpmudev_mapped_domain_' . $revision . '_' . $blog_id;
 
 			//* Check if the domain is mapped
-			$mapped_domain = $this->object_cache_get( $mapped_key );
+			$mapped_domain = $this->object_cache_get( $cache_key );
 			if ( false === $mapped_domain ) {
-				$mapped_domain = $wpdb->get_var( $wpdb->prepare( "SELECT domain FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d", $blog_id ) );
-				$this->object_cache_set( $mapped_key, $mapped_domain, 3600 );
+				//* Setup cache. Results may only contain one object.
+
+				$mapped_domains = $wpdb->get_results( $wpdb->prepare( "SELECT id, domain, is_primary, scheme FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d", $blog_id ), OBJECT );
+
+				$primary_key = 0;
+				$domain_ids = array();
+				foreach ( $mapped_domains as $key => $domain ) {
+					if ( isset( $domain->is_primary ) && '1' === $domain->is_primary ) {
+						$primary_key = $key;
+
+						//* We've found the primary key, break loop.
+						break;
+					} else {
+						//* Save IDs.
+						if ( isset( $domain->id ) && $domain->id )
+							$domain_ids[$key] = $domain->id;
+					}
+				}
+
+				if ( 0 === $primary_key && ! empty( $domain_ids ) ) {
+					//* No primary ID has been found. Get the one with the lowest ID, which has been added first.
+					$primary_key = array_keys( $domain_ids, min( $domain_ids ), true );
+					$primary_key = reset( $primary_key );
+				}
+
+				//* Set 0, as we check for false to begin with.
+				$mapped_domain = isset( $mapped_domains[$primary_key] ) ? $mapped_domains[$primary_key] : 0;
+
+				$this->object_cache_set( $cache_key, $mapped_domain, 3600 );
 			}
 
 			if ( $mapped_domain ) {
 
-				$scheme_key = 'wpmudev_mapped_scheme_' . $blog_id;
+				$domain = isset( $mapped_domain->domain ) ? $mapped_domain->domain : '0';
+				$scheme = isset( $mapped_domain->scheme ) ? $mapped_domain->scheme : '';
 
-				//* Fetch scheme
-				$mappedscheme = $this->object_cache_get( $scheme_key );
-				if ( false === $mappedscheme ) {
-					$mappedscheme = $wpdb->get_var( $wpdb->prepare( "SELECT scheme FROM {$wpdb->base_prefix}domain_mapping WHERE blog_id = %d", $blog_id ) );
-					$this->object_cache_set( $scheme_key, $mappedscheme, 3600 );
-				}
+				//* Fallback to is_ssl if no scheme has been found.
+				if ( '' === $scheme )
+					$scheme = is_ssl() ? '1' : '0';
 
-				if ( $mappedscheme === '1' ) {
+				if ( '1' === $scheme ) {
 					$scheme_full = 'https://';
 					$scheme = 'https';
 				} else {
@@ -851,8 +883,8 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 					$scheme = 'http';
 				}
 
-				// Put it all together
-				$url = trailingslashit( $scheme_full . $mapped_domain ) . ltrim( $path, '\/' );
+				//* Put it all together.
+				$url = trailingslashit( $scheme_full . $domain ) . ltrim( $path, '\/' );
 
 				if ( ! $get_scheme ) {
 					return $url;
@@ -1007,7 +1039,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		$prev = '';
 		$next = '';
 
-		if ( $this->get_option( 'prev_next_archives' ) && ! is_singular() ) {
+		if ( $this->get_option( 'prev_next_archives' ) && ! $this->is_singular() ) {
 
 			$paged = $this->paged();
 
@@ -1017,7 +1049,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			if ( 'next' === $prev_next )
 				$next = $paged < $wp_query->max_num_pages ? get_next_posts_page_link() : $next;
 
-		} else if ( $this->get_option( 'prev_next_posts' ) && is_singular() ) {
+		} else if ( $this->get_option( 'prev_next_posts' ) && $this->is_singular() ) {
 
 			$page = $this->page();
 			$numpages = substr_count( $wp_query->post->post_content, '<!--nextpage-->' ) + 1;
@@ -1068,7 +1100,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		$from_option = false;
 
-		if ( $i === (int) 1 ) {
+		if ( $i === 1 ) {
 			$url = $this->the_url_from_cache( '', $post_id, true, $from_option );
 		} else {
 			$post = get_post( $post_id );
@@ -1080,7 +1112,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			 *
 			 * @since 2.2.5
 			 */
-			if ( $i >= (int) 2 ) {
+			if ( $i >= 2 ) {
 				//* Fix adding pagination url.
 
 				//* Parse query arg and put in var.
@@ -1092,7 +1124,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 				$int_current = 'next' === $pos ? ( $i - 1 ) : ( $i + 1 );
 				$string_current = (string) $int_current;
 
-				if ( $i !== (int) 1 ) {
+				if ( $i !== 1 ) {
 					//* We're adding a page.
 					$last_occurence = strrpos( $urlfromcache, '/' . $string_current . '/' );
 
