@@ -178,6 +178,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				'og_tags',
 				'facebook_tags',
 				'twitter_tags',
+				'googleplus_tags',
 
 				'post_publish_time',
 				'post_modify_time',

@@ -29,16 +29,16 @@
  */
 
 //* Debug. Not to be used on production websites as it dumps and/or disables all kinds of stuff everywhere.
-//if ( is_admin() ) { // Warning: This indicates the wp-admin Area.
-//	if ( is_super_admin() ) { // AntiWarning: This indicates the user capability.
-//		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
-//		define( 'THE_SEO_FRAMEWORK_DEBUG_MORE', true );
-//		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
-//		define( 'THE_SEO_FRAMEWORK_PROFILE', true );
-//		define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
-		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
-//	}
-//}
+//add_action( 'plugins_loaded', function() { if ( is_super_admin() ) {
+	//if ( is_admin() ) {
+	//		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
+	//		define( 'THE_SEO_FRAMEWORK_DEBUG_MORE', true );
+	//		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
+	//		define( 'THE_SEO_FRAMEWORK_PROFILE', true );
+	//		define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
+			define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
+	//}
+//}},0);
 
 /**
  * CDN Cache buster. 3 to 4 point.

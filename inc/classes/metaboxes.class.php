@@ -207,6 +207,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		do_action( 'the_seo_framework_title_metabox_before' );
 
+		$language = $this->google_language();
+
 		$title_separator = $this->title_separator;
 
 		$recommended = ' class="recommended" title="' . esc_attr__( 'Recommended', 'autodescription' ) . '"';
@@ -278,7 +280,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					<input type="checkbox" name="<?php $this->field_name( 'title_rem_additions' ); ?>" id="<?php $this->field_id( 'title_rem_additions' ); ?>" <?php $this->is_conditional_checked( 'title_rem_additions' ); ?> value="1" <?php checked( $this->get_field_value( 'title_rem_additions' ) ); ?> />
 					<?php _e( 'Remove Blogname from title?', 'autodescription' ); ?>
 				</label>
-				<span title="<?php _e( 'This might decouple your posts and pages from the rest of the website.', 'autodescription' ); ?>">[?]</span>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php _e( 'This might decouple your posts and pages from the rest of the website.', 'autodescription' ); ?>">[?]</a>
 			</p>
 			<span class="description"><?php _e( 'Only use this option if you are aware of its SEO effects.', 'autodescription' ); ?></span>
 			<span class="description"><?php echo $home_page_has_option; ?></span>
@@ -313,7 +315,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$excerpt = $this->escape_description( $excerpt );
 
 		//* Put it together.
-		$example 	= '<span id="description-additionjs-js">'
+		$example 	= '<span id="description-additions-js">'
 						. $page_title
 						. '<span id="on-blogname-js">' . " $on " . $blogname . '</span>'
 						. '<span id="autodescription-descsep-js">' . " $sep " . '</span>'
@@ -424,7 +426,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	public function description_metabox_additions_tab() {
 
 		$language = $this->google_language();
-		$google_explanation = "https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1";
+		$google_explanation = esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' );
 
 		?>
 		<h4><?php printf( __( 'Additions Description Settings', 'autodescription' ) ); ?></h4>
@@ -929,7 +931,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'homepage_title' ); ?>">
 				<strong><?php printf( __( 'Custom %s Title', 'autodescription' ), $home_page_i18n ); ?></strong>
-				<a href="https://support.google.com/webmasters/answer/35624?hl=<?php echo $language; ?>#3" target="_blank" title="<?php _e( 'Recommended Length: 50 to 55 characters', 'autodescription' ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php _e( 'Recommended Length: 50 to 55 characters', 'autodescription' ) ?>">[?]</a>
 				<span class="description theseoframework-counter"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_title', false ) . '_chars">'. mb_strlen( $tit_len ) .'</span>' ); ?></span>
 			</label>
 		</p>
@@ -950,7 +952,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'homepage_description' ); ?>">
 				<strong><?php printf( __( 'Custom %s Description', 'autodescription' ), $home_page_i18n ); ?></strong>
-				<a href="https://support.google.com/webmasters/answer/35624?hl=<?php echo $language; ?>#1" target="_blank" title="<?php _e( 'Recommended Length: 145 to 155 characters', 'autodescription' ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' ); ?>" target="_blank" title="<?php _e( 'Recommended Length: 145 to 155 characters', 'autodescription' ) ?>">[?]</a>
 				<span class="description theseoframework-counter"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_description', false ) . '_chars">'. mb_strlen( $desc_len ) .'</span>' ); ?></span>
 			</label>
 		</p>
@@ -977,7 +979,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					/* translators: 1: Option, 2: Location */
 					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noindex' ), $home_page_i18n );
 				?>
-				<a href="https://support.google.com/webmasters/answer/93710?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/93710?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noindex_post ? $checked_home : ''; ?>
 			</label>
 
@@ -989,7 +991,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					/* translators: 1: Option, 2: Location */
 					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'nofollow' ), $home_page_i18n );
 				?>
-				<a href="https://support.google.com/webmasters/answer/96569?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/96569?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $nofollow_post ? $checked_home : ''; ?>
 			</label>
 
@@ -1001,7 +1003,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					/* translators: 1: Option, 2: Location */
 					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noarchive' ), $home_page_i18n );
 				?>
-				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/79812?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noarchive_post ? $checked_home : ''; ?>
 			</label>
 		</p>
@@ -1124,7 +1126,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<?php
 			if ( $this->has_og_plugin() ) {
 				?>
-				<p class="description"><?php _e( 'Note: Another Open Graph plugin has been detected. This means not all Open Graph meta tags will be outputted.', 'autodescription' ); ?></p>
+				<p class="description"><?php _e( 'Note: Another Open Graph plugin has been detected.', 'autodescription' ); ?></p>
 				<?php
 			}
 			?>

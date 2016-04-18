@@ -93,7 +93,7 @@ table.wp-list-table .column-price {
 
 /* START Character Counters */
 
-span.theseoframework-counter {
+.theseoframework-counter {
 	font-weight: 600;
 	cursor: pointer;
 	-webkit-user-select: none;
@@ -122,7 +122,7 @@ span.tsf-counter-one {
 	min-width: 29px;
 	display: inline-block;
 	text-align: center;
-	vertical-align: middle;
+	vertical-align: baseline;
 }
 span.tsf-counter-one.ad-count-bad {
 	background-color: #dd3811;
@@ -493,6 +493,10 @@ span.ad-seo .explanation-desc div {
 	background-color: inherit;
 	border-bottom-color: #fff;
 	color: #000;
+}
+
+.autodescription-metaboxes .seoframework-tabs-content {
+	margin: 1.33em auto 0;
 }
 
 body.js .autodescription-metaboxes .seoframework-tabs-content {
