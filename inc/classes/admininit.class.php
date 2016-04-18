@@ -253,7 +253,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 				$generated_doctitle_args = array(
 					'term_id' => $post_id,
 					'notagline' => true,
-					'meta' => true,
 					'get_custom_field' => false,
 				);
 
@@ -279,7 +278,6 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 							'term_id' => $term_id,
 							'taxonomy' => $current_screen->taxonomy,
 							'notagline' => true,
-							'meta' => true,
 							'get_custom_field' => false
 						);
 

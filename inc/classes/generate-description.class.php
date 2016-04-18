@@ -68,7 +68,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		}
 
 		//* Still no description found? Create an auto description based on content.
-		if ( empty( $description ) || ! is_string( $description ) )
+		if ( empty( $description ) || ! is_scalar( $description ) )
 			$description = $this->generate_description_from_id( $args, false );
 
 		/**
@@ -342,10 +342,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		$autodescription = (bool) apply_filters( 'the_seo_framework_enable_auto_description', true );
-		if ( ! $autodescription )
+		if ( false === $autodescription )
 			return '';
 
-		$description = $this->generate_the_description( $args );
+		$description = $this->generate_the_description( $args, false );
 
 		if ( $escape )
 			$description = $this->escape_description( $description );
@@ -367,12 +367,13 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * 		@param bool $get_custom_field Do not fetch custom title when false.
 	 * 		@param bool $social Generate Social Description when true.
 	 * }
+	 * @param bool $escape Whether to escape the description.
 	 *
 	 * @staticvar string $title
 	 *
 	 * @return string The description.
 	 */
-	protected function generate_the_description( $args ) {
+	protected function generate_the_description( $args, $escape = true ) {
 
 		/**
 		 * Parse args.
@@ -394,9 +395,6 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		$on = $title_on_blogname['on'];
 		$blogname = $title_on_blogname['blogname'];
 		$sep = $title_on_blogname['sep'];
-
-		//* Whether to add "on blogname"
-		$blogname_addition = $this->get_option( 'description_blogname' );
 
 		/**
 		 * Setup transient.
@@ -456,31 +454,37 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		if ( $args['social'] ) {
-			/**
-			 * @since 2.5.2
-			 */
-			$excerpt_exists = ! empty( $excerpt['social'] );
-
-			if ( $excerpt_exists ) {
+			if ( $excerpt['social'] ) {
 				$description = $excerpt['social'];
 			} else {
-				$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
+				//* No social description if nothing is found.
+				$description = '';
 			}
 		} else {
-			$excerpt_exists = ! empty( $excerpt['normal'] );
 
-			if ( $excerpt_exists ) {
-				if ( $blogname_addition ) {
-					$description = (string) sprintf( '%s %s %s %s %s', $title, $on, $blogname, $sep, $excerpt['normal'] );
-				} else {
-					$description = (string) sprintf( '%s %s %s', $title, $sep, $excerpt['normal'] );
-				}
+			if ( empty( $excerpt['normal'] ) ) {
+				//* Fetch additions ignoring options.
+
+				$title_on_blogname = $this->generate_description_additions( $args['id'], $term, true );
+				$title = $title_on_blogname['title'];
+				$on = $title_on_blogname['on'];
+				$blogname = $title_on_blogname['blogname'];
+				$sep = $title_on_blogname['sep'];
+			}
+
+			$title_on_blogname = trim( sprintf( _x( '%1$s %2$s %3$s', '1: Title, 2: on, 3: Blogname', 'autodescription' ), $title, $on, $blogname ) );
+
+			if ( $excerpt['normal'] ) {
+				$description = sprintf( _x( '%1$s %2$s %3$s', '1: Title on Blogname, 2: Separator, 3: Excerpt', 'autodescription' ), $title_on_blogname, $sep, $excerpt['normal'] );
 			} else {
 				//* We still add the additions when no excerpt has been found.
 				// i.e. home page or empty/shortcode filled page.
-				$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
+				$description = $title_on_blogname;
 			}
 		}
+
+		if ( $escape )
+			$description = $this->escape_description( $description );
 
 		return $description;
 	}
@@ -505,7 +509,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 */
 		if ( $custom_field ) {
 			$description = $this->get_custom_homepage_description( array( 'is_home' => true ) );
-			if ( '' !== $description )
+			if ( $description )
 				return $description;
 		}
 
@@ -515,7 +519,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		$on = $title_on_blogname['on'];
 		$blogname = $title_on_blogname['blogname'];
 
-		return $description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
+		return $description = sprintf( '%s %s %s', $title, $on, $blogname );
 	}
 
 	/**
@@ -573,7 +577,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *
 	 * @param int $id The post or term ID
 	 * @param object|empty $term The term object
-	 * @param bool $page_on_front Whether the page is on front.
+	 * @param bool $ignore Whether to ignore options and filters.
 	 *
 	 * @staticvar array $title string of titles.
 	 * @staticvar string $on
@@ -585,15 +589,15 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *		$sep		=> The separator
 	 * }
 	 */
-	public function generate_description_additions( $id, $term, $page_on_front ) {
+	public function generate_description_additions( $id = '', $term = '', $ignore = false ) {
 
-		if ( $page_on_front || $this->add_description_additions( $id, $term ) ) {
+		if ( $ignore || $this->add_description_additions( $id, $term ) ) {
 
 			static $title = array();
 			if ( ! isset( $title[$id] ) )
-				$title[$id] = $this->generate_description_title( $id, $term, $page_on_front );
+				$title[$id] = $this->generate_description_title( $id, $term, $ignore );
 
-			if ( $this->is_option_checked( 'description_blogname' ) ) {
+			if ( $ignore || $this->is_option_checked( 'description_blogname' ) ) {
 
 				static $on = null;
 				if ( is_null( $on ) ) {
@@ -659,14 +663,14 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				// @TODO create option.
 				/* translators: Front-end output. */
 				$title = __( 'Latest posts:', 'autodescription' ) . ' ' . $title;
-			} else if ( '' !== $term && is_object( $term ) ) {
+			} else if ( $term && is_object( $term ) ) {
 				//* We're on a taxonomy now.
 
-				if ( isset( $term->admeta['doctitle'] ) && '' !== $term->admeta['doctitle'] ) {
+				if ( isset( $term->admeta['doctitle'] ) && $term->admeta['doctitle'] ) {
 					$title = $term->admeta['doctitle'];
-				} else if ( isset( $term->name ) && '' !== $term->name ) {
+				} else if ( isset( $term->name ) && $term->name ) {
 					$title = $term->name;
-				} else if ( isset( $term->slug ) && '' !== $term->slug ) {
+				} else if ( isset( $term->slug ) && $term->slug ) {
 					$title = $term->slug;
 				}
 			} else {

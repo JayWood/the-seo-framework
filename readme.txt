@@ -567,7 +567,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO New global Automated Description options.
 	* TODO Jetpack Sitemap detection.
 	* TODO WP.me shortlink integration.
-	* TODO Cache key language detection.
 	* Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
 	* Removal commas if the excerpt ends with one in the automated description.
 	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
@@ -575,7 +574,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Headway compatibility. Done by using one of their SEO plugin detection filters which disables their SEO functionality.
 	* Runway Framework theme compatibility.
 	* Yandex sitemap pinging support.
-	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s.
+	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s on post publish.
 	* The SEO Bar now has a Double Title check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
 	* The SEO Bar now also checks for global category and tag indexing, following and archiving options on the applicable pages.
 	* The SEO Bar now has breaks in the description at various places, to impact behavior through glances.
@@ -590,7 +589,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Nested post categories now also have a breadcrumb script. Multiple even, when applicable.
 	* TODO Twitter card plugin detection and subtle notification of such.
 	* TODO Image Description is now used as an excerpt for the attachment's page meta descriptions.
-	* TODO Neatly styled sitemaps, I hope you like it!
 	* All admin notices are now dismissible.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
@@ -599,6 +597,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
 	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
 	* Descriptive URL on Title Blogname removal option.
+	* Title generation cache. It no longer gets generated more than once per page load.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -608,6 +607,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The SEO Bar T/D and G letters have a space removed between them to make it a little more appealing on smaller screens.
 	* The SEO Bar now has a maximum width of 220px instead of 260px.
 	* Description "good" detection length range has been extended to 137 minimum instead of 145, to eliminate over-optimization.
+	* When no description can be generated from the content or excerpt, the social description is now completely empty.
 	* LD+Json markup now uses double quotes instead of single.
 	* LD+Json Sitelinks Search Box script now excludes the Alternative Name, as it's optional and non-configurable (yet).
 	* Short explanatory text on Canonical question mark title within the inpost SEO metabox is displayed rather than the HTML output.
@@ -638,6 +638,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The SEO Bar's hover balloon is now aligned with its bar on Posts and Pages overview and to column in Term overview.
 	* The Custom Home Page Title JavaScript placeholder now updates to default when the Tagline is emptied.
 	* Translations with multiple variable strings can now safely be translated and switched around.
+	* The automated description orders are now translatable.
 	* LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
 	* Robots tag generation time.
 	* Removed break (`<br />`) closing tag throughout the plugin as we're not using XHTML in WordPress.
@@ -652,12 +653,14 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* External Sitemap plugin detection, it now uses constants to search for when applicable.
 * **Fixed:**
 	/
+	* Added cache key language detection, to build correct descriptions for the right language. This works on WPML, qTranslate X and many other translation plugins.
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
 	* Post type support check was run throughout the WordPress admin dashboard, now it only checks if there are actually posts to check.
 	* WPML query args canonical pagination links.
 	* Plausible description cache conflict when the home page has been switched from page to blog in the SEO settings page.
 	* WPML URL base structure check was done wrongfully, the canonical URLs are now fixed for multilingual pages.
 	* Incorrect title counter length on all posts and pages when the home page title tagline has been removed. This issue was first encountered in version 2.5.0.
+	* TODO Incorrect description was output on some archives.
 	* The removal of title additions now correctly reflect on the title counter length when JavaScript is disabled.
 	* The removal of title additions are now also reflecting its setting on the placeholders within categories and tags.
 	* Some deprecated functions gave a fatal error or warning, this has been resolved.
@@ -677,8 +680,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* External URLs to a root domain without slash now work correctly in custom 301 redirect.
 	* Servers that don't support PCRE will now have 301 redirects parsed correctly.
 	* Archive rel next/prev pagination links now also work on the Blog Page.
-	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily. Yes, I'm this dedicated in breaking stuff.
-	* TODO is this true? When an external Sitemap plugin is active, the Sitemap Tab is no longer shown when Javascript is disabled.
+	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily.
 	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
 	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
 * **Removed:**
@@ -694,7 +696,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	/
 	* New filters! See **Filter Notes** below.
 	* More than 150 new functions to make this plugin more maintainable.
-	* TODO The complete LD+Json output can now be disabled through a single filter.
 	* `AutoDescription_Core` class, this class replaced `AutoDescription_Init` from being the latest class.
 	* `AutoDescription_Generate_Description` class.
 	* `AutoDescription_Generate_Title` class.
@@ -716,7 +717,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS` boolean constant listener to disable transients.
 	* `the_seo_framework_is_settings_page()` function.
 	* Extra `$post_id` arguments, see **Filter notes** for more information below.
-	* TODO Multibyte support for paged URLs (urlencode) ?? Is this needed ??.
 	* Untitled Term Name when using WordPress core archive title filters when returning falsy.
 	* Debugging now shows memory usage and processing time.
 	* When debugging is enabled, the memory usage is also shown in the plugin indicator within HTML.
@@ -727,6 +727,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_Generate_Title::build_title_notagline()` is now protected.
 	* `AutoDescription_Generate_Title::title_for_terms()` now uses `array $args` for parameters.
 	* `AutoDescription_Generate_Title::generate_title()` now uses `array $args` for parameters.
+	* `AutoDescription_Generate_Title::title()` admin functions now don't rely on `$args['meta']` anymore to bypass doing it wrong detection, but rather on `is_admin()` checks.
+	* `AutoDescription_Generate_Title::title()`'s `$args['meta']` is now set to default `false`.
 	* CSS and JS file identifiers have their duplicated `css` or `js` removed. So `autodescription-css-css` is now `autodescription-css`, and so forth.
 * **Updated:**
 	* JS files and cache.
@@ -736,8 +738,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Class structure and order.
 	* `AutoDescription_DoingItRight` and all its contents.
 	* `AutoDescription_Generate_Description` and all its contents.
-	* TODO `AutoDescription_Transients::generate_cache_key()`, it's much faster now.
-	* TODO `AutoDescription_Generate_Url::the_url` function, by splitting it into multiple functions, again.
+	* `AutoDescription_Transients::generate_cache_key()`, it's much faster and more accurate now.
 	* `AutoDescription_Generate_Url` and all its contents.
 	* `AutoDescription_Generate_Ldjson` and all its contents.
 	* `AutoDescription_Generate_Title` and all its contents.
@@ -788,12 +789,12 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `AutoDescription_DoingItRight::seo_column()` function, replaced by `AutoDescription_DoingItRight::seo_bar()` to eliminate naming confusion.
 	* `AutoDescription_Sitemaps::setup_sitemap_transient()` function, replaced by `AutoDescription_Sitemaps::setup_sitemap()` to eliminate naming confusion.
 	* `AutoDescription_Detect::is_locale()` function, replaced by `AutoDescription_Detect::check_wp_locale()` to eliminate naming confusion.
-	* TODO `AutoDescription_Generate_Title::get_placeholder_title()` is now removed, use `AutoDescription_Generate_Title::title()` instead with the argument `notagline`.
+	* `AutoDescription_Generate_Title::get_placeholder_title()` function, use `AutoDescription_Generate_Title::title()` instead with the argument `notagline`.
 * **Removed:**
 	/
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
-	* Filter/Constant/Action change PHP comments from 2.3.0 to clean up code.
-	* Title generation `get_custom_field` argument. Use `get_custom_field` and/or `notagline` instead.
+	* Filter/Constant/Action PHP comments indicating changes from 2.3.0 to clean up code.
+	* Title generation `placeholder` argument. Use `get_custom_field` and/or `notagline` instead.
 * **Other:**
 	* Cleaned up code, massively.
 * **Filter Notes:**
@@ -814,6 +815,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(bool) the_seo_framework_seo_bar_pill`
 		* `(int) the_seo_framework_bother_me_desc_length`
 		* `(array) the_seo_framework_description_settings_tabs`
+		* `(string) the_seo_framework_feed_source_link_text`
 	* **Altered:**
 		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
 		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
@@ -836,7 +838,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(string) the_seo_framework_publishedtime_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_modifiedtime_output`, added `$post_id` parameter.
 		* `(bool) the_seo_framework_output_canonical`, added `$post_id` parameter.
-		* `(string) the_seo_framework_ldjson_scripts`, added `$post_id` parameter.
 		* `(string) the_seo_framework_googlesite_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_bingsite_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_pintsite_output`, added `$post_id` parameter.

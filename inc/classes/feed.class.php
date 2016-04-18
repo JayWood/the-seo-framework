@@ -110,7 +110,11 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 				//* Fetch permalink and add it to the content.
 				$permalink = $this->the_url();
 
-				$source_i18n = _x( 'Source', 'The content source', 'autodescription' );
+				/**
+				 * Applies filters 'the_seo_framework_feed_source_link' : string
+				 * @since 2.6.0
+				 */
+				$source_i18n = (string) apply_filters( 'the_seo_framework_feed_source_link_text', _x( 'Source', 'The content source', 'autodescription' ) );
 				$content .= "\r\n" . '<p><a href="' . $permalink . '" rel="external nofollow">' . $source_i18n . '</a></p>';
 			}
 

@@ -496,7 +496,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 				$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'id' => $parent_id ) ) );
 
 				$custom_field_name = $this->get_custom_field( '_genesis_title', $parent_id );
-				$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
+				$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'meta' => true, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
 
 				$name = json_encode( $parent_name );
 
@@ -606,7 +606,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		if ( ! isset( $name ) ) {
 			$custom_field = $this->get_custom_field( '_genesis_title', $post_id );
-			$name = $custom_field ? $custom_field : $this->title( '', '', '', array( 'term_id' => $post_id, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
+			$name = $custom_field ? $custom_field : $this->title( '', '', '', array( 'term_id' => $post_id, 'placeholder' => true, 'meta' => true, 'notagline' => true, 'description_title' => true ) );
 			$name = json_encode( $name );
 		}
 

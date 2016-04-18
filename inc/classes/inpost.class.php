@@ -277,7 +277,6 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			'term_id' => $term_id,
 			'taxonomy' => $taxonomy,
 			'placeholder' => true,
-			'meta' => true,
 			'get_custom_field' => false,
 		);
 
