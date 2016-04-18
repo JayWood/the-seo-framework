@@ -40,8 +40,10 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	public function __construct() {
 		parent::__construct();
 
-		add_action( 'admin_footer', array( $this, 'debug_screens' ) );
-		add_action( 'admin_footer', array( $this, 'debug_output' ) );
+		if ( $this->the_seo_framework_debug ) {
+			add_action( 'admin_footer', array( $this, 'debug_screens' ) );
+			add_action( 'admin_footer', array( $this, 'debug_output' ) );
+		}
 
 	}
 
@@ -249,12 +251,9 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 * @since 2.5.2
 	 */
 	public function debug_screens() {
+		global $current_screen;
 
-		if ( $this->the_seo_framework_debug ) {
-			global $current_screen;
-
-			$this->debug_init( __CLASS__, __FUNCTION__, false, get_defined_vars() );
-		}
+		$this->debug_init( __CLASS__, __FUNCTION__, false, get_defined_vars() );
 
 	}
 
@@ -266,7 +265,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 */
 	public function debug_output() {
 
-		if ( $this->the_seo_framework_debug && '' !== $this->debug_output ) {
+		if ( $this->debug_output ) {
 			if ( $this->the_seo_framework_debug_hidden ) echo "<!--\r\n";
 
 			?><div style="float:right;margin:3em;padding:1em;border:1px solid;background:#fff;color:#000;max-width:80%;max-width:calc( 100% - 280px )"><?php
@@ -526,7 +525,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 			}
 		}
 
-		if ( '' !== $output ) {
+		if ( $output ) {
 			//* Store debug output.
 			$this->debug_output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="background:#dadada;margin-bottom:6px">';
 			$this->debug_output .= $output;
@@ -581,21 +580,9 @@ class AutoDescription_Debug extends AutoDescription_Core {
 			$timer_start[$key] = $time_now;
 			$memory_start[$key] = $memory_usage_now;
 
-			if ( false === $from_last ) {
-				//* Return early if not allowed to echo.
+			if ( $from_last ) {
 				if ( false === $echo ) {
-					if ( 'time' === $what )
-						return number_format( $plugin_time[$key], 5 );
-
-					return $plugin_memory[$key];
-				}
-
-				//* Convert to string and echo if not returned yet.
-				echo (string) "\r\n" . $plugin_time[$key] . "s\r\n";
-				echo (string) ( $plugin_memory[$key] / 1024 ) . "kiB\r\n";
-			} else {
-				//* Return early if not allowed to echo.
-				if ( false === $echo ) {
+					//* Return early if not allowed to echo.
 					if ( 'time' === $what )
 						return number_format( $difference_time, 5 );
 
@@ -605,6 +592,18 @@ class AutoDescription_Debug extends AutoDescription_Core {
 				//* Convert to string and echo if not returned yet.
 				echo (string) "\r\n" . $difference_time . "s\r\n";
 				echo (string) ( $difference_memory / 1024 ) . "kiB\r\n";
+			} else {
+				if ( false === $echo ) {
+					//* Return early if not allowed to echo.
+					if ( 'time' === $what )
+						return number_format( $plugin_time[$key], 5 );
+
+					return $plugin_memory[$key];
+				}
+
+				//* Convert to string and echo if not returned yet.
+				echo (string) "\r\n" . $plugin_time[$key] . "s\r\n";
+				echo (string) ( $plugin_memory[$key] / 1024 ) . "kiB\r\n";
 			}
 
 		}

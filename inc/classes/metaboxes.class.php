@@ -207,6 +207,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		do_action( 'the_seo_framework_title_metabox_before' );
 
+		$language = $this->google_language();
+
 		$title_separator = $this->title_separator;
 
 		$recommended = ' class="recommended" title="' . esc_attr__( 'Recommended', 'autodescription' ) . '"';
@@ -278,7 +280,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					<input type="checkbox" name="<?php $this->field_name( 'title_rem_additions' ); ?>" id="<?php $this->field_id( 'title_rem_additions' ); ?>" <?php $this->is_conditional_checked( 'title_rem_additions' ); ?> value="1" <?php checked( $this->get_field_value( 'title_rem_additions' ) ); ?> />
 					<?php _e( 'Remove Blogname from title?', 'autodescription' ); ?>
 				</label>
-				<span title="<?php _e( 'This might decouple your posts and pages from the rest of the website.', 'autodescription' ); ?>">[?]</span>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php _e( 'This might decouple your posts and pages from the rest of the website.', 'autodescription' ); ?>">[?]</a>
 			</p>
 			<span class="description"><?php _e( 'Only use this option if you are aware of its SEO effects.', 'autodescription' ); ?></span>
 			<span class="description"><?php echo $home_page_has_option; ?></span>
@@ -292,12 +294,9 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 *
 	 * @since 2.3.4
 	 *
-	 * @uses globals $wpdb fetch post for the example
-	 *
 	 * @see $this->description_metabox()	Callback for Description Settings box.
 	 */
 	public function description_metabox( $args = array() ) {
-		global $wpdb, $blog_id;
 
 		do_action( 'the_seo_framework_description_metabox_before' );
 
@@ -309,27 +308,36 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 */
 		$page_title = __( 'Example Title', 'autodescription' );
 		$on = _x( 'on', 'Placement. e.g. Post Title "on" Blog Name', 'autodescription' );
-		$excerpt = __( 'This is an example description&#8230;', 'autodescription' );
+		$excerpt = __( 'This is an example description...', 'autodescription' );
+
+		$page_title = $this->escape_description( $page_title );
+		$on = $this->escape_description( $on );
+		$excerpt = $this->escape_description( $excerpt );
 
 		//* Put it together.
-		$example 	= $page_title
-					. '<span class="on-blogname-js">' . " $on " . $blogname . '</span>'
-					. '<span class="autodescription-descsep-js">' . " $sep " . '</span>'
+		$example 	= '<span id="description-additions-js">'
+						. $page_title
+						. '<span id="on-blogname-js">' . " $on " . $blogname . '</span>'
+						. '<span id="autodescription-descsep-js">' . " $sep " . '</span>'
+					. '</span>'
 					. $excerpt
 					;
 
-		/**
-		 * Generate no-JS example
-		 * Fetch description additions.
-		 */
-		$description_additions = $this->get_option( 'description_blogname' );
-
+		$nojs_additions = '';
 		//* Add or remove additions based on option.
-		$example_nojs_onblog = $description_additions ? " $on " . $blogname : '';
+		if ( $this->add_description_additions() ) {
+			$description_blogname_additions = $this->get_option( 'description_blogname' );
 
-		$example_nojs = $page_title . $example_nojs_onblog . " $sep " . $excerpt;
+			$example_nojs_onblog = $description_blogname_additions ? $page_title . " $on " . $blogname : $page_title;
+			$nojs_additions = $example_nojs_onblog . " $sep ";
+		}
+
+		$example_nojs = $nojs_additions . $excerpt;
 
 		?>
+		<h4><?php printf( __( 'Automated Description Settings', 'autodescription' ) ); ?></h4>
+		<p><span class="description"><?php printf( __( "The meta description can be used to determine the text used under the title on Search Engine results pages.", 'autodescription' ) ); ?></span></p>
+
 		<h4><?php _e( 'Example Automated Description Output', 'autodescription' ); ?></h4>
 		<p class="hide-if-no-js"><?php echo $this->code_wrap_noesc( $example ); ?></p>
 		<p class="hide-if-js"><?php echo $this->code_wrap( $example_nojs ); ?></p>
@@ -375,8 +383,16 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$this->nav_tab_wrapper( 'description', $tabs, '2.6.0' );
 
 		do_action( 'the_seo_framework_description_metabox_after' );
+
 	}
 
+	/**
+	 * Description meta box general tab.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @see $this->description_metabox()	Callback for Description Settings box.
+	 */
 	public function description_metabox_general_tab() {
 
 		//* Let's use the same separators as for the title.
@@ -386,9 +402,6 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$recommended = ' class="recommended" title="' . __( 'Recommended', 'autodescription' ) . '"';
 
 		?>
-		<h4><?php printf( __( 'Automated Description Settings', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php printf( __( "The meta description can be used to determine the text used under the title on Search Engine results pages.", 'autodescription' ) ); ?></span></p>
-
 		<fieldset>
 			<legend><h4><?php _e( 'Description Excerpt Separator', 'autodescription' ); ?></h4></legend>
 			<p id="description-separator" class="fields">
@@ -400,15 +413,36 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<span class="description"><?php _e( 'If the Automated Description consists of two parts (title and excerpt), then the separator will go in between them.', 'autodescription' ); ?></span>
 		</fieldset>
 		<?php
+
 	}
 
+	/**
+	 * Description meta box additions tab.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @see $this->description_metabox()	Callback for Description Settings box.
+	 */
 	public function description_metabox_additions_tab() {
+
+		$language = $this->google_language();
+		$google_explanation = esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' );
+
 		?>
 		<h4><?php printf( __( 'Additions Description Settings', 'autodescription' ) ); ?></h4>
 		<p><span class="description"><?php printf( __( "To create a more organic description, a small introduction can be added before the description.", 'autodescription' ) ); ?></span></p>
 		<p><span class="description"><?php printf( __( "The introduction consists of the title and optionally the blogname.", 'autodescription' ) ); ?></span></p>
 
 		<hr>
+
+		<h4><?php _e( 'Add descriptive Additions to Description', 'autodescription' ); ?></h4>
+		<p id="description-additions-toggle">
+			<label for="<?php $this->field_id( 'description_additions' ); ?>">
+				<input type="checkbox" name="<?php $this->field_name( 'description_additions' ); ?>" id="<?php $this->field_id( 'description_additions' ); ?>" <?php $this->is_conditional_checked( 'description_additions' ); ?> value="1" <?php checked( $this->get_field_value( 'description_additions' ) ); ?> />
+				<?php _e( 'Add Additions to automated description?', 'autodescription' ); ?>
+				<a href="<?php echo esc_url( $google_explanation ); ?>" target="_blank" class="description" title="<?php _e( 'This creates good meta descriptions', 'autodescription' ); ?>">[?]</a>
+			</label>
+		</p>
 
 		<h4><?php _e( 'Add Blogname to Description', 'autodescription' ); ?></h4>
 		<p id="description-onblogname-toggle">
@@ -418,6 +452,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</label>
 		</p>
 		<?php
+
 	}
 
 	/**
@@ -613,8 +648,6 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 * Home Page meta box on the Site SEO Settings page.
 	 *
 	 * @since 2.2.2
-	 *
-	 * @uses globals $wpdb fetch post for example
 	 *
 	 * @see $this->homepage_metabox()      Callback for Title Settings box.
 	 */
@@ -820,8 +853,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * This will convert e.g. &raquo; to a single length character.
 		 * @since 2.3.4
 		 */
-		$tit_len = html_entity_decode( $tit_len_pre );
-		$desc_len = html_entity_decode( $desc_len_pre );
+		$tit_len = $this->escape_title( $tit_len_pre );
+	//	$tit_len = html_entity_decode( $tit_len_pre );
+		$desc_len = $this->escape_title( $desc_len_pre );
+	//	$desc_len = html_entity_decode( $desc_len_pre );
 
 		/**
 		 * Generate Examples for both left and right seplocations.
@@ -896,8 +931,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'homepage_title' ); ?>">
 				<strong><?php printf( __( 'Custom %s Title', 'autodescription' ), $home_page_i18n ); ?></strong>
-				<a href="https://support.google.com/webmasters/answer/35624?hl=<?php echo $language; ?>#3" target="_blank" title="<?php _e( 'Recommended Length: 50 to 55 characters', 'autodescription' ) ?>">[?]</a>
-				<span class="description"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_title', false ) . '_chars">'. mb_strlen( $tit_len ) .'</span>' ); ?></span>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php _e( 'Recommended Length: 50 to 55 characters', 'autodescription' ) ?>">[?]</a>
+				<span class="description theseoframework-counter"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_title', false ) . '_chars">'. mb_strlen( $tit_len ) .'</span>' ); ?></span>
 			</label>
 		</p>
 		<p class="fields">
@@ -917,8 +952,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p class="fields">
 			<label for="<?php $this->field_id( 'homepage_description' ); ?>">
 				<strong><?php printf( __( 'Custom %s Description', 'autodescription' ), $home_page_i18n ); ?></strong>
-				<a href="https://support.google.com/webmasters/answer/35624?hl=<?php echo $language; ?>#1" target="_blank" title="<?php _e( 'Recommended Length: 145 to 155 characters', 'autodescription' ) ?>">[?]</a>
-				<span class="description"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_description', false ) . '_chars">'. mb_strlen( $desc_len ) .'</span>' ); ?></span>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' ); ?>" target="_blank" title="<?php _e( 'Recommended Length: 145 to 155 characters', 'autodescription' ) ?>">[?]</a>
+				<span class="description theseoframework-counter"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_description', false ) . '_chars">'. mb_strlen( $desc_len ) .'</span>' ); ?></span>
 			</label>
 		</p>
 		<p>
@@ -944,7 +979,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					/* translators: 1: Option, 2: Location */
 					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noindex' ), $home_page_i18n );
 				?>
-				<a href="https://support.google.com/webmasters/answer/93710?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/93710?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noindex_post ? $checked_home : ''; ?>
 			</label>
 
@@ -956,7 +991,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					/* translators: 1: Option, 2: Location */
 					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'nofollow' ), $home_page_i18n );
 				?>
-				<a href="https://support.google.com/webmasters/answer/96569?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/96569?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $nofollow_post ? $checked_home : ''; ?>
 			</label>
 
@@ -968,7 +1003,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					/* translators: 1: Option, 2: Location */
 					printf( __( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noarchive' ), $home_page_i18n );
 				?>
-				<a href="https://support.google.com/webmasters/answer/79812?hl=<?php echo $language; ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
+				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/79812?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noarchive_post ? $checked_home : ''; ?>
 			</label>
 		</p>
@@ -1091,7 +1126,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<?php
 			if ( $this->has_og_plugin() ) {
 				?>
-				<p class="description"><?php _e( 'Note: Another Open Graph plugin has been detected. This means not all Open Graph meta tags will be outputted.', 'autodescription' ); ?></p>
+				<p class="description"><?php _e( 'Note: Another Open Graph plugin has been detected.', 'autodescription' ); ?></p>
 				<?php
 			}
 			?>

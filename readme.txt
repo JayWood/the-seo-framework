@@ -2,7 +2,7 @@
 Contributors: Cybr
 Donate link: https://theseoframework.com/donate/
 Tags: open graph, description, automatic, generate, generator, title, breadcrumbs, ogtype, meta, metadata, search, engine, optimization, seo, framework, canonical, redirect, bbpress, twitter, facebook, google, bing, yahoo, jetpack, genesis, woocommerce, multisite, robots, icon, cpt, custom, post, types, pages, taxonomy, tag, sitemap, sitemaps, screenreader, rtl, feed
-Requires at least: 3.6.0
+Requires at least: 3.8.0
 Tested up to: 4.5.0
 Stable tag: 2.5.2.1
 License: GPLv3
@@ -14,9 +14,7 @@ An automated, advanced, accessible, unbranded and extremely fast SEO solution fo
 
 = The SEO Framework =
 
-**The lightning fast all in one automated SEO optimization plugin for WordPress**
-
-***Easy for beginners, awesome for experts. WordPress SEO for Everyone.***
+**Easy for beginners, awesome for experts. WordPress SEO for Everyone.**
 
 > <strong>This plugin strongly helps you create better SEO value for your content.</strong><br>
 > But at the end of the day, it all depends on how entertaining or well-constructed your content or product is.
@@ -405,6 +403,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Intelligently nested schema.org breadcrumbs.
 * Definite schema.org website name.
 * Better Automated Description sentence endings.
+* Vibrant character counters for when you need extra visual assistance.
 * TODO New Automated Description options.
 * TODO New Archive title prefix options.
 * Modernized and Smarter SEO bar, with many more conditional checks.
@@ -414,10 +413,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Improved performance, TODO more efficient cache key generation.
 * TODO New Date output options.
 * TODO Canonical scheme protocol options.
-* Elastic WPML URL generation.
+* Adaptive WPML URL generation.
 * Improved editorial translations.
 * Automatic option merging.
 * New AJAX integration when adding tags.
+* Color Deficiency mode character counters.
 * Personalized error handling for developers.
 * More than 150 new functions for developers.
 * WP Query Admin synchronization for developers.
@@ -565,10 +565,13 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO Article modified time output can now be adjusted, just like the sitemap timing options.
 	* TODO Per page title additions options (reverse of global settings with doing it right listener). (maybe)
 	* TODO New global Automated Description options.
+	* TODO Jetpack Sitemap detection.
+	* TODO WP.me shortlink integration.
+	* TODO Cache key language detection.
 	* Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
 	* Removal commas if the excerpt ends with one in the automated description.
 	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
-	* Article Modified Time now also works for WooCommerce products. TODO test and compare
+	* Article Modified Time now also works for WooCommerce products and are treated as Posts.
 	* Headway compatibility. Done by using one of their SEO plugin detection filters which disables their SEO functionality.
 	* Runway Framework theme compatibility.
 	* Yandex sitemap pinging support.
@@ -581,7 +584,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The SEO Bar Archiving notice turns yellow if Archiving has been enabled, yet the blog isn't set to public.
 	* The SEO Bar Categories and Tags Robots options now reflect in the SEO bar.
 	* The SEO Bar's description notification word counter now has a filterable minimum word character length which will have a higher tolerance for repeated words that are less than (filterable) 3 characters (5 times instead of 3).
-	* TODO The SEO Bar and the character counters have received an extra sub-green color, for when the lengths are between falling between okay and good.
+	* The SEO Bar will now show an exclamation mark when the Post ID can't be found. It's quite nice, and you probably won't ever see it :(.
 	* Non-executive `index.php` files in folders which contain readable files, to prevent indexing of such.
 	* WooCommerce breadcrumb support!
 	* Nested post categories now also have a breadcrumb script. Multiple even, when applicable.
@@ -593,7 +596,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
 	* The blog page is now also shown within the Sitemap.
 	* TODO Front Page pagination index options.
-	* TODO Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
+	* Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
+	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
+	* Descriptive URL on Title Blogname removal option.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -609,6 +614,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* When a Post ID can't be found for the SEO Bar, a more elegant notification is displayed.
 	* Moved SEO Bar before bbPress Reply Created.
 	* The sitemap, theme doing it right, description and LD+Json transient keys have been invalidated.
+	* Open Graph plugin detection now only shows a notification, instead of removing OG output as well. These values may be duplicated (although undesired).
 * **Updated:**
 	/
 	* Several sentences to have a better English structure to what they do.
@@ -622,12 +628,15 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more efficient ones.
 	* Metabox setting tabs no longer rely on WordPress Core admin navigation tabs.
 	* JavaScript caching and advanced optimizations for better browser performance through Google Closure Compiler.
+	* Description excerpt generation exceeding words calculation.
 * **Improved:**
 	/
+	* The SEO Bar's now more reliable in its data.
 	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
 	* The SEO Bar buttons are now converted to placeholder hyperlinks.
 	* The SEO Bar's text is now easier on the eyes due to added text-shadow.
 	* The SEO Bar's hover balloon is now aligned with its bar on Posts and Pages overview and to column in Term overview.
+	* The Custom Home Page Title JavaScript placeholder now updates to default when the Tagline is emptied.
 	* Translations with multiple variable strings can now safely be translated and switched around.
 	* LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
 	* Robots tag generation time.
@@ -637,6 +646,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* The Term SEO Box is removed if another popular SEO plugin is detected.
 	* Feed excerpt generation time.
 	* Sitemap generation time.
+	* The custom title is now trimmed from whitespace in the Home Page Settings metabox.
+	* WPMUdev Domain Mapping database values are now all fetched in one query instead of two.
+	* External SEO plugin detection, it now uses constants to search for when applicable.
+	* External Sitemap plugin detection, it now uses constants to search for when applicable.
 * **Fixed:**
 	/
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
@@ -651,7 +664,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* When Reading Settings' Feed Options are set to summary, the backlink is now still shown when enabled.
 	* Screen Options showed an SEO column, while there isn't any in pages, posts and terms.
 	* When using diacritic characters, like in French, The SEO Bar's description word counter would be incorrect.
-	* TODO Sometimes, on WooCommerce product tag search within the dashboard, Products showed the status of NoIndex and No Search. (/wp-admin/edit.php?product_tag=women&post_type=product)
+	* On WooCommerce product tag search within the dashboard, Products showed the wrong SEO bar.
+	* On WooCommerce product tag search within the dashboard, Products could show the wrong post SEO state.
 	* On Touching the SEO bar, the pointer could be misplaced.
 	* When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
 	* Double subdirectory generation in special Site Address URL configurations.
@@ -666,11 +680,13 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily. Yes, I'm this dedicated in breaking stuff.
 	* TODO is this true? When an external Sitemap plugin is active, the Sitemap Tab is no longer shown when Javascript is disabled.
 	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
+	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
 * **Removed:**
 	/
 	* Shortlink URL from Homepage, as it's quite useless and self referring there.
 	* Yahoo Pinging option and initiation, as they've moved to Bing quite some time ago (oops).
 	* WPMUdev Avatars support. As WordPress core has taken over this feature and it was unreliable.
+	* Official support for WordPress 3.6 and 3.7. It takes too much time to maintain such backwards compatibility.
 
 **For developers:**
 
@@ -728,6 +744,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Functions have been put in their respective aptly named classes where applicable.
 	* Debugging has been modified to clean up the code greatly.
 	* Metabox Setting Navigation Tabs, now your tabs are automatically styled and integrated when using the `AutoDescription_Metaboxes::nav_tab_wrapper()` function. It's also less "search-and-destroy" and thus easier on the browser.
+	* The metabox navigation tabs' content is now also automatically aligned.
 * **Improved:**
 	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Hertz!).
 	* Cached the SEO bar translations.
@@ -750,6 +767,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* `og:image` quality has been upped to 82 from 70. This is according to the [new WordPress 4.5.0 standards](https://make.wordpress.org/core/2016/02/22/proposal-increase-the-default-image-compression-in-wordpress/).
 	* This plugin's admin CSS and JS are now registered and cached prior to enqueueing. This speeds things up if multiple script calling hooks are used.
 	* The Term SEO box initialization now only happens on the term edit screens.
+	* Automated Description Example now uses ID's rather than classes for better JavaScript performance.
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
@@ -783,7 +801,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		/
 		* `(string) the_seo_framework_shortlink_output`
 		* `(string) the_seo_framework_robots_output`
-		* `(string) the_seo_framework_paged_url_output`
+		* `(string) the_seo_framework_paged_url_output_prev`
+		* `(string) the_seo_framework_paged_url_output_next`
 		* `(string) the_seo_framework_ldjson_scripts`
 		* `(bool) the_seo_framework_json_name_output`
 		* `(bool) the_seo_framework_use_archive_title_prefix`
@@ -822,8 +841,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 		* `(string) the_seo_framework_bingsite_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_pintsite_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_robots_meta`, added `$post_id` parameter.
-		* `(string) the_seo_framework_shortlink_output`, added `$post_id` parameter.
-		* `(string) the_seo_framework_paged_url_output`, added `$post_id` parameter.
 		* `(array) the_seo_framework_robots_settings_tabs`, added `$args` parameter.
 		* `(array) the_seo_framework_social_settings_tabs`, added `$args` parameter.
 		* `(array) the_seo_framework_knowledgegraph_settings_tabs`, added `$args` parameter.
@@ -834,10 +851,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * **Constant Notes:**
 	* **New:**
 		* `(bool) THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS`. Note: Does not disable transients for pinging search engines
-		* `(bool) THE_SEO_FRAMEWORK_PROFILE`. Profiles the plugin (in the future, maybe).
+		* `(bool) THE_SEO_FRAMEWORK_PROFILE`. Profiles the plugin when debugging has been enabled
 		* `(bool) THE_SEO_FRAMEWORK_PROFILE_SPECIFIC`. Profiles the plugin more specifically (in the future, maybe).
 * **Notes:**
 	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
+	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace of The SEO Framework.
 
 = Full changelog =
 

@@ -167,17 +167,23 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 *
 		 * @since 2.3.4
 		 */
-		$revision = '5';
+		$revision = '0';
 
-		/**
-		 * Two different cache keys for two different settings.
-		 *
-		 * @since 2.3.4
-		 */
-		if ( $this->get_option( 'description_blogname' ) ) {
-			$this->auto_description_transient = 'the_seo_f' . $revision . '_exc_' . $cache_key;
+		$additions = $this->add_description_additions( $page_id, $taxonomy );
+
+		if ( $additions ) {
+			/**
+			 * Two different cache keys for two different settings.
+			 *
+			 * @since 2.3.4
+			 */
+			if ( $this->get_option( 'description_blogname' ) ) {
+				$this->auto_description_transient = 'tsf_descall_' . $revision . '_' . $cache_key;
+			} else {
+				$this->auto_description_transient = 'tsf_descnob_' . $revision . '_' . $cache_key;
+			}
 		} else {
-			$this->auto_description_transient = 'the_seo_f' . $revision . '_exc_s_' . $cache_key;
+			$this->auto_description_transient = 'tsf_descnoa_' . $revision . '_' . $cache_key;
 		}
 
 	}
@@ -225,6 +231,8 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 		if ( isset( $cached_id[$page_id][$taxonomy] ) )
 			return $cached_id[$page_id][$taxonomy];
+
+		//get_locale(); === 5 characters
 
 		global $blog_id;
 
@@ -467,7 +475,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 */
 	public function delete_auto_description_blog_transient( $old_option ) {
 
-		$this->setup_auto_description_transient( false );
+		$this->setup_auto_description_transient( (int) get_option( 'page_for_posts' ) );
 
 		delete_transient( $this->auto_description_transient );
 

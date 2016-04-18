@@ -344,7 +344,7 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 	 * @return string Title without tagline.
 	 */
 	public function get_placeholder_title( $title = '', $args = array() ) {
-		$this->_deprecated_function( 'AutoDescription_Detect::' . __FUNCTION__, '2.6.0', 'AutoDescription_Generate_Title::title()` with the argument $args[\'notagline\']' );
+		$this->_deprecated_function( 'AutoDescription_Generate_Title::' . __FUNCTION__, '2.6.0', 'AutoDescription_Generate_Title::title()` with the argument $args[\'notagline\']' );
 
 		$args['notagline'] = true;
 		return $this->title( $title, '', '', $args );

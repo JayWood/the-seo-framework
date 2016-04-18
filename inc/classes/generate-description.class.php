@@ -75,6 +75,22 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * Beautify.
 		 * @since 2.3.4
 		 */
+		$description = $this->escape_description( $description );
+
+		return $description;
+	}
+
+	/**
+	 * Escapes and beautifies description.
+	 *
+	 * @param string $description The description to escape and beautify.
+	 *
+	 * @since 2.5.2
+	 *
+	 * @return string Escaped and beautified description.
+	 */
+	public function escape_description( $description = '' ) {
+
 		$description = wptexturize( $description );
 		$description = convert_chars( $description );
 		$description = esc_html( $description );
@@ -192,11 +208,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			$description = $this->get_custom_archive_description( $args );
 
 		if ( $escape && $description ) {
-			$description = wptexturize( $description );
-			$description = convert_chars( $description );
-			$description = esc_html( $description );
-			$description = capital_P_dangit( $description );
-			$description = trim( $description );
+			$description = $this->escape_description( $description );
 		}
 
 		return $description;
@@ -335,13 +347,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		$description = $this->generate_the_description( $args );
 
-		if ( $escape ) {
-			$description = wptexturize( $description );
-			$description = convert_chars( $description );
-			$description = esc_html( $description );
-			$description = capital_P_dangit( $description );
-			$description = trim( $description );
-		}
+		if ( $escape )
+			$description = $this->escape_description( $description );
 
 		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'description' => $description ) );
 
@@ -409,13 +416,16 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 			/**
 			 * Get max char length
-			 * 149 will account for the added (single char) ... and two spaces around $on and the separator + 2 spaces around the separator: makes 155
-			 *
-			 * 151 will count for the added (single char) ... and the separator + 2 spaces around the separator: makes 155
+			 * 154 will count for the added (single char) ...: makes 155
 			 *
 			 * Default to 200 when $args['social'] as there are no additions.
 			 */
-			$max_char_length_normal = $blogname_addition ? (int) 149 - mb_strlen( html_entity_decode( $title . $on . $blogname ) ) : (int) 151 - mb_strlen( html_entity_decode( $title ) );
+			$additions = trim( $title . " $on " . $blogname );
+			//* If there are additions, add a trailing space.
+			if ( $additions )
+				$additions .= " ";
+
+			$max_char_length_normal = 154 - mb_strlen( html_entity_decode( $additions ) );
 			$max_char_length_social = 200;
 
 			//* Generate Excerpts.
@@ -515,6 +525,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * @param object|emptystring $term The current Term.
 	 *
 	 * Applies filters the_seo_framework_add_description_additions : boolean
+	 *
 	 * @staticvar bool $cache
 	 * @since 2.6.0
 	 *
@@ -524,12 +535,13 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		static $cache = null;
 
-		//* @TODO add options.  var_dump();
-
 		if ( isset( $cache ) )
 			return $cache;
 
-		return $cache = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
+		$option = (bool) $this->get_option( 'description_additions' );
+		$filter = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
+
+		return $cache = $option && $filter ? true : false;
 	}
 
 	/**
@@ -575,20 +587,28 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 */
 	public function generate_description_additions( $id, $term, $page_on_front ) {
 
-		static $title = array();
-		static $on = null;
-
 		if ( $page_on_front || $this->add_description_additions( $id, $term ) ) {
+
+			static $title = array();
 			if ( ! isset( $title[$id] ) )
 				$title[$id] = $this->generate_description_title( $id, $term, $page_on_front );
 
-			if ( is_null( $on ) ) {
-				/* translators: Front-end output. */
-				$on = _x( 'on', 'Placement. e.g. Post Title "on" Blog Name', 'autodescription' );
+			if ( $this->is_option_checked( 'description_blogname' ) ) {
+
+				static $on = null;
+				if ( is_null( $on ) ) {
+					/* translators: Front-end output. */
+					$on = _x( 'on', 'Placement. e.g. Post Title "on" Blog Name', 'autodescription' );
+				}
+
+				//* Already cached.
+				$blogname = $this->get_blogname();
+			} else {
+				$on = '';
+				$blogname = '';
 			}
 
 			//* Already cached.
-			$blogname = $this->get_blogname();
 			$sep = $this->get_description_separator();
 		} else {
 			$title[$id] = '';
@@ -710,7 +730,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * However, _mb_strlen (compat) is about 1740x slower. And this is the reason it's cached!
 		 */
 		if ( ! isset( $excerptlength_cache[$page_id][$term_id] ) )
-			$excerptlength_cache[$page_id][$term_id] = (int) mb_strlen( $excerpt );
+			$excerptlength_cache[$page_id][$term_id] = mb_strlen( $excerpt );
 
 		//* Fetch the length from cache.
 		$excerpt_length = $excerptlength_cache[$page_id][$term_id];
@@ -737,18 +757,45 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( $excerpt_length > $max_char_length ) {
 
 			//* Cut string to fit $max_char_length.
-			$subex = mb_substr( $excerpt, 0, $max_char_length );
-			//* Split words in array. Boom.
-			$exwords = explode( ' ', $subex );
-			//* Calculate if last word exceeds.
-			$excut = - ( mb_strlen( $exwords[ count( $exwords ) - (int) 1 ] ) );
+			$sub_ex = mb_substr( $excerpt, 0, $max_char_length );
+			$sub_ex = trim( html_entity_decode( $sub_ex ) );
 
-			if ( $excut < (int) 0 ) {
-				//* Cut out exceeding word.
-				$excerpt = mb_substr( $subex, 0, $excut );
-			} else {
-				//* We're all good here, continue.
-				$excerpt = $subex;
+			//* Split words in array separated by delimiter.
+			$ex_words = explode( ' ', $sub_ex );
+
+			//* Count to total words in the excerpt.
+			$ex_total = count( $ex_words );
+
+			//* Slice the complete excerpt and count the amount of words.
+			$extra_ex_words = explode( ' ', trim( $excerpt ), $ex_total + 1 );
+			$extra_ex_total = count( $extra_ex_words ) - 1;
+			unset( $extra_ex_words[ $extra_ex_total ] );
+
+			//* Calculate if last word exceeds.
+			if ( $extra_ex_total >= $ex_total ) {
+				$ex_cut = mb_strlen( $ex_words[ $ex_total - 1 ] );
+
+				if ( $extra_ex_total > $ex_total ) {
+					/**
+					 * There are more words in the trimmed excerpt than the compared total excerpt.
+					 * Remove the exceeding word.
+					 */
+					$excerpt = mb_substr( $sub_ex, 0, - $ex_cut );
+				} else {
+					/**
+					 * The amount of words are the same in the comparison.
+					 * Calculate if the chacterers are exceeding.
+					 */
+					$ex_extra_cut = mb_strlen( $extra_ex_words[ $extra_ex_total - 1 ] );
+
+					if ( $ex_extra_cut > $ex_cut ) {
+						//* Final word is falling off. Remove it.
+						$excerpt = mb_substr( $sub_ex, 0, - $ex_cut );
+					} else {
+						//* We're all good here, continue.
+						$excerpt = $sub_ex;
+					}
+				}
 			}
 
 			//* Remove comma's and spaces.

@@ -58,11 +58,10 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		//* Only load on singular pages.
 		if ( $this->is_singular() ) {
 
-			//* Prevent this function from running if this plugin is set to disabled.
 			$allow_states = (bool) apply_filters( 'the_seo_framework_allow_states', true );
 
 			if ( $allow_states )
-				add_filter( 'display_post_states', array( $this, 'add_post_state' ) );
+				add_filter( 'display_post_states', array( $this, 'add_post_state' ), 10, 2 );
 
 		}
 
@@ -71,17 +70,21 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	/**
 	 * Adds post states in post/page edit.php query
 	 *
-	 * @param array states The current post states array
+	 * @param array $states The current post states array
+	 * @param object $post The Post Object.
 	 *
 	 * @since 2.1.0
 	 */
-	public function add_post_state( $states = array() ) {
+	public function add_post_state( $states = array(), $post ) {
 
-		$post_id = $this->get_the_real_ID( false );
-		$searchexclude = (bool) $this->get_custom_field( 'exclude_local_search', $post_id );
+		$post_id = isset( $post->ID ) ? $post->ID : false;
 
-		if ( $searchexclude )
-			$states[] = __( 'No Search', 'autodescription' );
+		if ( $post_id ) {
+			$searchexclude = (bool) $this->get_custom_field( 'exclude_local_search', $post_id );
+
+			if ( $searchexclude )
+				$states[] = __( 'No Search', 'autodescription' );
+		}
 
 		return $states;
 	}
@@ -353,10 +356,8 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( empty( $post_id ) )
 			$post_id = $this->get_the_real_ID();
 
-		$run = isset( $post_id ) && $post_id ? true : false;
-
 		//* Only run when post ID is found.
-		if ( $run ) {
+		if ( isset( $post_id ) && $post_id ) {
 
 			//* Fetch Post Type.
 			if ( 'inpost' === $type || '' === $type )
@@ -562,10 +563,10 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		$is_term = false;
 		$is_front_page = $this->is_static_frontpage( $post_id );
 
-		$redirect = $this->get_custom_field( 'redirect' );
+		$redirect = $this->get_custom_field( 'redirect', $post_id );
 		$redirect = empty( $redirect ) ? false : true;
 
-		$noindex = $this->get_custom_field( '_genesis_noindex' );
+		$noindex = $this->get_custom_field( '_genesis_noindex', $post_id );
 		$noindex = $this->is_checked( $noindex );
 
 		if ( $is_front_page )

@@ -287,22 +287,22 @@ class AutoDescription_Detect extends AutoDescription_Render {
 			'the_seo_framework_detect_seo_plugins',
 			//* Add to this array to add new plugin checks.
 			array(
-
 				// Classes to detect.
 				'classes' => array(
-					'All_in_One_SEO_Pack',
-					'All_in_One_SEO_Pack_p',
-					'HeadSpace_Plugin',
-					'Platinum_SEO_Pack',
-					'wpSEO',
-					'SEO_Ultimate',
+					'gregsHighPerformanceSEO'
 				),
 
 				// Functions to detect.
 				'functions' => array(),
 
 				// Constants to detect.
-				'constants' => array( 'WPSEO_VERSION', ),
+				'constants' => array(
+					'AIOSEOPPRO',		// All in one SEO + Pro
+					'AMT_PLUGIN_FILE',	// Add Meta Tags
+					'WPSEO_FILE',		// Yoast SEO
+					'SQ_VERSION',		// SEO by Squirrly
+					'SU_PLUGIN_NAME',	// SEO Ultimate
+				),
 			)
 		);
 
@@ -338,7 +338,10 @@ class AutoDescription_Detect extends AutoDescription_Render {
 			),
 			'functions' => array(
 				'amt_plugin_actions'
-			)
+			),
+			'constants' => array(
+
+			),
 		);
 
 		return $has_plugin = (bool) $this->detect_plugin( $plugins );

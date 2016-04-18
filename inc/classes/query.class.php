@@ -48,7 +48,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		$is_admin = $this->is_admin();
 
-		//* Never use cache in admin. Only causes bugs.
+		//* Never use cache for this in admin. Only causes bugs.
 		$use_cache = $is_admin ? false : $use_cache;
 
 		if ( $use_cache ) {
@@ -58,10 +58,9 @@ class AutoDescription_Query extends AutoDescription_Compat {
 				return $id;
 		}
 
-		if ( false === $is_admin )
-			$id = $this->check_the_real_ID();
+		$id = $is_admin ? $this->check_the_real_ID() : '';
 
-		if ( ! isset( $id ) || empty( $id ) ) {
+		if ( empty( $id ) ) {
 			//* Does not always return false.
 			$id = get_queried_object_id();
 
@@ -70,9 +69,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		}
 
 		//* Turn ID into 0 if empty.
-		$id = empty( $id ) ? 0 : $id;
-
-		return $id;
+		return $id = empty( $id ) ? 0 : $id;
 	}
 
 	/**
@@ -355,7 +352,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		$pfp = (int) get_option( 'page_for_posts' );
 
-		if ( 0 !== $pfp && $id === $pfp ) {
+		if ( $id === $pfp ) {
 			//* Don't use $this->is_archive (will loop).
 			if ( $this->has_page_on_front() && false === $this->is_front_page() && false === is_archive() ) {
 				return $is_blog_page[$id] = true;

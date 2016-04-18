@@ -6,6 +6,7 @@ function the_seo_framework_php_benchmark() {
 
 	//* Boolean.
 	$b = true;
+	$ba = false;
 
 	//* String.
 	$s = '';
@@ -286,6 +287,28 @@ function the_seo_framework_php_benchmark() {
 	}
 	$inarrayend50function = microtime(true) - $t;
 
+	//* Strict false
+	$i = 0;
+	$t = microtime(true);
+	while ( $i < $it ) {
+		if ( false === $ba ) {
+			// valuated
+		}
+		++$i;
+	}
+	$strictfalsetime = microtime(true) - $t;
+
+	//* Loose flip false
+	$i = 0;
+	$t = microtime(true);
+	while ( $i < $it ) {
+		if ( ! $ba ) {
+			// valuated
+		}
+		++$i;
+	}
+	$falsefliptime = microtime(true) - $t;
+
 	//* With PHP 7 results @ 10,000,000 iterations.
 	echo 'Loose time: ' . $loosetime . " seconds\r\n"; 					// 0.1115360260009765625 seconds
 	echo 'Strict time: ' . $stricttime . " seconds\r\n";				// 0.1202042102813720703125 seconds
@@ -295,6 +318,9 @@ function the_seo_framework_php_benchmark() {
 	echo 'Strict Neg Empty time: ' . $strictemptytime . " seconds\r\n"; // 0.18640804290771484375 seconds <- Double check
 	echo 'Isset time: ' . $issettime . " seconds\r\n"; 					// 0.115377902984619140625 seconds
 	echo 'Strict Isset time: ' . $issetstricttime . " seconds\r\n"; 	// 0.17035007476806640625 seconds <- Double check
+
+	echo 'Strict False time: ' . $strictfalsetime . " seconds\r\n"; 	// 0.1211879253387451171875  seconds
+	echo 'Loose Flip time: ' . $falsefliptime . " seconds\r\n";			// 0.1306369304656982421875 seconds
 
 	echo "\r\n";
 
