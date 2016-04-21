@@ -201,7 +201,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 	 * Echos output.
 	 */
 	public function html_output() {
-		
+
 		/**
 		 * Start the timer here. I know it doesn't calculate the initiation of
 		 * the plugin, but it will make the code smelly if I were to do so.
@@ -246,7 +246,6 @@ class AutoDescription_Init extends AutoDescription_Query {
 						. $this->og_title()
 						. $this->og_url()
 						. $this->og_sitename()
-						. $this->canonical()
 						. $this->google_site_output()
 						. $this->bing_site_output()
 						. $this->pint_site_output()

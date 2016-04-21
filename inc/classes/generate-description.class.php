@@ -26,6 +26,15 @@
 class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 	/**
+	 * Whether we're parsing the manual Excerpt for the automated description.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @var bool Using manual excerpt.
+	 */
+	protected $using_manual_excerpt = false;
+
+	/**
 	 * Constructor, load parent constructor
 	 */
 	public function __construct() {
@@ -334,7 +343,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 */
 	public function generate_description_from_id( $args = array(), $escape = true ) {
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, $debug_key = microtime(true), get_defined_vars() );
 
 		/**
 		 * Applies filters bool 'the_seo_framework_enable_auto_description' : Enable or disable the description.
@@ -350,7 +359,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( $escape )
 			$description = $this->escape_description( $description );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'description' => $description ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, $debug_key, array( 'description' => $description, 'transient_key' => $this->auto_description_transient ) );
 
 		return (string) $description;
 	}
@@ -390,6 +399,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		$term = $args['term'];
 
+		//* Whether the post ID has a manual excerpt.
+		if ( empty( $term ) && has_excerpt( $args['id'] ) )
+			$this->using_manual_excerpt = true;
+
 		$title_on_blogname = $this->generate_description_additions( $args['id'], $term, false );
 		$title = $title_on_blogname['title'];
 		$on = $title_on_blogname['on'];
@@ -413,9 +426,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( false === $excerpt ) {
 
 			/**
-			 * Get max char length
-			 * 154 will count for the added (single char) ...: makes 155
-			 *
+			 * Get max char length.
 			 * Default to 200 when $args['social'] as there are no additions.
 			 */
 			$additions = trim( $title . " $on " . $blogname );
@@ -423,7 +434,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			if ( $additions )
 				$additions .= " ";
 
-			$max_char_length_normal = 154 - mb_strlen( html_entity_decode( $additions ) );
+			$max_char_length_normal = 155 - mb_strlen( html_entity_decode( $additions ) );
 			$max_char_length_social = 200;
 
 			//* Generate Excerpts.
@@ -525,13 +536,11 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	/**
 	 * Whether to add description additions. (╯°□°）╯︵ ┻━┻
 	 *
-	 * @param int $id The current page or post ID.
-	 * @param object|emptystring $term The current Term.
-	 *
-	 * Applies filters the_seo_framework_add_description_additions : boolean
-	 *
 	 * @staticvar bool $cache
 	 * @since 2.6.0
+	 *
+	 * @param int $id The current page or post ID.
+	 * @param object|emptystring $term The current Term.
 	 *
 	 * @return bool
 	 */
@@ -542,10 +551,20 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( isset( $cache ) )
 			return $cache;
 
-		$option = (bool) $this->get_option( 'description_additions' );
+		/**
+		 * Applies filters the_seo_framework_add_description_additions : {
+		 *		@param bool true to add prefix.
+		 * 		@param int $id The Term object ID or The Page ID.
+		 * 		@param object $term The Term object.
+		 *	}
+		 *
+		 * @since 2.6.0
+		 */
 		$filter = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
+		$option = (bool) $this->get_option( 'description_additions' );
+		$excerpt = ! $this->using_manual_excerpt;
 
-		return $cache = $option && $filter ? true : false;
+		return $cache = $option && $filter && $excerpt ? true : false;
 	}
 
 	/**
@@ -703,7 +722,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *
 	 * Please note that this does not reflect the actual output becaue the $max_char_length isn't calculated on direct call.
 	 */
-	public function generate_excerpt( $page_id, $term = '', $max_char_length = 155 ) {
+	public function generate_excerpt( $page_id, $term = '', $max_char_length = 154 ) {
 
 		static $excerpt_cache = array();
 		static $excerptlength_cache = array();

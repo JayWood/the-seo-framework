@@ -87,6 +87,39 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 	 */
 	public function fetch_excerpt( $the_id = '', $tt_id = '' ) {
 
+		$post = $this->fetch_post_by_id( $the_id, $tt_id );
+
+		if ( empty( $post ) )
+			return '';
+
+		/**
+		 * Fetch custom excerpt, if not empty, from the post_excerpt field.
+		 * @since 2.5.2
+		 */
+		if ( isset( $post['post_excerpt'] ) && $post['post_excerpt'] ) {
+			$excerpt = $post['post_excerpt'];
+		} else if ( isset( $post['post_content'] ) ) {
+			$excerpt = $post['post_content'];
+		} else {
+			$excerpt = '';
+		}
+
+		return $excerpt;
+	}
+
+	/**
+	 * Returns Post Array from ID.
+	 * Also returns latest post from blog or archive if applicable.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int $the_id The Post ID.
+	 * @param int $tt_id The Taxonomy Term ID
+	 *
+	 * @return empty|array The Post Array.
+	 */
+	protected function fetch_post_by_id( $the_id = '', $tt_id = '' ) {
+
 		if ( '' === $the_id && '' === $tt_id ) {
 			$the_id = $this->get_the_real_ID();
 
@@ -101,7 +134,7 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		 * Now casts to array
 		 * @since 2.3.3
 		 */
-		if (  '' !== $the_id ) {
+		if ( '' !== $the_id ) {
 			if ( $this->is_blog_page( $the_id ) ) {
 				$args = array(
 					'posts_per_page'	=> 1,
@@ -112,10 +145,11 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 					'order'				=> 'DESC',
 					'post_type'			=> 'post',
 					'post_status'		=> 'publish',
+					'cache_results'		=> false,
 				);
 
 				$post = get_posts( $args );
-			} else if ( '' !== $the_id ) {
+			} else {
 				$post = get_post( $the_id, ARRAY_A );
 			}
 		} else if ( '' !== $tt_id ) {
@@ -130,6 +164,7 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 				'category_name'		=> '',
 				'post_type'			=> 'post',
 				'post_status'		=> 'publish',
+				'cache_results'		=> false,
 			);
 
 			$post = get_posts( $args );
@@ -147,26 +182,14 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		}
 
 		// Something went wrong, nothing to be found. Return empty.
-		if ( ! isset( $post ) || ! is_array( $post ) )
+		if ( empty( $post ) || ! is_array( $post ) )
 			return '';
 
 		//* Stop getting something that doesn't exists. E.g. 404
 		if ( isset( $post['ID'] ) && 0 === $post['ID'] )
 			return '';
 
-		/**
-		 * Fetch custom excerpt, if not empty, from the post_excerpt field.
-		 * @since 2.5.2
-		 */
-		if ( isset( $post['post_excerpt'] ) && '' !== $post['post_excerpt'] ) {
-			$excerpt = $post['post_excerpt'];
-		} else if ( isset( $post['post_content'] ) ) {
-			$excerpt = $post['post_content'];
-		} else {
-			$excerpt = '';
-		}
-
-		return $excerpt;
+		return $post;
 	}
 
 	/**

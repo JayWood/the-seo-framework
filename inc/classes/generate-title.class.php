@@ -308,7 +308,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function build_title_doingitwrong( $title = '', $sep = '', $seplocation = '', $args = array() ) {
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, $debug_key = microtime(true), get_defined_vars() );
 
 		/**
 		 * Empty the title, because most themes think they 'know' how to SEO the front page.
@@ -431,7 +431,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $args['escape'] )
 			$title = $this->escape_title( $title, false );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'title_output' => $title ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, $debug_key, array( 'title_output' => $title ) );
 
 		return $title;
 	}
@@ -456,7 +456,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	public function build_title( $title = '', $seplocation = '', $args = array() ) {
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, $debug_key = microtime(true), get_defined_vars() );
 
 		$args = $this->reparse_title_args( $args );
 
@@ -542,7 +542,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $args['escape'] )
 			$title = $this->escape_title( $title );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'title_output' => $title ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, $debug_key, array( 'title_output' => $title ) );
 
 		return $title;
 	}
@@ -1097,11 +1097,11 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	/**
 	 * Get Title Separator.
 	 *
-	 * Applies filters the_seo_framework_title_separator
-	 * @since 2.3.9
-	 *
 	 * @since 2.6.0
 	 * @staticvar string $sep
+	 *
+	 * Applies filters the_seo_framework_title_separator
+	 * @since 2.3.9
 	 *
 	 * @return string The Separator
 	 */
@@ -1197,17 +1197,17 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *
 	 * @since 2.6.0
 	 */
-	protected function process_title_additions( $title, $blogname, $seplocation ) {
+	public function process_title_additions( $title, $blogname, $seplocation ) {
 
 		$sep = $this->get_title_separator();
 
 		$title = trim( $title );
 		$blogname = trim( $blogname );
 
-		if ( 'right' === $seplocation ) {
-			$title = $title . " $sep " . $blogname;
-		} else {
+		if ( 'left' === $seplocation ) {
 			$title = $blogname . " $sep " . $title;
+		} else {
+			$title = $title . " $sep " . $blogname;
 		}
 
 		return $title;
@@ -1289,7 +1289,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Whether to use a title prefix or not.
 	 *
 	 * @since 2.6.0
-	 * @staticvar bool $prefix
+	 * @staticvar bool $cache
 	 *
 	 * @param object $term The Term object.
 	 * @param array $args The title arguments.
@@ -1302,22 +1302,23 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $args['meta'] )
 			return false;
 
-		static $prefix = null;
+		static $cache = null;
 
-		if ( isset( $prefix ) )
-			return $prefix;
-
-		//* @TODO var_dump get options
+		if ( isset( $cache ) )
+			return $cache;
 
 		/**
 		 * Applies filters the_seo_framework_use_archive_title_prefix : {
-		 *		Boolean true to add prefix.
+		 *		@param bool true to add prefix.
 		 * 		@param object $term The Term object.
 		 *	}
 		 *
 		 * @since 2.6.0
 		 */
-		return $prefix = (bool) apply_filters( 'the_seo_framework_use_archive_title_prefix', true, $term );
+		$filter = (bool) apply_filters( 'the_seo_framework_use_archive_title_prefix', true, $term );
+		$option = ! $this->get_option( 'title_rem_prefixes' );
+
+		return $cache = $option && $filter ? true : false;
 	}
 
 }

@@ -72,7 +72,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 */
 	public function the_url( $url = '', $args = array() ) {
 
-		if ( $this->the_seo_framework_debug && false === $this->doing_sitemap ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
+		if ( $this->the_seo_framework_debug && false === $this->doing_sitemap ) $this->debug_init( __CLASS__, __FUNCTION__, true, $debug_key = microtime(true), get_defined_vars() );
 
 		//* Reset cache.
 		$this->url_slashit = true;
@@ -186,7 +186,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		$url = esc_url( $output );
 
-		if ( $this->the_seo_framework_debug && false === $this->doing_sitemap ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'url_output' => $url ) );
+		if ( $this->the_seo_framework_debug && false === $this->doing_sitemap ) $this->debug_init( __CLASS__, __FUNCTION__, false, $debug_key, array( 'url_output' => $url ) );
 
 		return $url;
 	}

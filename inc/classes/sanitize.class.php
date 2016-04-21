@@ -131,6 +131,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			$this->settings_field,
 			array(
 				'title_rem_additions',
+				'title_rem_prefixes',
 
 				'description_additions',
 				'description_blogname',
@@ -290,6 +291,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			$this->settings_field,
 			array(
 				'sitemaps_modified',
+				'sitemap_timestamps',
 			)
 		);
 

@@ -157,7 +157,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 */
 	public function register_admin_javascript() {
 
-		$registered = null;
+		static $registered = null;
 
 		if ( isset( $registered ) )
 			return;
@@ -448,6 +448,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 			//* Count up, reset to 0 if needed. We have 4 options: 0, 1, 2, 3
 			// We're not accepting any $_POST values. Keeping it clean.
+			// Yet we should for consistency. @TODO
 			$options['counter_type'] = $options['counter_type'] + 1;
 			if ( $options['counter_type'] > 3 )
 				$options['counter_type'] = 0;

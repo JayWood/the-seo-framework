@@ -473,7 +473,7 @@ span.ad-seo .explanation-desc div {
 .autodescription-metaboxes .seoframework-dashicons-tabs {
 	font-size: initial;
 	display: inline;
-	vertical-align: text-top;
+	vertical-align: text-bottom;
 }
 
 .autodescription-metaboxes .seoframework-tabs-radio {
@@ -493,6 +493,10 @@ span.ad-seo .explanation-desc div {
 
 .autodescription-metaboxes .seoframework-tabs-content {
 	margin: 1.33em auto 0;
+}
+
+.autodescription-metaboxes .seoframework-content-no-js {
+	margin: 1.33em auto;
 }
 
 body.js .autodescription-metaboxes .seoframework-tabs-content {

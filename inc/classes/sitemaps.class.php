@@ -165,22 +165,50 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 				$this->doing_sitemap = true;
 
-				return $this->output_sitemap();
+				/**
+				 * Set at least 2000 variables free.
+				 * Freeing 0.15MB on a clean WordPress installation.
+				 */
+				$this->clean_up_globals();
+
+				$this->output_sitemap();
 			}
 		}
 
 	}
 
 	/**
-	 * Destroy all filters.
+	 * Destroy unused $GLOBALS.
 	 *
 	 * @since 2.6.0
 	 */
-	protected function remove_all_filters() {
-		global $wp_filter, $merged_filters;
+	protected function clean_up_globals() {
 
-		$wp_filter = array();
-		$merged_filters = array();
+		$remove = array(
+			'wp_filter' => array(
+				'wp_head',
+				'the_content',
+				'the_content_feed',
+				'the_excerpt_rss',
+			),
+			'wp_registered_widgets',
+			'wp_registered_sidebars',
+			'wp_registered_widget_updates',
+			'wp_registered_widget_controls',
+			'_wp_deprecated_widgets_callbacks',
+			'posts',
+			'shortcode_tags',
+		);
+
+		foreach ( $remove as $key => $value ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $v )
+					unset( $GLOBALS[$key][$v] );
+			} else {
+				unset( $GLOBALS[$value] );
+			}
+		}
+
 	}
 
 	/**
@@ -315,15 +343,21 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		$latest_cpt_posts = array();
 		$cpt = array();
 
+		//* Sets timezone according to WordPress settings.
+		$this->set_timezone();
+		$timestamp_format = $this->get_option( 'sitemap_timestamps' );
+		$timestamp_format = '1' === $timestamp_format ? 'Y-m-d\TH:iP' : 'Y-m-d';
+
 		if ( $totalpages ) {
 			//* Ascend by the date for normal pages. Older pages get to the top of the list.
 			$args = array(
-				'numberposts' => $totalpages,
-				'posts_per_page' => $totalpages,
-				'post_type' => 'page',
-				'orderby' => 'date',
-				'order' => 'ASC',
-				'post_status' => 'publish'
+				'numberposts' 		=> $totalpages,
+				'posts_per_page' 	=> $totalpages,
+				'post_type' 		=> 'page',
+				'orderby' 			=> 'date',
+				'order' 			=> 'ASC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
 			);
 			$latest_pages = get_posts( $args );
 		}
@@ -331,12 +365,13 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $totalposts ) {
 			//* Descend by the date for posts. The latest posts get to the top of the list after pages.
 			$args = array(
-				'numberposts' => $totalposts,
-				'posts_per_page' => $totalposts,
-				'post_type' => 'post',
-				'orderby' => 'date',
-				'order' => 'DESC',
-				'post_status' => 'publish'
+				'numberposts' 		=> $totalposts,
+				'posts_per_page' 	=> $totalposts,
+				'post_type' 		=> 'post',
+				'orderby' 			=> 'date',
+				'order' 			=> 'DESC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
 			);
 			$latest_posts = get_posts( $args );
 		}
@@ -366,12 +401,13 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $total_cpt_posts_bool && $cpt ) {
 			//* Descend by the date for CPTs. The latest posts get to the top of the list after pages.
 			$args = array(
-				'numberposts' => $total_cpt_posts,
-				'posts_per_page' => $total_cpt_posts,
-				'post_type' => $cpt,
-				'orderby' => 'date',
-				'order' => 'DESC',
-				'post_status' => 'publish'
+				'numberposts' 		=> $total_cpt_posts,
+				'posts_per_page' 	=> $total_cpt_posts,
+				'post_type' 		=> $cpt,
+				'orderby' 			=> 'date',
+				'order' 			=> 'DESC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
 			);
 			$latest_cpt_posts = get_posts( $args );
 		}
@@ -435,7 +471,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 								$page_modified_gmt = $page->post_modified_gmt;
 
 								if ( $page_modified_gmt !== '0000-00-00 00:00:00' )
-									$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $page_modified_gmt, false ) . "</lastmod>\r\n";
+									$content .= '		<lastmod>' . mysql2date( $timestamp_format, $page_modified_gmt, false ) . "</lastmod>\r\n";
 							}
 
 							// Give higher priority to the home page.
@@ -501,7 +537,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 								$post_modified_gmt = $post->post_modified_gmt;
 
 								if ( $post_modified_gmt !== '0000-00-00 00:00:00' )
-									$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $post_modified_gmt, false ) . "</lastmod>\r\n";
+									$content .= '		<lastmod>' . mysql2date( $timestamp_format, $post_modified_gmt, false ) . "</lastmod>\r\n";
 							}
 
 							$content .= '		<priority>' . number_format( $priority, 1 ) . "</priority>\r\n";
@@ -564,7 +600,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 								//* Some CPT don't set modified time.
 								if ( $post_modified_gmt !== '0000-00-00 00:00:00' )
-									$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $post_modified_gmt, false ) . "</lastmod>\r\n";
+									$content .= '		<lastmod>' . mysql2date( $timestamp_format, $post_modified_gmt, false ) . "</lastmod>\r\n";
 							}
 
 							$content .= '		<priority>' . number_format( $priority_cpt, 1 ) . "</priority>\r\n";
@@ -606,7 +642,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				$content .= '		<loc>' . esc_url_raw( $url ) . "</loc>\r\n";
 
 				if ( isset( $args['lastmod'] ) && $args['lastmod'] ) {
-					$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $args['lastmod'], false ) . "</lastmod>\r\n";
+					$content .= '		<lastmod>' . mysql2date( $timestamp_format, $args['lastmod'], false ) . "</lastmod>\r\n";
 				}
 
 				if ( isset( $args['priority'] ) && $args['priority'] ) {
@@ -629,6 +665,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		if ( '' !== $extend )
 			$content .= "	" . $extend . "\r\n";
+
+		//* Reset timezone to default.
+		$this->reset_timezone();
 
 		return $content;
 	}

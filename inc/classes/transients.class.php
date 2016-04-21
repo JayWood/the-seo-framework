@@ -243,6 +243,18 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		if ( $this->is_404() ) {
 			//* 404.
 			$the_id = '_404_';
+		} else if ( ( $this->is_front_page( $page_id ) ) || ( $this->is_admin() && $this->is_menu_page( $this->pagehook ) ) ) {
+			//* Fetch Home key.
+			if ( $this->has_page_on_front() ) {
+				//* Home is page.
+				$the_id = 'hpage_' . $this->get_the_front_page_ID();
+			} else {
+				//* Home is blog.
+				$the_id = 'hblog_' . $this->get_the_front_page_ID();
+			}
+		} else if ( $this->is_blog_page( $page_id ) ) {
+			//* Blog page.
+			$the_id = 'blog_' . $page_id;
 		} else if ( $this->is_singular() ) {
 			if ( $this->is_page( $page_id ) ) {
 				//* Page.
@@ -320,6 +332,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 					//* Temporarily disable transients to prevent database spam.
 					$this->the_seo_framework_use_transients = false;
+					$this->use_object_cache = false;
 
 					$the_id = 'unix_' . $unix;
 				}
@@ -345,15 +358,6 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 				$the_id = $this->generate_taxonomial_cache_key( $page_id, $taxonomy );
 				$the_id = 'archives_' . $the_id;
-			}
-		} else if ( ( $this->is_front_page( $page_id ) ) || ( $this->is_admin() && $this->is_menu_page( $this->pagehook ) ) ) {
-			//* Fetch Home key.
-			if ( $this->has_page_on_front() ) {
-				//* Home is page.
-				$the_id = 'hpage_' . $this->get_the_front_page_ID();
-			} else {
-				//* Home is blog.
-				$the_id = 'hblog_' . $this->get_the_front_page_ID();
 			}
 		}
 
@@ -523,7 +527,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 */
 	public function delete_ld_json_transient( $page_id, $taxonomy = '' ) {
 
-		$flushed = null;
+		static $flushed = null;
 
 		if ( ! isset( $flushed ) ) {
 			$this->setup_ld_json_transient( $page_id, $taxonomy );

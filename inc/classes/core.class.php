@@ -483,4 +483,96 @@ class AutoDescription_Core {
 		return '';
 	}
 
+	/**
+	 * Returns the PHP timezone compatible string.
+	 * UTC offsets are unreliable.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param bool $guess : If true, the timezone will be guessed from the
+	 * WordPress core gmt_offset option.
+	 *
+	 * @return string|empty PHP Timezone String.
+	 */
+	public function get_timezone_string( $guess = false ) {
+
+		$tzstring = get_option( 'timezone_string' );
+
+		if ( false !== strpos( $tzstring, 'Etc/GMT' ) )
+			$tzstring = '';
+
+		if ( $guess && empty( $tzstring ) ) {
+			$offset = get_option( 'gmt_offset' );
+			$tzstring = $this->get_tzstring_from_offset( $offset );
+		}
+
+		return $tzstring;
+	}
+
+	/**
+	 * Fetches the Timezone String from given offset.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int $offset The GMT offzet.
+	 *
+	 * @return string PHP Timezone String.
+	 */
+	protected function get_tzstring_from_offset( $offset = 0 ) {
+
+		$seconds = round( $offset * 60 * 60 );
+
+		//* Try Daylight savings.
+		$tzstring = timezone_name_from_abbr( '', $seconds, 1 );
+		/**
+		 * PHP bug workaround.
+		 * @link https://bugs.php.net/bug.php?id=44780
+		 */
+		if ( false === $tzstring )
+			$tzstring = timezone_name_from_abbr( '', $seconds, 0 );
+
+		return $tzstring;
+	}
+
+	/**
+	 * Sets and resets the timezone.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param string $tzstring Optional. The PHP Timezone string. Best to leave empty to always get a correct one.
+	 * @link http://php.net/manual/en/timezones.php
+	 * @param bool $reset Whether to reset to default. Ignoring first parameter.
+	 *
+	 * @return bool True on success. False on failure.
+	 */
+	public function set_timezone( $tzstring = '', $reset = false ) {
+
+		static $old_tz = null;
+
+		if ( is_null( $old_tz ) ) {
+			$old_tz = date_default_timezone_get();
+			if ( empty( $old_tz ) )
+				$old_tz = 'UTC';
+		}
+
+		if ( $reset )
+			return date_default_timezone_set( $old_tz );
+
+		if ( empty( $tzstring ) )
+			$tzstring = $this->get_timezone_string( true );
+
+		return date_default_timezone_set( $tzstring );
+	}
+
+	/**
+	 * Resets the timezone to default or UTC.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool True on success. False on failure.
+	 */
+	public function reset_timezone() {
+		return $this->set_timezone( '', true );
+	}
+
 }
