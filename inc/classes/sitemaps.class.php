@@ -718,7 +718,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				 */
 				$expiration = (int) apply_filters( 'the_seo_framework_sitemap_throttle_s', 60 * 60 );
 
-				//* NOTE: Use legacy set_transient to prevent ping spam.
+				//* @NOTE: Using legacy set_transient to prevent ping spam.
 				set_transient( $transient, $throttle, $expiration );
 			}
 		}

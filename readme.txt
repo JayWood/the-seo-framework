@@ -400,10 +400,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Feature highlights:**
 /
-* TODO Author Twitter and Facebook connections for posts.
 * WooCommerce schema.org breadcrumbs.
 * Intelligently nested schema.org breadcrumbs.
-* Definite schema.org website name.
+* Clarified schema.org website name.
 * Better Automated Description sentence endings.
 * Vibrant character counters for when you need extra visual assistance.
 * New Automated Description options.
@@ -413,15 +412,13 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Yandex Sitemap pinging support.
 * Extended Title Fix extension support.
 * Improved performance, more efficient cache key generation.
-* New Date output options.
-* TODO Canonical scheme protocol options.
+* New Sitemap Date output options.
 * Adaptive WPML URL generation.
 * Improved editorial translations.
 * Automatic option merging.
 * New AJAX integration when adding tags.
-* Color Deficiency mode character counters.
 * Personalized error handling for developers.
-* More than 150 new functions for developers.
+* 129 new functions for developers.
 * WP Query Admin synchronization for developers.
 * Automated setting navigation tabs for developers.
 
@@ -540,6 +537,20 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * These functions do not work on custom post types, yet. But they do work on WooCommerce products and product categories.
 * This resulted in easing the whole code base as it doesn't have to check for admin/front-end per-function anymore. Further improvements are planned, but this update already contains most of the overhaul.
 
+**Looking forward - Upcoming features:**
+
+Not all planned features made it into 2.6.0.
+
+* WP.me shortlink integration.
+* Article modified time output can now be adjusted, just like the sitemap timing options.
+* Per page title additions options (reverse of Global Settings).
+* The SEO Bar options.
+* Canonical SEO (URL scheme options).
+* Twitter card plugin detection and subtle notification of such.
+* Image Description is now used as an excerpt for the attachment's page meta descriptions.
+* Author SEO (Title, Description, Twitter, Facebook, Google+, etc.).
+* Jetpack Sitemap detection.
+
 **Detailed log:**
 
 ***There are a lot more changes in this update which did not make it to this page. Please refer to [the detailed changelog](https://theseoframework.com/?p=xxx).***
@@ -553,21 +564,12 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * **Added:**
 	/
 	* Default options merging on plugin update, so you don't have to check out the new features manually with each update. When new features are added which have not yet been registered. These features will now be updated to its default settings. Multisite compatible.
-	* TODO Author SEO!
-	* TODO Author SEO can only be updated by Authors (self), Editors (self) and Admins (all).
-	* TODO Canonical SEO!
-	* TODO Canonical SEO scheme options, default "automated".
 	* Archive title prefix options!
 	* TODO Schema SEO!
-	* TODO The SEO Bar options.
 	* TODO Schema SEO will allow you to enable and disable global Schema.org features.
 	* LD+Json Schema.org website name and URL header markup on the front-page. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
 	* Time display options for the sitemap. Now you can select how the time is output. Default "Complete date plus hours, minutes and timezone".
-	* TODO Article modified time output can now be adjusted, just like the sitemap timing options.
-	* TODO Per page title additions options (reverse of global settings with doing it right listener). (maybe)
-	* TODO New global Automated Description options.
-	* TODO Jetpack Sitemap detection.
-	* TODO WP.me shortlink integration.
+	* New global Automated Description options.
 	* Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
 	* Removal commas if the excerpt ends with one in the automated description.
 	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
@@ -589,8 +591,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Non-executive `index.php` files in folders which contain readable files, to prevent indexing of such.
 	* WooCommerce breadcrumb support!
 	* Nested post categories now also have a breadcrumb script. Multiple even, when applicable.
-	* TODO Twitter card plugin detection and subtle notification of such.
-	* TODO Image Description is now used as an excerpt for the attachment's page meta descriptions.
 	* All admin notices are now dismissible.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.

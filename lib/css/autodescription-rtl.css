@@ -414,8 +414,7 @@ span.ad-seo .explanation-desc div {
 	display: block;
 }
 
-.autodescription-metaboxes #title-location span,
-.autodescription-metaboxes #home-title-location span {
+.autodescription-metaboxes .toblock {
 	display: block;
 	margin-bottom: 4px;
 }

@@ -416,7 +416,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		$this->delete_auto_description_transient( $post_id );
 		$this->delete_ld_json_transient( $post_id );
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) !== false ) {
+		if ( $this->is_option_checked( 'sitemaps_output' ) ) {
 
 			//* Don't flush sitemap on revision.
 			if ( wp_is_post_revision( $post_id ) )
