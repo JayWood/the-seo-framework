@@ -17,23 +17,19 @@
  */
 
 /**
- * This file contains most functions that have been deprecated.
+ * Class AutoDescription_AuthorOptions
  *
- * @since 2.1.6
+ * Renders author options.
  *
- * Emptied.
- * @since 2.3.5 ( ~2.5 months later )
+ * @since 2.6.0
  */
+class AutoDescription_AuthorOptions extends AutoDescription_PageOptions {
 
-/**
- * @deprecated
- *
- * @since 2.3.7
- *
- * @see the_seo_framework_load();
- */
-function hmpl_ad_load() {
-	_deprecated_function( __FUNCTION__, '2.3.7 of The SEO Framework', 'the_seo_framework_load()' );
+	/**
+	 * Constructor, load parent constructor
+	 */
+	public function __construct() {
+		parent::__construct();
+	}
 
-	return the_seo_framework_load();
 }

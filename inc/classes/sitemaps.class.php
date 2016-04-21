@@ -83,6 +83,28 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	}
 
 	/**
+	 * Whether we can output sitemap or not based on options.
+	 *
+	 * @staticvar bool $cache
+	 * @since 2.6.0
+	 *
+	 * @return bool
+	 */
+	public function can_run_sitemap() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		/**
+		 * Don't do anything on a deleted or spam blog.
+		 * There's nothing to find anyway. Multisite Only.
+		 */
+		return $cache = $this->pretty_permalinks && $this->is_option_checked( 'sitemaps_output' ) && false === $this->current_blog_is_spam_or_deleted() ? true : false;
+	}
+
+	/**
 	 * Adds rewrite rule to WordPress
 	 * This rule defines the sitemap.xml output
 	 *
@@ -92,25 +114,22 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	public function rewrite_rule_sitemap( $run = false ) {
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) || $run ) {
+		//* Adding rewrite rules only has effect when permalink structures are active.
+		if ( $this->can_run_sitemap() || $run ) {
 
 			/**
 			 * Don't do anything if a sitemap plugin is active.
 			 * On sitemap plugin activation, the sitemap plugin should flush the
 			 * rewrite rules. If it doesn't, then this plugin's sitemap will be called.
-			 *
-			 * @todo expand detection list.
 			 */
 			if ( $this->has_sitemap_plugin() )
 				return;
 
-			//* Adding rewrite rules only has effect when permalink structures are active.
-			if ( $this->pretty_permalinks )
-				add_rewrite_rule( 'sitemap\.xml$', 'index.php?the_seo_framework_sitemap=xml', 'top' );
+			add_rewrite_rule( 'sitemap\.xml$', 'index.php?the_seo_framework_sitemap=xml', 'top' );
 
 			$this->wpmudev_domainmap_flush_fix( false );
-
 		}
+
 	}
 
 	/**
@@ -122,7 +141,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	public function enqueue_sitemap_query_vars( $vars ) {
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) )
+		if ( $this->can_run_sitemap() )
 			$vars[] = 'the_seo_framework_sitemap';
 
 		return $vars;
@@ -133,22 +152,11 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 *
 	 * @since 2.2.9
 	 *
-	 * @return void|mixed SiteMAp XML file.
+	 * @return void|header+string SiteMap XML file.
 	 */
 	public function maybe_output_sitemap() {
 
-		if ( (bool) $this->get_option( 'sitemaps_output' ) && $this->pretty_permalinks ) {
-			global $current_blog;
-
-			/**
-			 * Don't do anything on a deleted or spam blog.
-			 * There's nothing to find anyway. Multisite Only.
-			 *
-			 * @since 2.2.9
-			 */
-			if ( isset( $current_blog ) && ( 1 == $current_blog->spam || 1 == $current_blog->deleted ) )
-				return;
-
+		if ( $this->can_run_sitemap() ) {
 			global $wp_query;
 
 			if ( isset( $wp_query->query_vars['the_seo_framework_sitemap'] ) && 'xml' === $wp_query->query_vars['the_seo_framework_sitemap'] ) {
@@ -157,7 +165,47 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 				$this->doing_sitemap = true;
 
-				return $this->output_sitemap();
+				/**
+				 * Set at least 2000 variables free.
+				 * Freeing 0.15MB on a clean WordPress installation.
+				 */
+				$this->clean_up_globals();
+
+				$this->output_sitemap();
+			}
+		}
+
+	}
+
+	/**
+	 * Destroy unused $GLOBALS.
+	 *
+	 * @since 2.6.0
+	 */
+	protected function clean_up_globals() {
+
+		$remove = array(
+			'wp_filter' => array(
+				'wp_head',
+				'the_content',
+				'the_content_feed',
+				'the_excerpt_rss',
+			),
+			'wp_registered_widgets',
+			'wp_registered_sidebars',
+			'wp_registered_widget_updates',
+			'wp_registered_widget_controls',
+			'_wp_deprecated_widgets_callbacks',
+			'posts',
+			'shortcode_tags',
+		);
+
+		foreach ( $remove as $key => $value ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $v )
+					unset( $GLOBALS[$key][$v] );
+			} else {
+				unset( $GLOBALS[$value] );
 			}
 		}
 
@@ -170,18 +218,13 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	protected function output_sitemap() {
 
+		if ( ! headers_sent() )
+			header( 'Content-type: text/xml; charset=utf-8' );
+
 		//* Fetch sitemap content.
 		$xml_content = $this->get_sitemap_content();
 
-		$setheader = true;
-
-		//* Don't crash the system when debugging
-		if ( $this->the_seo_framework_debug && headers_sent() )
-			$setheader = false;
-
-		if ( false !== $setheader )
-			header( 'Content-type: text/xml; charset=utf-8' );
-
+		//* Echo and add trailing line.
 		echo $xml_content . "\r\n";
 
 		// We're done now.
@@ -197,15 +240,15 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 */
 	protected function get_sitemap_content() {
 
-		$timer_start = microtime( true );
+		if ( $this->the_seo_framework_debug ) $timer_start = microtime( true );
 
 		/**
 		 * Re-use the variable, eliminating database requests
 		 * @since 2.4.0
 		 */
-		$sitemap_content = get_transient( $this->sitemap_transient );
+		$sitemap_content = $this->get_transient( $this->sitemap_transient );
 
-		if ( false == $sitemap_content ) {
+		if ( false === $sitemap_content ) {
 			$cached_content = "\r\n<!-- " . __( 'Sitemap is generated for this view', 'autodescription' ) . " -->";
 		} else {
 			$cached_content = "\r\n<!-- " . __( 'Sitemap is served from cache', 'autodescription' ) . " -->";
@@ -213,17 +256,16 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		$content  = '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
 		$content .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\r\n";
-		$content .= $this->setup_sitemap_transient( $sitemap_content );
+		$content .= $this->setup_sitemap( $sitemap_content );
 		$content .= '</urlset>';
 
 		$content .= $cached_content;
 
 		/**
 		 * Output debug info.
-		 *
 		 * @since 2.3.7
 		 */
-		if ( defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG && function_exists( 'memory_get_usage' ) ) {
+		if ( $this->the_seo_framework_debug ) {
 			$content .= "\r\n<!-- Site current usage: " . ( memory_get_usage() / 1024 / 1024 ) . " MB -->";
 			$content .= "\r\n<!-- System current usage: " . ( memory_get_usage( true ) / 1024 / 1024 ) . " MB -->";
 			$content .= "\r\n<!-- Sitemap generation time: " . ( number_format( microtime( true ) - $timer_start, 6 ) ) . " seconds -->";
@@ -237,9 +279,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 *
 	 * @param string|bool $content required The sitemap transient content.
 	 *
-	 * @since 2.2.9
+	 * @since 2.6.0
 	 */
-	public function setup_sitemap_transient( $sitemap_content ) {
+	public function setup_sitemap( $sitemap_content ) {
 
 		if ( false === $sitemap_content ) {
 			//* Transient doesn't exist yet.
@@ -253,7 +295,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 */
 			$expiration = 60 * 60 * 24 * 7;
 
-			set_transient( $this->sitemap_transient, $sitemap_content, $expiration );
+			$this->set_transient( $this->sitemap_transient, $sitemap_content, $expiration );
 		}
 
 		return $sitemap_content;
@@ -301,15 +343,21 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		$latest_cpt_posts = array();
 		$cpt = array();
 
+		//* Sets timezone according to WordPress settings.
+		$this->set_timezone();
+		$timestamp_format = $this->get_option( 'sitemap_timestamps' );
+		$timestamp_format = '1' === $timestamp_format ? 'Y-m-d\TH:iP' : 'Y-m-d';
+
 		if ( $totalpages ) {
 			//* Ascend by the date for normal pages. Older pages get to the top of the list.
 			$args = array(
-				'numberposts' => $totalpages,
-				'posts_per_page' => $totalpages,
-				'post_type' => 'page',
-				'orderby' => 'date',
-				'order' => 'ASC',
-				'post_status' => 'publish'
+				'numberposts' 		=> $totalpages,
+				'posts_per_page' 	=> $totalpages,
+				'post_type' 		=> 'page',
+				'orderby' 			=> 'date',
+				'order' 			=> 'ASC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
 			);
 			$latest_pages = get_posts( $args );
 		}
@@ -317,14 +365,14 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $totalposts ) {
 			//* Descend by the date for posts. The latest posts get to the top of the list after pages.
 			$args = array(
-				'numberposts' => $totalposts,
-				'posts_per_page' => $totalposts,
-				'post_type' => 'post',
-				'orderby' => 'date',
-				'order' => 'DESC',
-				'post_status' => 'publish'
+				'numberposts' 		=> $totalposts,
+				'posts_per_page' 	=> $totalposts,
+				'post_type' 		=> 'post',
+				'orderby' 			=> 'date',
+				'order' 			=> 'DESC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
 			);
-
 			$latest_posts = get_posts( $args );
 		}
 
@@ -337,8 +385,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 */
 			$excluded_cpt = (array) apply_filters( 'the_seo_framework_sitemap_exclude_cpt', array() );
 
+			$notcpt = array( 'post', 'page', 'attachment' );
+
 			foreach ( $post_page as $post_type ) {
-				if ( $post_type != 'post' && $post_type != 'page' && $post_type != 'attachment' ) {
+				if ( ! in_array( $post_type, $notcpt ) ) {
 					if ( empty( $excluded_cpt ) || ! in_array( $post_type, $excluded_cpt ) ) {
 						if ( $this->post_type_supports_custom_seo( $post_type ) ) {
 							$cpt[] = $post_type;
@@ -348,17 +398,17 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			}
 		}
 
-		if ( $total_cpt_posts_bool && ! empty( $cpt ) ) {
+		if ( $total_cpt_posts_bool && $cpt ) {
 			//* Descend by the date for CPTs. The latest posts get to the top of the list after pages.
 			$args = array(
-				'numberposts' => $total_cpt_posts,
-				'posts_per_page' => $total_cpt_posts,
-				'post_type' => $cpt,
-				'orderby' => 'date',
-				'order' => 'DESC',
-				'post_status' => 'publish'
+				'numberposts' 		=> $total_cpt_posts,
+				'posts_per_page' 	=> $total_cpt_posts,
+				'post_type' 		=> $cpt,
+				'orderby' 			=> 'date',
+				'order' 			=> 'DESC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
 			);
-
 			$latest_cpt_posts = get_posts( $args );
 		}
 
@@ -366,9 +416,16 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 * Fetch the page/post modified options.
 		 * We can't get specific on the home page, unfortunately.
 		 */
-		$page_lastmod = $this->get_option( 'sitemaps_modified' ) || $this->get_option( 'page_modify_time' ) ? true : false;
-		$post_lastmod = $this->get_option( 'sitemaps_modified' ) || $this->get_option( 'post_modify_time' ) ? true : false;
-		$home_lastmod = $this->get_option( 'sitemaps_modified' ) || $this->get_option( 'home_modify_time' ) ? true : false;
+		$sitemaps_modified = $this->is_option_checked( 'sitemaps_modified' );
+		if ( $sitemaps_modified ) {
+			$page_lastmod = true;
+			$post_lastmod = true;
+			$home_lastmod = true;
+		} else {
+			$page_lastmod = $this->is_option_checked( 'page_modify_time' );
+			$post_lastmod = $this->is_option_checked( 'post_modify_time' );
+			$home_lastmod = $page_lastmod ? $page_lastmod : $this->is_option_checked( 'home_modify_time' );
+		}
 
 		/**
 		 * Generation time output
@@ -384,9 +441,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		if ( $latest_pages_amount > 0 ) {
 
-			$page_on_front = (int) get_option( 'page_on_front' );
-			$page_for_posts_option = (int) get_option( 'page_for_posts' );
-			$page_show_on_front = ( 'page' == get_option( 'show_on_front' ) ) ? true : false;
+			$id_on_front = $this->has_page_on_front() ? (int) get_option( 'page_on_front' ) : (int) get_option( 'page_for_posts' );
 
 			/**
 			 * This can be heavy.
@@ -397,35 +452,33 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 					if ( '' === $excluded || ! isset( $excluded[$post_id] ) ) {
 						//* Is this the front page?
-						$page_is_front = ( $page_id === $page_on_front ) ? true : false;
+						$page_is_front = ( $page_id === $id_on_front ) ? true : false;
 
 						//* Fetch the noindex option, per page.
 						$noindex = (bool) $this->get_custom_field( '_genesis_noindex', $page_id );
 
 						//* Continue if indexed.
-						if ( ! $noindex ) {
-							//* Don't add the posts page.
-							if ( ! $page_show_on_front || ! ( $page_show_on_front && $page_id == $page_for_posts_option ) ) {
-
-								$content .= "	<url>\r\n";
-								// No need to use static vars.
-								$content .= '		<loc>' . $this->the_url( '', $page_id, array( 'get_custom_field' => false, 'external' => true, 'post' => $page ) ) . "</loc>\r\n";
-
-								// Keep it consistent. Only parse if page_lastmod is true.
-								if ( $page_lastmod && ( ! $page_is_front || ( $home_lastmod && $page_is_front ) ) ) {
-									$page_modified_gmt = $page->post_modified_gmt;
-
-									if ( $page_modified_gmt !== '0000-00-00 00:00:00' )
-										$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $page_modified_gmt, false ) . "</lastmod>\r\n";
-								}
-
-								// Give higher priority to the home page.
-								$priority_page = $page_is_front ? 1 : 0.9;
-
-								$content .= '		<priority>' . number_format( $priority_page, 1 ) . "</priority>\r\n";
-								$content .= "	</url>\r\n";
-
+						if ( false === $noindex ) {
+							$content .= "	<url>\r\n";
+							if ( $page_is_front ) {
+								$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'home' => true ) ) . "</loc>\r\n";
+							} else {
+								$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $page, 'id' => $page_id ) ) . "</loc>\r\n";
 							}
+
+							// Keep it consistent. Only parse if page_lastmod is true.
+							if ( $page_lastmod || ( $page_is_front && $home_lastmod ) ) {
+								$page_modified_gmt = $page->post_modified_gmt;
+
+								if ( $page_modified_gmt !== '0000-00-00 00:00:00' )
+									$content .= '		<lastmod>' . mysql2date( $timestamp_format, $page_modified_gmt, false ) . "</lastmod>\r\n";
+							}
+
+							// Give higher priority to the home page.
+							$priority_page = $page_is_front ? 1 : 0.9;
+
+							$content .= '		<priority>' . number_format( $priority_page, 1 ) . "</priority>\r\n";
+							$content .= "	</url>\r\n";
 						}
 					}
 				}
@@ -477,14 +530,14 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 							$content .= "	<url>\r\n";
 							// No need to use static vars
-							$content .= '		<loc>' . $this->the_url( '', $post_id, array( 'get_custom_field' => false, 'external' => true, 'post' => $post ) ) . "</loc>\r\n";
+							$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $post, 'id' => $post_id ) ) . "</loc>\r\n";
 
 							// Keep it consistent. Only parse if page_lastmod is true.
 							if ( $post_lastmod ) {
 								$post_modified_gmt = $post->post_modified_gmt;
 
 								if ( $post_modified_gmt !== '0000-00-00 00:00:00' )
-									$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $post_modified_gmt, false ) . "</lastmod>\r\n";
+									$content .= '		<lastmod>' . mysql2date( $timestamp_format, $post_modified_gmt, false ) . "</lastmod>\r\n";
 							}
 
 							$content .= '		<priority>' . number_format( $priority, 1 ) . "</priority>\r\n";
@@ -539,7 +592,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 							$content .= "	<url>\r\n";
 							//* No need to use static vars
-							$content .= '		<loc>' . $this->the_url( '', $post_id, array( 'get_custom_field' => false, 'external' => true, 'post' => $ctp_post ) ) . "</loc>\r\n";
+							$content .= '		<loc>' . $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'post' => $ctp_post, 'id' => $post_id ) ) . "</loc>\r\n";
 
 							//* Keep it consistent. Only parse if page_lastmod is true.
 							if ( $post_lastmod ) {
@@ -547,7 +600,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 								//* Some CPT don't set modified time.
 								if ( $post_modified_gmt !== '0000-00-00 00:00:00' )
-									$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $post_modified_gmt, false ) . "</lastmod>\r\n";
+									$content .= '		<lastmod>' . mysql2date( $timestamp_format, $post_modified_gmt, false ) . "</lastmod>\r\n";
 							}
 
 							$content .= '		<priority>' . number_format( $priority_cpt, 1 ) . "</priority>\r\n";
@@ -576,10 +629,11 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 */
 		$custom_urls = (array) apply_filters( 'the_seo_framework_sitemap_additional_urls', array() );
 
-		if ( ! empty( $custom_urls ) ) {
+		if ( $custom_urls ) {
 			foreach ( $custom_urls as $url => $args ) {
 
 				if ( ! is_array( $args ) ) {
+					//* If there are no args, it's assigned as URL (per example)
 					$url = $args;
 				}
 
@@ -587,11 +641,11 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				//* No need to use static vars
 				$content .= '		<loc>' . esc_url_raw( $url ) . "</loc>\r\n";
 
-				if ( isset( $args['lastmod'] ) && ! empty( $args['lastmod'] ) ) {
-					$content .= '		<lastmod>' . mysql2date( 'Y-m-d', $args['lastmod'], false ) . "</lastmod>\r\n";
+				if ( isset( $args['lastmod'] ) && $args['lastmod'] ) {
+					$content .= '		<lastmod>' . mysql2date( $timestamp_format, $args['lastmod'], false ) . "</lastmod>\r\n";
 				}
 
-				if ( isset( $args['priority'] ) && ! empty( $args['priority'] ) ) {
+				if ( isset( $args['priority'] ) && $args['priority'] ) {
 					$priority = $args['priority'];
 				} else {
 					$priority = 0.9;
@@ -612,6 +666,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( '' !== $extend )
 			$content .= "	" . $extend . "\r\n";
 
+		//* Reset timezone to default.
+		$this->reset_timezone();
+
 		return $content;
 	}
 
@@ -627,24 +684,25 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 *
 		 * @since 2.3.1
 		 */
-		if ( ! $this->get_option( 'site_noindex' ) && get_option( 'blog_public' ) ) {
+		if ( false === $this->is_option_checked( 'site_noindex' ) && $this->is_blog_public() ) {
 			global $blog_id;
 
 			$blog_id = (string) $blog_id;
 
 			$transient = 'tsf_throttle_ping_' . $blog_id;
 
+			//* NOTE: Use legacy get_transient to prevent ping spam.
 			if ( false === get_transient( $transient ) ) {
 				//* Transient doesn't exist yet.
 
-				if ( $this->get_option( 'ping_google' ) )
+				if ( $this->is_option_checked( 'ping_google' ) )
 					$this->ping_google();
 
-				if ( $this->get_option( 'ping_bing' ) )
+				if ( $this->is_option_checked( 'ping_bing' ) )
 					$this->ping_bing();
 
-				if ( $this->get_option( 'ping_yahoo' ) )
-					$this->ping_yahoo();
+				if ( $this->is_option_checked( 'ping_yandex' ) )
+					$this->ping_yandex();
 
 				// Sorry I couldn't help myself.
 				$throttle = 'Bert and Ernie are weird.';
@@ -655,11 +713,12 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				 *
 				 * 60s * 60m
 				 *
-				 * Applies filters the_seo_framework_sitemap_throttle_seconds
+				 * Applies filters the_seo_framework_sitemap_throttle_s
 				 * @since 2.5.1
 				 */
 				$expiration = (int) apply_filters( 'the_seo_framework_sitemap_throttle_s', 60 * 60 );
 
+				//* NOTE: Use legacy set_transient to prevent ping spam.
 				set_transient( $transient, $throttle, $expiration );
 			}
 		}
@@ -672,9 +731,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @since 2.2.9
 	 */
 	public function ping_google() {
-		$pingurl = 'http://www.google.com/webmasters/sitemaps/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
 
-		wp_remote_get( $pingurl );
+		$pingurl = 'http://www.google.com/webmasters/sitemaps/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
 	}
 
 	/**
@@ -683,20 +743,22 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @since 2.2.9
 	 */
 	public function ping_bing() {
-		$pingurl = 'http://www.bing.com/webmaster/ping.aspx?siteMap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
 
-		wp_remote_get( $pingurl );
+		$pingurl = 'http://www.bing.com/webmaster/ping.aspx?siteMap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
 	}
 
 	/**
-	 * Ping Yahoo
+	 * Ping Yandex
 	 *
-	 * @since 2.2.9
+	 * @since 2.6.0
 	 */
-	public function ping_yahoo() {
-		$pingurl = 'http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+	public function ping_yandex() {
 
-		wp_remote_get( $pingurl );
+		$pingurl = 'http://blogs.yandex.ru/pings/?status=success&url=' . urlencode( $this->the_home_url_from_cache( true ) . 'sitemap.xml' );
+		wp_remote_get( $pingurl, array( 'timeout' => 3 ) );
+
 	}
 
 	/**
@@ -718,7 +780,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		/**
 		 * Don't do anything if the blog isn't public
 		 */
-		if ( '0' == $public )
+		if ( '0' === $public )
 			return $robots_txt;
 
 		$revision = '1';
@@ -741,7 +803,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$home_url = $this->the_home_url_from_cache();
 			$parse_url = parse_url( $home_url );
-			$path = ! empty( $site_url['path'] ) ? $site_url['path'] : '';
+			$path = $parse_url['path'] ? ltrim( $parse_url['path'], ' /' ) : '';
 
 			$output .= $pre;
 			//* Output defaults
@@ -753,7 +815,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 * Prevents query indexing
 			 * @since 2.2.9
 			 *
-			 * Applies filters the_seo_framework_robots_disallow_queries : Wether to allow queries for robots.
+			 * Applies filters the_seo_framework_robots_disallow_queries : Whether to allow queries for robots.
 			 * @since 2.5.0
 			 */
 			if ( (bool) apply_filters( 'the_seo_framework_robots_disallow_queries', false ) )
@@ -810,7 +872,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		$wp_rewrite->init();
 
-		// Works as intended.
 		unset( $wp_rewrite->extra_rules_top['sitemap\.xml$'] );
 
 		$wp_rewrite->flush_rules( true );
@@ -888,7 +949,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	public function wpmudev_domainmap_flush_fix( $options_saved = false ) {
 
 		if ( $this->pretty_permalinks && $this->is_domainmapping_active() ) {
-			if ( current_action() == 'init' || $options_saved ) {
+			if ( 'init' === current_action() || $options_saved ) {
 				if ( class_exists( 'Domainmap_Module_Cdsso' ) && defined( 'Domainmap_Module_Cdsso::SSO_ENDPOINT' ) ) {
 					add_rewrite_endpoint( Domainmap_Module_Cdsso::SSO_ENDPOINT, EP_ALL );
 
@@ -897,12 +958,12 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 						$key = 'the_seo_framework_wpmdev_dm' . get_current_blog_id() . '_extra_flush';
 
 						if ( $options_saved ) {
+							//* Reset the flush on option change.
 							if ( get_site_option( $key ) ) {
-								//* Prevent flushing multiple times.
 								update_site_option( $key, false );
 							}
 						} else {
-							if ( ! get_site_option( $key ) ) {
+							if ( false === get_site_option( $key ) ) {
 								//* Prevent flushing multiple times.
 								update_site_option( $key, true );
 

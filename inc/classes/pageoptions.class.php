@@ -180,13 +180,6 @@ class AutoDescription_PageOptions extends AutoDescription_DoingItRight {
 		$db = get_option( 'autodescription-term-meta' );
 		$term_meta = isset( $db[$term->term_id] ) ? $db[$term->term_id] : array();
 
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		$args = (array) apply_filters( 'the_seo_framework_term_meta_defaults', array(
 			'doctitle'            => '',
 			'description'         => '',
@@ -216,24 +209,12 @@ class AutoDescription_PageOptions extends AutoDescription_DoingItRight {
 				$value = $this->s_description( $value );
 
 			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 *
 			 * @param $taxonomy the Taxonomy name
 			 */
 			$term->admeta[$field] = (string) apply_filters( "the_seo_framework_term_meta_{$field}", stripslashes( wp_kses_decode_entities( $value ) ), $term, $taxonomy );
 		}
 
 		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 *
 		 * @param $taxonomy the Taxonomy name
 		 */
 		$term->admeta = (array) apply_filters( 'the_seo_framework_term_meta', $term->admeta, $term, $taxonomy );

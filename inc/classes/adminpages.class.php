@@ -53,26 +53,27 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	public $network_pagehook;
 
 	/**
-	 * Constructor, load parent constructor
+	 * Load the options.
 	 *
-	 * Cache various variables
+	 * @since 2.6.0
 	 *
-	 * @applies filters the_seo_framework_load_options : Allows the options page to be removed
+	 * @var bool Load options.
+	 */
+	public $load_options;
+
+	/**
+	 * Constructor, load parent constructor and set up variables.
 	 */
 	public function __construct() {
 		parent::__construct();
 
 		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
-		$load_options = (bool) apply_filters( 'the_seo_framework_load_options', true );
+		* Applies filters the_seo_framework_load_options : Boolean Allows the options page to be removed
+		* @since 2.2.2
+		*/
+		$this->load_options = (bool) apply_filters( 'the_seo_framework_load_options', true );
 
-		if ( $load_options ) {
-
+		if ( $this->load_options ) {
 			add_action( 'admin_init', array( $this, 'enqueue_page_defaults' ), 1 );
 
 			// Add menu links and register $this->pagehook
@@ -92,36 +93,29 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 			// Load nessecary assets
 			add_action( 'admin_init', array( $this, 'load_assets' ) );
-
 		}
+
 	}
 
 	/**
 	 * Enqueue page defaults early.
 	 *
-	 * Applies filter `the_seo_framework_admin_page_defaults`.
+	 * Applies filter 'the_seo_framework_admin_page_defaults' : Array
 	 * This filter adds i18n support for buttons and notices.
 	 *
 	 * @since 2.3.1
-	 * @return void
 	 */
 	public function enqueue_page_defaults() {
 
-		/**
-		 * New filter.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filter.
-		 * @since 2.3.5
-		 */
 		$this->page_defaults = (array) apply_filters(
 			'the_seo_framework_admin_page_defaults',
 			array(
-				'save_button_text'  => __( 'Save Settings', 'autodescription' ),
-				'reset_button_text' => __( 'Reset Settings', 'autodescription' ),
-				'saved_notice_text' => __( 'Settings saved.', 'autodescription' ),
-				'reset_notice_text' => __( 'Settings reset.', 'autodescription' ),
-				'error_notice_text' => __( 'Error saving settings.', 'autodescription' ),
+				'save_button_text'		=> __( 'Save Settings', 'autodescription' ),
+				'reset_button_text'		=> __( 'Reset Settings', 'autodescription' ),
+				'saved_notice_text'		=> __( 'Settings are saved.', 'autodescription' ),
+				'reset_notice_text'		=> __( 'Settings are reset.', 'autodescription' ),
+				'error_notice_text'		=> __( 'Error saving settings.', 'autodescription' ),
+				'plugin_update_text'	=> __( 'New SEO Settings have been updated.', 'autodescription' ),
 			)
 		);
 
@@ -130,10 +124,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	/**
 	 * Adds menu links under "settings" in the wp-admin dashboard
 	 *
-	 * Applies filter `the_seo_framework_settings_capability`.
-	 * This filter changes the minimum role for viewing and editing the plugin's settings.
-	 *
 	 * @since 2.2.2
+	 *
 	 * @return void
 	 */
 	public function add_menu_link() {
@@ -141,16 +133,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$menu = array(
 			'pagetitle'		=> __( 'SEO Settings', 'autodescription' ),
 			'menutitle'		=> __( 'SEO', 'autodescription' ),
-
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
-			'capability'	=> (string) apply_filters( 'the_seo_framework_settings_capability', 'manage_options' ),
-
+			'capability'	=> $this->settings_capability(),
 			'menu_slug'		=> 'autodescription-settings',
 			'callback'		=> array( $this, 'admin' ),
 			'icon'			=> 'dashicons-search',
@@ -167,13 +150,12 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			$menu['position']
 		);
 
-		// Enqueue styles
-		// Doesn't pass the $hook argument
+		//* Enqueue styles
 		add_action( 'admin_print_styles-' . $this->pagehook, array( $this, 'enqueue_admin_css' ), 11 );
 
-		// Enqueue scripts
-		// Doesn't pass the $hook argument
+		//* Enqueue scripts
 		add_action( 'admin_print_scripts-' . $this->pagehook, array( $this, 'enqueue_admin_javascript' ), 11 );
+
 	}
 
 	/**
@@ -216,6 +198,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		// Enqueue scripts
 		add_action( 'admin_print_scripts-' . $this->network_pagehook, array( $this, 'enqueue_admin_javascript' ), 11 );
+
 	}
 
 	/**
@@ -244,7 +227,6 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		<div class="metabox-holder columns-2">
 			<div class="postbox-container-1">
 				<?php
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_before_siteadmin_metaboxes', $this->pagehook );
 
 				do_meta_boxes( $this->pagehook, 'main', null );
@@ -252,23 +234,141 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				if ( isset( $wp_meta_boxes[$this->pagehook]['main_extra'] ) )
 					do_meta_boxes( $this->pagehook, 'main_extra', null );
 
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_after_siteadmin_metaboxes', $this->pagehook );
 				?>
 			</div>
 			<div class="postbox-container-2">
 				<?php
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_before_siteadmin_metaboxes_side', $this->pagehook );
 
 				// @TODO fill this in
 
-				//* @since 2.3.0 action.
 				do_action( 'the_seo_framework_after_siteadmin_metaboxes_side', $this->pagehook );
 				?>
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Register meta boxes on the Site SEO Settings page.
+	 *
+	 * @since 2.2.2
+	 *
+	 * @see $this->title_metabox()		Callback for Title Settings box.
+	 * @see $this->robots_metabox()		Callback for Robots Settings box.
+	 * @see $this->homepage_metabox()	Callback for Home Page Settings box.
+	 * @see $this->social_metabox()		Callback for Social Settings box.
+	 * @see $this->webmaster_metabox()	Callback for Webmaster Settings box.
+	 */
+	public function metaboxes() {
+
+		/**
+		 * Various metabox filters.
+		 * Set any to false if you wish the meta box to be removed.
+		 *
+		 * @since 2.2.4
+		 */
+		$title 			= (bool) apply_filters( 'the_seo_framework_title_metabox', true );
+		$description 	= (bool) apply_filters( 'the_seo_framework_description_metabox', true );
+		$robots 		= (bool) apply_filters( 'the_seo_framework_robots_metabox', true );
+		$home 			= (bool) apply_filters( 'the_seo_framework_home_metabox', true );
+		$social 		= (bool) apply_filters( 'the_seo_framework_social_metabox', true );
+		$knowledge 		= (bool) apply_filters( 'the_seo_framework_knowledge_metabox', true );
+		$webmaster 		= (bool) apply_filters( 'the_seo_framework_webmaster_metabox', true );
+		$sitemap 		= (bool) apply_filters( 'the_seo_framework_sitemap_metabox', true );
+		$feed 			= (bool) apply_filters( 'the_seo_framework_feed_metabox', true );
+
+		//* Title Meta Box
+		if ( $title )
+			add_meta_box(
+				'autodescription-title-settings',
+				__( 'Title Settings', 'autodescription' ),
+				array( $this, 'title_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Description Meta Box
+		if ( $description )
+			add_meta_box(
+				'autodescription-description-settings',
+				__( 'Description Meta Settings', 'autodescription' ),
+				array( $this, 'description_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Home Page Meta Box
+		if ( $home )
+			add_meta_box(
+				'autodescription-homepage-settings',
+				__( 'Home Page Settings', 'autodescription' ),
+				array( $this, 'homepage_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Social Meta Box
+		if ( $social )
+			add_meta_box(
+				'autodescription-social-settings',
+				__( 'Social Meta Settings', 'autodescription' ),
+				array( $this, 'social_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Knowledge Graph Meta Box
+		if ( $knowledge )
+			add_meta_box(
+				'autodescription-knowledgegraph-settings',
+				__( 'Knowledge Graph Settings', 'autodescription' ),
+				array( $this, 'knowledge_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Robots Meta Box
+		if ( $robots )
+			add_meta_box(
+				'autodescription-robots-settings',
+				__( 'Robots Meta Settings', 'autodescription' ),
+				array( $this, 'robots_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Webmaster Meta Box
+		if ( $webmaster )
+			add_meta_box(
+				'autodescription-webmaster-settings',
+				__( 'Webmaster Meta Settings', 'autodescription' ),
+				array( $this, 'webmaster_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Sitemaps Meta Box
+		if ( $sitemap )
+			add_meta_box(
+				'autodescription-sitemap-settings',
+				__( 'Sitemap Settings', 'autodescription' ),
+				array( $this, 'sitemaps_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
+		//* Feed Meta Box
+		if ( $feed )
+			add_meta_box(
+				'autodescription-feed-settings',
+				__( 'Feed Settings', 'autodescription' ),
+				array( $this, 'feed_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
 	}
 
 	/**
@@ -376,222 +476,18 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 */
 	public function notices() {
 
-		if ( ! $this->is_menu_page( $this->pagehook ) )
+		if ( false === $this->is_seo_settings_page() )
 			return;
 
 		if ( isset( $_REQUEST['settings-updated'] ) && 'true' === $_REQUEST['settings-updated'] )
-			echo '<div id="message" class="updated"><p><strong>' . $this->page_defaults['saved_notice_text'] . '</strong></p></div>';
+			echo $this->generate_dismissible_notice( $this->page_defaults['saved_notice_text'], 'updated' );
 		else if ( isset( $_REQUEST['reset'] ) && 'true' === $_REQUEST['reset'] )
-			echo '<div id="message" class="notice notice-warning"><p><strong>' . $this->page_defaults['reset_notice_text'] . '</strong></p></div>';
+			echo $this->generate_dismissible_notice( $this->page_defaults['reset_notice_text'], 'warning' );
 		else if ( isset( $_REQUEST['error'] ) && 'true' === $_REQUEST['error'] )
-			echo '<div id="message" class="error"><p><strong>' . $this->page_defaults['error_notice_text'] . '</strong></p></div>';
+			echo $this->generate_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
+		else if ( isset( $_REQUEST['seo-updated'] ) && 'true' === $_REQUEST['seo-updated'] )
+			echo $this->generate_dismissible_notice( $this->page_defaults['plugin_update_text'], 'updated' );
 
-	}
-
-	/**
-	 * Register meta boxes on the Site SEO Settings page.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @see $this->title_metabox()		Callback for Title Settings box.
-	 * @see $this->robots_metabox()		Callback for Robots Settings box.
-	 * @see $this->homepage_metabox()	Callback for Home Page Settings box.
-	 * @see $this->social_metabox()		Callback for Social Settings box.
-	 * @see $this->webmaster_metabox()	Callback for Webmaster Settings box.
-	 */
-	public function metaboxes() {
-
-		/**
-		 * Various metabox filters.
-		 * Set any to false if you wish the meta box to be removed.
-		 *
-		 * @since 2.2.4
-		 *
-		 * New filters.
-		 * @since 2.3.0
-		 *
-		 * Removed previous filters.
-		 * @since 2.3.5
-		 */
-		$title 			= (bool) apply_filters( 'the_seo_framework_title_metabox', true );
-		$description 	= (bool) apply_filters( 'the_seo_framework_description_metabox', true );
-		$robots 		= (bool) apply_filters( 'the_seo_framework_robots_metabox', true );
-		$home 			= (bool) apply_filters( 'the_seo_framework_home_metabox', true );
-		$social 		= (bool) apply_filters( 'the_seo_framework_social_metabox', true );
-		$knowledge 		= (bool) apply_filters( 'the_seo_framework_knowledge_metabox', true );
-		$webmaster 		= (bool) apply_filters( 'the_seo_framework_webmaster_metabox', true );
-		$sitemap 		= (bool) apply_filters( 'the_seo_framework_sitemap_metabox', true );
-		$feed 			= (bool) apply_filters( 'the_seo_framework_feed_metabox', true );
-
-		//* Title Meta Box
-		if ( $title )
-			add_meta_box(
-				'autodescription-title-settings',
-				__( 'Title Settings', 'autodescription' ),
-				array( $this, 'title_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Description Meta Box
-		if ( $description )
-			add_meta_box(
-				'autodescription-description-settings',
-				__( 'Description Meta Settings', 'autodescription' ),
-				array( $this, 'description_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Home Page Meta Box
-		if ( $home )
-			add_meta_box(
-				'autodescription-homepage-settings',
-				__( 'Home Page Settings', 'autodescription' ),
-				array( $this, 'homepage_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Social Meta Box
-		if ( $social )
-			add_meta_box(
-				'autodescription-social-settings',
-				__( 'Social Meta Settings', 'autodescription' ),
-				array( $this, 'social_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Knowledge Graph Meta Box
-		if ( $knowledge )
-			add_meta_box(
-				'autodescription-knowledgegraph-settings',
-				__( 'Knowledge Graph Settings', 'autodescription' ),
-				array( $this, 'knowledge_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Robots Meta Box
-		if ( $robots )
-			add_meta_box(
-				'autodescription-robots-settings',
-				__( 'Robots Meta Settings', 'autodescription' ),
-				array( $this, 'robots_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Webmaster Meta Box
-		if ( $webmaster )
-			add_meta_box(
-				'autodescription-webmaster-settings',
-				__( 'Webmaster Meta Settings', 'autodescription' ),
-				array( $this, 'webmaster_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Sitemaps Meta Box
-		if ( $sitemap )
-			add_meta_box(
-				'autodescription-sitemap-settings',
-				__( 'Sitemaps Settings', 'autodescription' ),
-				array( $this, 'sitemaps_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-		//* Feed Meta Box
-		if ( $feed )
-			add_meta_box(
-				'autodescription-feed-settings',
-				__( 'Feed Settings', 'autodescription' ),
-				array( $this, 'feed_metabox' ),
-				$this->pagehook,
-				'main'
-			);
-
-	}
-
-	/**
-	 * Return option from the options table and cache result.
-	 *
-	 * Applies `the_seo_framework_get_options` filters.
-	 * This filter retrieves the (previous) values from Genesis if exists.
-	 *
-	 * Values pulled from the database are cached on each request, so a second request for the same value won't cause a
-	 * second DB interaction.
-	 * @staticvar array $settings_cache
-	 * @staticvar array $options_cache
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param string  $key        Option name.
-	 * @param string  $setting    Optional. Settings field name. Eventually defaults to null if not passed as an argument.
-	 * @param boolean $use_cache  Optional. Whether to use the cache value or not. Default is true.
-	 *
-	 * @return mixed The value of this $key in the database.
-	 *
-	 * @thanks StudioPress (http://www.studiopress.com/) for some code.
-	 */
-	public function the_seo_framework_get_option( $key, $setting = null, $use_cache = true ) {
-
-		//* If we need to bypass the cache
-		if ( ! $use_cache ) {
-			$options = get_option( $setting );
-
-			if ( ! is_array( $options ) || ! array_key_exists( $key, $options ) )
-				return '';
-
-			return is_array( $options[$key] ) ? stripslashes_deep( $options[$key] ) : stripslashes( wp_kses_decode_entities( $options[$key] ) );
-		}
-
-		//* Setup caches
-		static $settings_cache = array();
-		static $options_cache  = array();
-
-		//* Check options cache
-		if ( isset( $options_cache[$setting][$key] ) )
-			//* Option has been cached
-			return $options_cache[$setting][$key];
-
-		//* Check settings cache
-		if ( isset( $settings_cache[$setting] ) ) {
-			//* Setting has been cached
-
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
-			$options = apply_filters( 'the_seo_framework_get_options', $settings_cache[$setting], $setting );
-		} else {
-			//* Set value and cache setting
-
-			/**
-			 * New filter.
-			 * @since 2.3.0
-			 *
-			 * Removed previous filter.
-			 * @since 2.3.5
-			 */
-			$options = $settings_cache[$setting] = apply_filters( 'the_seo_framework_get_options', get_option( $setting ), $setting );
-		}
-
-		//* Check for non-existent option
-		if ( ! is_array( $options ) || ! array_key_exists( $key, (array) $options ) ) {
-			//* Cache non-existent option
-			$options_cache[$setting][$key] = '';
-		} else {
-			//* Option has not been previously been cached, so cache now
-			$options_cache[$setting][$key] = is_array( $options[$key] ) ? stripslashes_deep( $options[$key] ) : stripslashes( wp_kses_decode_entities( $options[$key] ) );
-		}
-
-		return $options_cache[$setting][$key];
 	}
 
 	/**
@@ -740,7 +636,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		$default = $this->get_default_settings( $key, $setting );
 
-		if ( ! is_string( $default ) && $default != -1 && $default )
+		if ( 1 === $default )
 			$class = 'seoframework-default-selected';
 
 		if ( $echo ) {
@@ -778,7 +674,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		$warned = $this->get_warned_settings( $key, $setting );
 
-		if ( $warned )
+		if ( 1 === $warned )
 			$class = 'seoframework-warning-selected';
 
 		if ( $echo ) {
@@ -817,11 +713,11 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$default = $this->is_default_checked( $key, $setting, false, false );
 		$warned = $this->is_warning_checked( $key, $setting, false, false );
 
-		if ( ! empty( $default ) && ! empty( $warned ) ) {
+		if ( '' !== $default && '' !== $warned ) {
 			$class = $default . ' ' . $warned;
-		} else if ( ! empty( $default ) ) {
+		} else if ( '' !== $default ) {
 			$class = $default;
-		} else if ( ! empty( $warned ) ) {
+		} else if ( '' !== $warned ) {
 			$class = $warned;
 		}
 
@@ -851,6 +747,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 *
 	 * @since 2.2.5
 	 *
+	 * @TODO use this
+	 *
 	 * @return string|null the default selected class.
 	 */
 	public function is_default_radio( $key, $value, $setting = '', $wrap = true, $echo = true ) {
@@ -859,7 +757,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		$default = $this->get_default_settings( $key, $setting );
 
-		if ( $default && $default === $value )
+		if ( $value === $default )
 			$class = 'seoframework-default-selected';
 
 		if ( $echo ) {

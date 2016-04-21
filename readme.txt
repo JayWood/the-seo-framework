@@ -2,24 +2,25 @@
 Contributors: Cybr
 Donate link: https://theseoframework.com/donate/
 Tags: open graph, description, automatic, generate, generator, title, breadcrumbs, ogtype, meta, metadata, search, engine, optimization, seo, framework, canonical, redirect, bbpress, twitter, facebook, google, bing, yahoo, jetpack, genesis, woocommerce, multisite, robots, icon, cpt, custom, post, types, pages, taxonomy, tag, sitemap, sitemaps, screenreader, rtl, feed
-Requires at least: 3.6.0
+Requires at least: 3.8.0
 Tested up to: 4.5.0
-Stable tag: 2.5.2
+Stable tag: 2.5.2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-The SEO Framework makes sure your Website's SEO is always up-to-date without any configuration needed. It also has support for extending.
+The SEO Framework plugin provides an automated and advanced SEO solution for your WordPress website.
 
 == Description ==
 
 = The SEO Framework =
 
-**The lightning fast all in one automated SEO optimization plugin for WordPress**
+**Easy for beginners, awesome for experts. WordPress SEO for Everyone.**
+An accessible, unbranded and extremely fast SEO solution for any WordPress website.
 
-> <strong>This plugin strongly helps you create better SEO value for your content.</strong><br />
+> <strong>This plugin strongly helps you create better SEO value for your content.</strong><br>
 > But at the end of the day, it all depends on how entertaining or well-constructed your content or product is.
 >
-> No SEO plugin does the magic thing to be found instantly. But doing it right helps a lot.<br />
+> No SEO plugin does the magic thing to be found instantly. But doing it right helps a lot.<br>
 > The SEO Framework helps you doing it right. Give it a try!
 >
 > The Default Settings are recommended in the SEO Settings page. If you know what you're doing, go ahead and change them! Each option is also documented.
@@ -38,15 +39,25 @@ The SEO Framework makes sure your Website's SEO is always up-to-date without any
 
 *Read **Transferring SEO Content using SEO Data Transporter** below for SEO plugin transitioning instructions.*
 
+= Unbranded, Free and for the Professional =
+This plugin is unbranded! This even means that we don't even put the name "The SEO Framework" anywhere within the WordPress interface, aside from the plugin activation page.
+This plugin makes great use of the default WordPress interface elements, like as if this plugin is part of WordPress. No ads, no nags.
+The small and hidden HTML comment can easily be disabled with the use of a filter.
+
+Nobody has to know about the tools you've used to create your or someone else's website. A clean interface, for everyone.
+
 = Numbers don't lie =
 Optimizing SEO is a fundamental process for any website. So we try to be non-intrusive with The SEO Framework.
 The SEO Framework is byte and process optimized on PHP level, with each update the optimization is improved when possible.
 
+var_dump() update these..
 * This plugin is written with massive and busy (multi-)sites in mind.
 * This plugin is 197% to 867% faster compared to other popular SEO plugins.
 * This plugin consumes 177% to 260% fewer server resources than other popular SEO plugins.
 * 15% fewer database interactions (numbers may vary on this one depending on plugin compatibility).
 * 100% fewer advertisements. Let's keep it that way.
+
+*Numbers may vary per installation and version.*
 
 = Completely pluggable =
 The SEO Framework also features pluggable functions. All functions are active and can be called within the WordPress Loop.
@@ -63,9 +74,10 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 * Special Open Graph description, which organically integrates with the Facebook and Twitter snippets
 * Extended Open Graph Images support, including image manipulation.
 * Canonical, with full WPMUdev Domain Mapping, subdomain and HTTPS support to prevent duplicated content.
-* LD+Json script that adds extended search support for Google Search and Chrome.
-* LD+Json script for Knowledge Graph (Personal/Business site relations, name and logo).
-* LD+Json script for Breadcrumbs (just like the visual one) which extends page relation support in Google Search.
+* Schema.org LD+Json script that adds extended search support for Google Search and Chrome.
+* Schema.org LD+Json script for Knowledge Graph (Personal/Business site relations, name and logo).
+* Advanced Schema.org LD+Json script for Breadcrumbs (just like the visual one) which extends page relation support in Google Search.
+* Schema.org LD+Json script to show the correct site name in Google Breadcrumbs.
 * Publishing and editing dates, accurate to the day.
 * Link relationships, with full WPMUdev Domain Mapping and HTTPS support.
 * Various Facebook and Twitter Meta tags.
@@ -77,7 +89,6 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 * Prevents canonical errors with categories, pages, subdomains and multisite domain mapping.
 * Disables 404 pages and empty categories from being indexed, even if they don't send a 404 response.
 * Automatically notifies Google, Bing and Yahoo on Post or Page update when sitemaps are enabled.
-* Prevents duplicated content by disabling
 
 **This plugin allows you to manually set these values for each post, page, supported CPT and term:**
 
@@ -119,9 +130,9 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 
 **We call this The SEO Bar. Check out the [Screenshots](https://wordpress.org/plugins/autodescription/screenshots/#plugin-info) to see how it helps you!**
 
-> This plugin is fully compatible with the [Domain Mapping plugin by WPMUdev](https://premium.wpmudev.org/project/domain-mapping/) and the [Domain Mapping plugin by Donncha](https://wordpress.org/plugins/wordpress-mu-domain-mapping/).<br />
-> This plugin is now also compatible with all kinds of custom post types.<br />
-> This will **prevent canonical errors**. This way your site will always be correctly indexed, no matter what you use!<br />
+> This plugin is fully compatible with the [Domain Mapping plugin by WPMUdev](https://premium.wpmudev.org/project/domain-mapping/) and the [Domain Mapping plugin by Donncha](https://wordpress.org/plugins/wordpress-mu-domain-mapping/).<br>
+> This plugin is now also compatible with all kinds of custom post types.<br>
+> This will **prevent canonical errors**. This way your site will always be correctly indexed, no matter what you use!<br>
 >
 > This plugin is also completely ad-free and has a WordPress integrated clean layout. As per WordPress.org plugin guidelines and standards.
 
@@ -135,12 +146,12 @@ The output will be stored for each page, if you've edited a page the page output
 
 **Supported Caches:**
 
-* Server-level Opcode (optimized)
-* Staticvar functions (prevents running code twice or more)
-* Staticvar class (instead of globals, prevents constructors running multiple times)
-* Objects for database calls
+* Server-level Opcode (optimized).
+* Staticvar functions (prevents running code twice or more).
+* Staticvar class (instead of globals, prevents constructors running multiple times).
+* Objects for database calls.
 * Transients for process intensive operations or persisting communication with front-and back end.
-* CDN for Open Graph and Twitter images
+* CDN for Open Graph and Twitter images.
 * HTML and script Minification caching as well as Database caching are also supported.
 
 = Compatibility =
@@ -161,7 +172,7 @@ The output will be stored for each page, if you've edited a page the page output
 **Plugins:**
 
 * W3 Total Cache, WP Super Cache, Batcache, etc.
-* WooCommerce: Shop Page, Products, Product Galleries, Product Categories and Product Tags.
+* WooCommerce: Shop Page, Products, Product Breadcrumbs, Product Galleries, Product Categories and Product Tags.
 * Custom Post Types, (all kinds of plugins) with automatic integration.
 * WPMUdev and Donncha's Domain Mapping with full HTTPS support.
 * WPMUdev Avatars for og:image and twitter:image if no other image is found.
@@ -170,8 +181,8 @@ The output will be stored for each page, if you've edited a page the page output
 * Ultimate Member profiles.
 * AnsPress Questions, Profiles and Pages, also Canonical errors have been fixed.
 * StudioPress SEO Data Transporter for Posts and Pages.
-* WPML, URL's, sitemap and per-page/post SEO settings. (The full and automated compatibility is being discussed with WPML.)
-* qTranslate X, URL's, limited sitemap and per-page/post SEO settings (through shortcodes by set by qTranslate X).
+* WPML, URLs, sitemap and per-page/post SEO settings. (The full and automated compatibility is being discussed with WPML.)
+* qTranslate X, URLs, limited sitemap and per-page/post SEO settings (through shortcodes by set by qTranslate X).
 * Jetpack modules: Custom Content Types (Testimonials, Portfolio), Infinite Scroll, Photon.
 * Most popular SEO plugins, let's not get in each other's way.
 * Many, many other plugins, yet to confirm.
@@ -192,12 +203,12 @@ Because this plugin was initially written to extend the Genesis SEO, it uses the
 >
 > Get the [SEO Data Transporter from WordPress.org](https://wordpress.org/plugins/seo-data-transporter/).
 >
-> Usage:<br />
-> 1. Install and activate SEO Data Transporter.<br />
-> 2. Go to the <strong>SEO Data Transporter menu within Tools</strong>.<br />
-> 3. Select your <strong>previous SEO plugin</strong> within the first dropdown menu.<br />
-> 4. Select <strong>Genesis</strong> within the second dropdown menu.<br />
-> 5. Click <strong>Analyze</strong> for extra information about the data transport.<br />
+> Usage:<br>
+> 1. Install and activate SEO Data Transporter.<br>
+> 2. Go to the <strong>SEO Data Transporter menu within Tools</strong>.<br>
+> 3. Select your <strong>previous SEO plugin</strong> within the first dropdown menu.<br>
+> 4. Select <strong>Genesis</strong> within the second dropdown menu.<br>
+> 5. Click <strong>Analyze</strong> for extra information about the data transport.<br>
 > 6. Click <strong>Convert</strong> to convert the data.
 >
 > The SEO Framework now uses the same data from the new Genesis SEO settings on Posts, Pages and Taxonomies.
@@ -250,6 +261,12 @@ Absolutely! It will stay free as well, without ads or nags!
 
 Please visit [the support forums](https://wordpress.org/support/plugin/autodescription) and kindly tell me about it. I try to get back to you within 48 hours. :)
 
+= Is this really a Framework? =
+
+This plugin is not in particular a framework in a technical sense, but it is built with a framework's mindset. It is however a framework for your website's SEO, a building block that keeps everything together.
+This means that this plugin will do all the great Search Engine Optimization, and also allows for extensions and real-time alterations. For when you really want or need to change something.
+Extensions built for this plugin might just as well work as a standalone. The SEO Framework provides an easier and cached way of doing so, however.
+
 = I am a developer, how can I help? =
 
 The SEO Framework is currently a one-man project. However, any input is greatly appreciated and everything will be considered.
@@ -288,11 +305,11 @@ Absolutely not! Read more about this on the [Plugin Guidelines, Section 7](https
 
 = Premium version? =
 
-Nope! Only premium extensions. These are being developed.
+Nope! Only premium extensions. These are planned and being developed.
 
 = If a premium extensions is released, what will happen to this plugin? =
 
-This plugin is built to be an all-in-one SEO solution, so:
+This plugin is built to be an all-in-one SEO solution for professional environments, so:
 
 1. No advertisements about the premium extensions will be placed within this plugin.
 1. No features will be removed or replaced for premium-only features.
@@ -321,7 +338,7 @@ If you know your way around PHP, you can speed up this process by replacing the 
 
 = The meta data is not being updated, and I'm using a caching plugin. =
 
-All The SEO Framework's metadata is put into Object cache when a caching plugin is available. The descriptions are put into Transients. Please be sure to clear your cache.
+All The SEO Framework's metadata is put into Object cache when a caching plugin is available. The descriptions and schema.org scripts are put into Transients. Please be sure to clear your cache.
 If you're using W3 Total Cache you might be interested in [this free plugin](https://wordpress.org/plugins/w3tc-auto-pilot/) to do it for you.
 
 = Ugh, I don't want anyone to know I'm using The SEO Framework! =
@@ -343,193 +360,515 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 == Changelog ==
 
-= 2.5.2.1 - Unforeseen Improvements =
+= 2.6.0 - Pragmatic Foundation =
+
+/
+** TODO TESTING CHECKLIST **
+/
+* Canonical URLs <- most important.
+* Custom Post Type Archives.
+* Descriptions are what they said to be.
+* AutoDescriptions ending with '.', ',', '!' and '?'.
+* Breadcrumb validation on posts and products with multiple and sub categories.
+* Schema sitename
+* Hundreds of filters... ugh :).
+* The SEO Bar colors, in many situations.
+* Title lengths.
+* Description lengths.
+* Post Author SEO settings.
+* Pre-"The SEO Framework" Genesis data.
+
+**Release date:**
+/
+* March TODO 2016
+
+**Preamble:**
+
+* This is a dot version bump update, which is done so as the core code has been changed drastically. **Thirteen new classes** have been added to maintain structured code, including many more function to fetch data easily and consitently.
+* With hundreds of changes, I had to find a new way to present this update in an understandable manner. So here goes!
 
 **Summarized:**
+/
+* With over 180 notable changes, I bring you a new Pragmatic Foundation.
+* At long last, something that was planned for almost half a year, **Author SEO** has finally been included, this affects all posts when set up.
+* As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
+* Also, many minor **translation improvements** have been put in place on many places. And **WPML compatibility** has received a rework, now all canonical URLs in the sitemap and front-end are always correct.
+* A new script has been added on the front-page. This will make sure the Breadcrumb homepage name will be correct in the Search Engine Results Page.
+* Most importantly, this update allows you to be better informed about your website's index status, through the much improved SEO bar.
+* The breadcrumb script has been expanded to work on posts with multiple and nested categories. These scripts now also work on WooCommerce products. So don't be surprised if you suddenly have all kinds of scripts in the header! These scripts help Google better understand your website.
+* And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes** including major refactorization.
 
-* This minor update brings you a special scenario fix that caused an unnecessary browser alert.
-* Also, the object cache key fetching used to be incorrect. Now object caching works as intended and you can see a minor performance improvement when used.
+**Feature highlights:**
+/
+* TODO Author Twitter and Facebook connections for posts.
+* WooCommerce schema.org breadcrumbs.
+* Intelligently nested schema.org breadcrumbs.
+* Definite schema.org website name.
+* Better Automated Description sentence endings.
+* Vibrant character counters for when you need extra visual assistance.
+* New Automated Description options.
+* New Archive title prefix options.
+* Modernized and Smarter SEO bar, with many more conditional checks.
+* Many linguistic improvements, with more flow in the SEO Bar.
+* Yandex Sitemap pinging support.
+* Extended Title Fix extension support.
+* Improved performance, more efficient cache key generation.
+* New Date output options.
+* TODO Canonical scheme protocol options.
+* Adaptive WPML URL generation.
+* Improved editorial translations.
+* Automatic option merging.
+* New AJAX integration when adding tags.
+* Color Deficiency mode character counters.
+* Personalized error handling for developers.
+* More than 150 new functions for developers.
+* WP Query Admin synchronization for developers.
+* Automated setting navigation tabs for developers.
+
+**Feature highlights visualized:**
+/
+* TODO View side-by-side visual changes [here](link_to_page)
+
+**SEO Tip of the Update: Redirects & Canonical**
+/
+* A change in the Canonical URL or the use of a 301 Redirect URL indicate that your page has moved.
+* These can be seen by Search Engines as the same. However, the 301 Redirect enforces the relocation of the page to everyone, whereas the Canonical URL softly indicates.
+* When changing the Canonical URL of a Page, you're telling robots to look and elsewhere, be sure to include a link to the new Page on the canonicalized Page to indicate where everything has moved to.
+* However, it's even better to enforce a 301 redirect. This makes sure both your visitors as Search Engines know where to be instantaneously.
+* If you've changed the permalink of a popular post, you should create an empty post that follows one of the said examples.
+
+**Anouncements:**
+
+* I'm announcing a new plugin extension for The SEO Framework! [Title Fix - The SEO Framework](https://wordpress.org/plugins/the-seo-framework-title-fix/).
+* This update ensures extra compatiblity with the Title Fix plugin, this will add back removed title features for if the theme is doing it wrong and when the Title Fix plugin is active.
+
+**About: Plugin progression and help wanted:**
+
+* This dear project has taken me over 2500 hours to perfectionize and maintain. This update alone has cost me over 220 hours to complete.
+* I really want to keep this project free. In fact, Author SEO was actually planned to be a premium extension.
+* I also want to turn this project into my full-time job, even if it's free from monetization and/or premium content.
+* And I will keep my promises, always: This plugin will stay free of ads, (self-)reference and this plugin will continue to be maintained.
+* All with all, this means I can't do it without your help!
+* Please consider making a donation. The link can be found on the WordPress.org plugin page. Or [here](https://theseoframework.com/?p=572).
+* Thank you so much for your support!
+
+**About: Changes in Changelog**
+
+* I love to push many changes at once every update, as I'm only happy when everything works. If I find a bug, I'll be sure to fix it!
+* So to clean up the massive changelogs, detailed information on updates are put aside and are visible on the plugin's website.
+* With each update, I try to find better ways of presenting information and I try to minimize confusion.
+* Putting everything in categorized lists is one way of presenting information, to erase sentence flow and to prevent misunderstanding.
+
+**For translators:**
+
+* Please look for **Front-end output** comments within the translation page to find high-priority translations.
+
+**For everyone - Square SEO Bar:**
+/
+* From now on, the SEO bar is flat and square. This gives a more modern look and feel.
+
+**For everyone - Option Merging:**
+/
+* From this plugin update, new default options are automatically merged with the previous options.
+* This way, you don't have to update each site you own with the new recommended features.
+* No options will be overwritten in this process, and it only happens in the admin area.
+* This new feature is multisite compatible and can be disabled through a filter.
+* An update notification will shown whenever this happens, only to the Super Admin on Mutli-Site environments, and only to Admins on Single-Site environments.
+* The notification is unbranded, it will say "New SEO options have been updated." on the SEO Settings Page and will add "View the new options here." on all other Admin Pages.
+
+**For everyone - About Author SEO:**
+/
+* TODO When a post has an author assigned through the default WordPress interface, and the author SEO has been filled in, the post will obtain the Author information.
+* TODO If there's no Author information set, or the default Social Meta Settings will be used.
+
+**For everyone - About Canonical SEO:**
+/
+* TODO A new setting has been added to adjust the preffered URL scheme of your website.
+* TODO This new setting influences which page Search Engines index. Default (and recommended) is Automatic.
+* TODO This new setting doesn't affect scheme redirection of pages and posts, which should be done using `.htaccess`.
+
+**For everyone - About Schema Markup:**
+/
+* New schema markup has been added, this helps Search Engines better understand your website.
+* Breadcrumbs have been expanded, to support nested categories and multiple categories. Now you can see multiple breadcrumb scripts to help Search Engines better understand your website's structure.
+* Breadcrumbs scripts now also work on WooCommerce products, enjoy!
+* Note: If you use PHP 5.3 or later, the nested scripts provide a more consitent (yet negligible) structure.
+
+**For everyone - About translations:**
+/
+* Objective translations for grammatically gender noun types like "this post" (male in Dutch) and "this page" (genderless in Dutch) within sentences which are fetched dynamically (like "Product" and "ProductTag" for WooCommerce) couldn't be translated correctly.
+* Therefore, I've exchanged these types of sentences without losing understanding of those.
+* Small changes within translations happen over time and I try to reduce it when to only when nessecary, as this is an ongoing project you can expect continous improvements wherever possible. Translating WordPress and its plugins are a team effort :).
+* Other small changes include conversion of WordPress slang to real English. Like "Paged" to "Paginated".
+* Over time, inconsitencies have been created with the language used within this plugin. If you still find any, please notify me through the support forums and I'll address them.
+* Thanks @pidengmor for many (over 30) linguistic improvements, they're really appreciated! Thank you so much for your time!
+* I also want to make a big shout out to all the other translators who have contributed to this plugin! <3
+
+**For developers - About class changes:**
+/
+* This plugin should always be extended with the use of filters, actions or with the use of the Settings API.
+* This plugin relies on a God class, which has been put into a cached function `the_seo_framework()`.
+* Interacting with the class functions statically could lead to duplicated constructor output and fatal errors.
+* Therefore it's always implied and recommended to use `the_seo_framework()` function if you need to interact with any of the functions.
+* If done correctly, whichever update comes in the future won't break the site(s).
+
+**For developers - About the new functions:**
+/
+* In order to maintain a stable future, most dynamic generation output that depends on a setting are put in functions.
+* This also counts for filters. To prevent and fix miscalculations through Javascript and other means.
+
+**For developers - Performance, improved:**
+/
+* I've tested out some yet undiscovered ground on PHP while doing millions of iterations in the benchmark.
+* These benchmarks can be found in the aptly named `benchmark.php` file.
+* What I found is that an if-statement looks passes if the value is a boolean. So converting any value to a boolean will improve its speed.
+* I also found that strict false checks are faster than using an exclamation mark. E.g. `false === $thing` is faster than `! $thing`, as the latter flips the boolean, which requires processing power.
+* These methodologic improvements have put into effect throughout the whole plugin, with this you will notice an extremely minor performance improvement. But every little bit matters in a framework.
+* Because this plugin has grown massively in size in this update, the memory use has been increased by a negligible 500kiB.
+* The netto outcome of this plugin's performance in this update is about 0%, this is because many more items are being rendered, even though overall performance has been improved.
+
+**For developers - Refactoring classes:**
+
+* The classes `AutoDescription_DoingItRight`, `AutoDescription_Generate_Description`, `AutoDescription_Generate_Url`, `AutoDescription_Generate_Ldjson`, and `AutoDescription_Generate_Title` have been greatly refactored to improve performance and maintainability.
+* All pre-overhaul functions have maintained their initial behaviour, the generation of the output has just been split over multiple functions.
+
+**For developers - About WP Query Sync:**
+
+* The current WordPress query only works on the front-end.
+* `query.class.php` contains alternative functions based on the WordPress query.
+* These functions work just like WordPress Core query functions, but now they also look for the screens in the admin area.
+* These functions do not work on custom post types, yet. But they do work on WooCommerce products and product categories.
+* This resulted in easing the whole code base as it doesn't have to check for admin/front-end per-function anymore. Further improvements are planned, but this update already contains most of the overhaul.
+
+**Detailed log:**
+
+***There are a lot more changes in this update which did not make it to this page. Please refer to [the detailed changelog](https://theseoframework.com/?p=xxx).***
+
+**Many, many other - both minor and major - changes did not make it to the detailed log. For example, when a new function has been added to check for a state, the use of it goes throughout the plugin, effectively added many changes.**
+
+*What do you think of this change? Let me know on [Slack](https://wordpress.slack.com/messages/@cybr/) (no support questions there, please)!*
 
 **For everyone:**
-
-* Improved: The HTML plugin indicators now ignore object cache. Making the filter more responsive.
-* Fixed: The HTML plugin indicator timer translation is now put to use (oops).
-* Fixed: JavaScript bug caused by undefined error where the user was prompted for settings change while there weren't any on the Post or Page edit screens when the *"Remove blogname from title?"* option is checked or when editing the home page and the *"Add site description (tagline) to the Title on the Home Page?"* is unchecked.
-* Removed: Twitter card and Twitter title output on 404 and search pages. The Twitter tags rely on other tags which can't be rendered in their full extend by default on these pages. Twitter uses OG tags to fall back on.
-* Note: The per-page output cache key has changed for the output, this forces the object cache to be invalidated.
+/
+* **Added:**
+	/
+	* Default options merging on plugin update, so you don't have to check out the new features manually with each update. When new features are added which have not yet been registered. These features will now be updated to its default settings. Multisite compatible.
+	* TODO Author SEO!
+	* TODO Author SEO can only be updated by Authors (self), Editors (self) and Admins (all).
+	* TODO Canonical SEO!
+	* TODO Canonical SEO scheme options, default "automated".
+	* Archive title prefix options!
+	* TODO Schema SEO!
+	* TODO The SEO Bar options.
+	* TODO Schema SEO will allow you to enable and disable global Schema.org features.
+	* LD+Json Schema.org website name and URL header markup on the front-page. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
+	* Time display options for the sitemap. Now you can select how the time is output. Default "Complete date plus hours, minutes and timezone".
+	* TODO Article modified time output can now be adjusted, just like the sitemap timing options.
+	* TODO Per page title additions options (reverse of global settings with doing it right listener). (maybe)
+	* TODO New global Automated Description options.
+	* TODO Jetpack Sitemap detection.
+	* TODO WP.me shortlink integration.
+	* Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
+	* Removal commas if the excerpt ends with one in the automated description.
+	* Extra compatibility for when the theme is doing it wrong, for when the Title Fix extension plugin has been used.
+	* Article Modified Time now also works for WooCommerce products and are treated as Posts.
+	* Headway compatibility. Done by using one of their SEO plugin detection filters which disables their SEO functionality.
+	* Runway Framework theme compatibility.
+	* Yandex sitemap pinging support.
+	* Description excerpt detection. Now when an excerpt is filled in, no description additions will be added in front of them.
+	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s on post publish.
+	* The SEO Bar now has a Double Title check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
+	* The SEO Bar now also checks for global category and tag indexing, following and archiving options on the applicable pages.
+	* The SEO Bar now has breaks in the description at various places, to impact behavior through glances.
+	* The SEO Bar Indexing notice turns red if Indexing has been enabled, yet the blog isn't set to public.
+	* The SEO Bar Following notice turns yellow if Following has been disabled, yet the blog isn't set to public.
+	* The SEO Bar Archiving notice turns yellow if Archiving has been enabled, yet the blog isn't set to public.
+	* The SEO Bar Categories and Tags Robots options now reflect in the SEO bar.
+	* The SEO Bar's description notification word counter now has a filterable minimum word character length which will have a higher tolerance for repeated words that are less than (filterable) 3 characters (5 times instead of 3).
+	* The SEO Bar will now show an exclamation mark when the Post ID can't be found. It's quite nice, and you probably won't ever see it :(.
+	* Non-executive `index.php` files in folders which contain readable files, to prevent indexing of such.
+	* WooCommerce breadcrumb support!
+	* Nested post categories now also have a breadcrumb script. Multiple even, when applicable.
+	* TODO Twitter card plugin detection and subtle notification of such.
+	* TODO Image Description is now used as an excerpt for the attachment's page meta descriptions.
+	* All admin notices are now dismissible.
+	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
+	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
+	* The blog page is now also shown within the Sitemap.
+	* TODO Front Page pagination index options.
+	* Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
+	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
+	* Descriptive URL on Title Blogname removal option.
+	* Title generation cache. It no longer gets generated more than once per page load.
+* **Changed:**
+	/
+	* TODO New Plugin Logo!
+	* TODO New Plugin Banner, now this one can be shared peacefully through Facebook (which crops and centers the image).
+	* The SEO Bar is now flat and square. Much more modern.
+	* The SEO Bar's balloon is now also flat and square.
+	* The SEO Bar T/D and G letters have a space removed between them to make it a little more appealing on smaller screens.
+	* The SEO Bar now has a maximum width of 220px instead of 260px.
+	* Description "good" detection length range has been extended to 137 minimum instead of 145, to eliminate over-optimization.
+	* When no description can be generated from the content or excerpt, the social description is now completely empty.
+	* LD+Json markup now uses double quotes instead of single.
+	* LD+Json Sitelinks Search Box script now excludes the Alternative Name, as it's optional and non-configurable (yet).
+	* Short explanatory text on Canonical question mark title within the inpost SEO metabox is displayed rather than the HTML output.
+	* When a Post ID can't be found for the SEO Bar, a more elegant notification is displayed.
+	* Moved SEO Bar before bbPress Reply Created.
+	* The sitemap, theme doing it right, description and LD+Json transient keys have been invalidated.
+	* Open Graph plugin detection now only shows a notification, instead of removing OG output as well. These values may be duplicated (although undesired).
+	* When a Custom Home Page Title Tagline is set, it's now used for the Title on the description on the home page.
+	* When no Blog Tagline has been set, it will now return "Untitled".
+* **Updated:**
+	/
+	* Several sentences to have a better English structure to what they do.
+	* TODO .POT translation file.
+* **Reworked:**
+	/
+	* URL generation.
+	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
+	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
+	* Massively improved URL generation time by adding more layers of cache on often used and also heavy scripts.
+	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more efficient ones.
+	* Metabox setting tabs no longer rely on WordPress Core admin navigation tabs.
+	* JavaScript caching and advanced optimizations for better browser performance through Google Closure Compiler.
+	* Description excerpt generation exceeding words calculation.
+* **Improved:**
+	/
+	* The SEO Bar's now more reliable in its data.
+	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
+	* The SEO Bar buttons are now converted to placeholder hyperlinks.
+	* The SEO Bar's text is now easier on the eyes due to added text-shadow.
+	* The SEO Bar's hover balloon is now aligned with its bar on Posts and Pages overview and to column in Term overview.
+	* The Custom Home Page Title JavaScript placeholder now updates to default when the Tagline is emptied.
+	* Translations with multiple variable strings can now safely be translated and switched around.
+	* The automated description orders are now translatable.
+	* LD+Json transient is also flushed on change within the SEO Settings page when the home page is a blog.
+	* Robots tag generation time.
+	* Removed break (`<br />`) closing tag throughout the plugin as we're not using XHTML in WordPress.
+	* Sanitation of URLs where query args must be removed is now compatible on any (odd) server configuration.
+	* Post State "No Search" additions check is now only done on singular pages within the admin dashboard.
+	* The Term SEO Box is removed if another popular SEO plugin is detected.
+	* Feed excerpt generation time.
+	* Sitemap generation time.
+	* Disabled query caching when fetching posts on the sitemap as it's a redundant feature at that point.
+	* Right before the sitemap gets rendered, many filters have been cleaned up to save memory.
+	* The custom title is now trimmed from whitespace in the Home Page Settings metabox.
+	* WPMUdev Domain Mapping database values are now all fetched in one query instead of two.
+	* External SEO plugin detection, it now uses constants to search for when applicable.
+	* External Sitemap plugin detection, it now uses constants to search for when applicable.
+	* Settings tabs vertical icon alignment.
+* **Fixed:**
+	/
+	* Added cache key language detection, to build correct descriptions for the right language. This works on WPML, qTranslate X and many other translation plugins.
+	* Added back Genesis schema.org `<head>` markup indicator on the home page.
+	* Post type support check was run throughout the WordPress admin dashboard, now it only checks if there are actually posts to check.
+	* WPML query args canonical pagination links.
+	* Plausible description cache conflict when the home page has been switched from page to blog in the SEO settings page.
+	* WPML URL base structure check was done wrongfully, the canonical URLs are now fixed for multilingual pages.
+	* Incorrect title counter length on all posts and pages when the home page title tagline has been removed. This issue was first encountered in version 2.5.0.
+	* Incorrect description was output on some archives.
+	* The removal of title additions now correctly reflect on the title counter length when JavaScript is disabled.
+	* The removal of title additions are now also reflecting its setting on the placeholders within categories and tags.
+	* Some deprecated functions gave a fatal error or warning, this has been resolved.
+	* When Reading Settings' Feed Options are set to summary, the backlink is now still shown when enabled.
+	* Screen Options showed an SEO column, while there isn't any in pages, posts and terms.
+	* When using diacritic characters, like in French, The SEO Bar's description word counter would be incorrect.
+	* On WooCommerce product tag search within the dashboard, Products showed the wrong SEO bar.
+	* On WooCommerce product tag search within the dashboard, Products could show the wrong post SEO state.
+	* On Touching the SEO bar, the pointer could be misplaced.
+	* When a category is added, the SEO bar doesn't show an empty and shifted row anymore.
+	* Double subdirectory generation in special Site Address URL configurations.
+	* Link relationship on the second Page was pointing to itself.
+	* The SEO Bar within Terms had a minor pixel overflow on small screens.
+	* Unneeded Page navigation confirmation warning when deleting post.
+	* Global page and paged variables could've been overwritten by the theme resulting in a crash. This can't happen anymore.
+	* Pinging the Search Engines of sitemap changes now won't happen on post creation.
+	* External URLs to a root domain without slash now work correctly in custom 301 redirect.
+	* Servers that don't support PCRE will now have 301 redirects parsed correctly.
+	* Archive rel next/prev pagination links now also work on the Blog Page.
+	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily.
+	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
+	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
+	* Blogname cache wasn't initialized correctly.
+	* Blog Description cache wasn't initialized correctly.
+* **Removed:**
+	/
+	* Shortlink URL from Homepage, as it's quite useless and self referring there.
+	* Yahoo Pinging option and initiation, as they've moved to Bing quite some time ago (oops).
+	* WPMUdev Avatars support. As WordPress core has taken over this feature and it was unreliable.
+	* Canonical URL from Search and 404 pages. It yields no value on those pages and might even yield incorrect results.
+	* Official support for WordPress 3.6 and 3.7. It takes too much time to maintain such backwards compatibility.
 
 **For developers:**
 
-* Added: `AutoDescription_Detect::tell_title_doing_it_wrong()`, based on the following deprecated function.
-* Deprecated: `AutoDescription_Detect::title_doing_it_wrong()`, this function was reworked to a point of uselessness in 2.5.2.
-* Changed: If the theme you're using is doing the wp_title() function wrong, the title parameters are now changed within the hidden HTML comment, i.e. e.g. `<!-- Title diw: "title" : "sep" : "seplocation" -->`).
-* Improved: Transient for title doing it right is now also set if the theme is doing it right to reduce extra database calls.
-* Cleaned up code.
-
-= 2.5.2 - Data Feed Influx =
-
-**Summarized:**
-
-* This is the biggest update so far, with over a hundred noticeable changes and with many functions added to remove repeated calls and replace them with memory stored functions.
-* This update of The SEO Framework brings you Feed excerpt generation as well as options to add backlinks in the feed. You can now also add your Pinterest verification code.
-* Also, a lot of the WordPress behavior detection and plugin detection has been reworked, improved and has been put to great use within the option pages to eliminate confusion by removing options if they have no effect.
-* And last but not least, due to popular demand an extra option has been added to change the Title generation, although it decouples all your pages within your website.
-* Oh, and many minor improvements and bug fixes have also been put into effect, including a few more important WooCommerce shop page fixes and a proud-to-be-of 20% overall performance improvement.
-
-**SEO Tip of the Update:**
-
-* If you are writing blog posts, take a look at the rising trends at Google Trends before it's all over the internet.
-* Write about any of the trends once in a while, and if the trend kicks off your website might just be exposed to many people.
-
-**For everyone:**
-
-* Added: Pinterest Analytics verification field.
-* Added: Feed option in the new Feed Settings metabox tab to convert the feed content into to an excerpt (400 characters) to counter scrapers and to prevent duplicated content issues. Default enabled on new installations.
-* Added: Feed option to add a non-followed backlink to the feed content to counter scrapers and bad links. Default enabled on new installations.
-* Added: The custom excerpt field (if available) is now taken into account before generating one from the content.
-* Added: Title additions options, which allows you to remove the blogname from all pages (except the home page, which has its own option already). This option is only available to themes which are doing it right. Default disabled and recommended not to be used, not even if the SEO data transfer went otherwise than expected.
-* Added: The custom in-post titles now also listen to the new Title addition options.
-* Added: The dynamic title additions placeholder has also been put into effect when the Title Additions Location has been set in reverse order. This effectively also eliminates confusion.
-* Added: Dynamic title additions left/right options based on being enabled or disabled.
-* Added: PHP 5.2 compatibility, which is actually very much outdated. PHP 5.2 will henceforth be (syntax-wise) supported until at least March 2016. Please [stay](http://php.net/eol.php) [updated](http://php.net/supported-versions.php)!
-* Added: Subtle sitemap plugin detection notification on SEO Settings Page. If a sitemap plugin is detected, the option will be removed from view and will be replaced with the notification.
-* Added: The sitemap detection will also remove the Sitemap ping and timestamp submenus and their options.
-* Added: Robots.txt file detection. If a robots.txt file is detected in the website's root folder the options to change it will be removed.
-* Added: sitemap.xml file detection. If a sitemap.xml file is detected in the website's root folder the options to output it will be removed.
-* Added: Subtle OG plugin detection notification on SEO Settings Page.
-* Added: The generation comments within the Sitemap output are now translatable.
-* Added: The plugin usage comments within the HTML output are now translatable.
-* Added: Translation comments aimed at front-end translations, translators can now easily find high-priority translations through the "Front-end" filter keyword.
-* Added: Removal of WordPress Core adjacent post rel links, this is now managed by The SEO Framework.
-* Added: Implemented, but left deactivated, the SEO bar in the Post Edit screens. You can enable this through a filter, found at [The SEO Framework filters](https://theseoframework.com/docs/api/filters/).
-* Added: Ultimate Member profile titles compatibility.
-* Added: A lot more sitemap plugins can be detected.
-* Improved: All archives get the archive title correctly.
-* Improved: When no excerpt can be created, the social description will be the same as the regular description again, instead of being empty.
-* Improved: Sped up breadcrumb generation time when no Post parents are found.
-* Improved: All single sentence html hover titles have no more dots at the end to maintain consistency.
-* Improved: Navigation tabs in the SEO Setting page now don't overflow anymore in the Social Meta Settings metabox.
-* Improved: Greatly reduced non-minified CSS file size by converting spaces into tabs.
-* Improved: Plugin Home link in the Plugin Activation page is now updated to HTTPS.
-* Improved: Various comparison checks are sped up.
-* Improved: Added trimming of spaces around the blogname and title in the Title and Description.
-* Improved: The character counter and settings changes is much more responsive and now listens to more browser interactions.
-* Improved: Greatly reduced sitemap generation time by caching more variables.
-* Changed: Small textual change to make things more clear in the Description Settings.
-* Fixed: Custom Canonical URL now works again when using WPMUdev Domain Mapping.
-* Fixed: Firefox checkbox colors are now also visible through shadows, when FireFox officially supports checkbox styling (which has been in question for [almost 8 years](https://bugzilla.mozilla.org/show_bug.cgi?id=418833)!) it will be removed.
-* Fixed: Firefox separator radio button margins were doubled.
-* Fixed: Firefox unnecessary white space above separator buttons.
-* Fixed: Sitemap `lastmod` dates could be in an incorrect syntax due to WordPress translations.
-* Fixed: Some other plugins pop up annoying notices over the controls within the SEO Framework (outside of their plugin domain!). They've been pushed down. Because of this fix the title is also pushed in-line to go beneath the Screen Options on tablets, a welcome side effect.
-* Fixed: og:locale content when a translation plugin has incorrectly changed the locale code of WordPress.
-* Fixed: Saving Draft after SEO Settings change gave an unnecessary and incorrect unsaved data popup notification.
-* Fixed: Sitemap URL Location missed a slash with special permalink settings.
-* Fixed: When using WordPress version below 4.5, when the Home Title location lost its input as a result from metabox dragging, the option is now properly falling back to its previous value rather than the global Title Settings value.
-* Fixed: Robots.txt URL Location missed a slash with special permalink settings.
-* Fixed: WPML Negotiation Type miscalculation, Different Domain Language URL format was treated as the subdirectory URL format.
-* Fixed: Invalid HTML around the Local Search Settings question mark in the Inpost Metabox.
-* Fixed: Twitter card type wasn't properly sanitized. This didn't cause a security issue as the option value is properly escaped before it's sent to the database and on output. Hurray for Framework.
-* Fixed: Settings radio boxes now contain a second fall back to default if empty value is and was given.
-* Fixed: Missing characters at the end of the title when the theme is using an html entity that has characters like the end of the title name.
-* Fixed: Day date archives cache keys could've been too long on old WordPress installations.
-* Fixed: WooCommerce main shop page now listens to all the assigned page SEO settings.
-* Fixed: WooCommerce main shop page description title is now correct.
-* Fixed: When a static front page has been assigned, the Posts Page can now listen to the redirect option.
-* Fixed: Temporarily added lines back (which were removed in WordPress 4.4) beneath the option tabs in the metaboxes on mobile screens.
-* Fixed: Dynamic Title Placeholder input text visual glitch when the input text was overflowing.
-* Fixed: Miscalculation in multibyte string positioning when using non UTF-8 characters and when the server didn't support mbstring. This could've caused a miscalculation for the title when the theme was doing it wrong.
-* Updated: POT file.
-
-**For developers:**
-
-* Added: New filters.
-* Added: New Class: `AutoDescription_Feed` within `feed.class.php`.
-* Added: More filterable image arguments.
-* Added: Two Image fallback filters.
-* Added: Extra title argument to disable sanitation. Requires santition afterwards.
-* Added: If the theme you're using is doing the `wp_title()` function wrong, the title parameters are now added in a hidden HTML comment (i.e. e.g. `<!-- Title diw: | true right -->`) in the page footer for developer debugging purposes.
-* Added: Sanitation for effectively removing spaces and html tags, `s_no_html_space`.
-* Added: With up to 140 calls in a single load in the admin area, a new cached function has arrived: `AutoDescription_PostData::get_blogname()`. Effectively reduced RAM usage by 800kB with 100 posts displayed.
-* Added: New cached function: `AutoDescription_PostData::get_blogdescription()`.
-* Added: New function: `AutoDescription_Generate::fetch_locale()`, fetches correct Open Graph locale based on WordPress settings or through parameter.
-* Added: New cached function: `AutoDescription_Detect::can_i_use()`. Dump your multidimensional array of functions, classes and constants in this function and it will calculate if they can all be used, which also caches the matches for these checks are quite intensive.
-* Added: New cached function: `AutoDescription_Detect::is_singular()`. Special is_singular check which works on both front-end as backend. This also tells that the WooCommerce Shop page is singular instead of an archive.
-* Added: Many more functions, which aren't important enough to be highlighted.
-* Added: `post_id` filterable argument on `AutoDescription_Generate::get_image()`.
-* Added: When The SEO Framework debugger is activated, the screen names are shown at the bottom-right in the admin screens.
-* Optimized: Many comparisons have been converted into type sensitive statements, this is less forgiving to erroneous option array filters.
-* Changed: Reduced sitemap ping throttle transient name length.
-* Changed: When the first parameter of `AutoDescription_PostData::get_excerpt_by_id()` is filled in, it will now not only escape the attributes, but strip the whole content from its tags and shortcodes.
-* Changed: `AudoDescription_Generate::description_from_custom_field()` can no longer return an array with page for posts data.
-* Improved: `AutoDescription_PostData::get_excerpt_by_id()` now listens more carefully to the first parameter. If it's not empty, it doesn't try to fetch the post content.
-* Improved: Removed the Generator tag through action instead of filter.
-* Improved: Disabled plugin output completely on Preview mode, including the title tag manipulation.
-* Improved: `AutoDescription_Admin_Init::add_post_state` no longer uses `global $post`.
-* Improved: Cleaned up debug messages.
-* Updated: Doing it Wrong notice to the current standards.
-* Fixed: Unlikely conflict in the default site options and warned site options. This should only have caused a problem if the (protected) warned settings were fetched before admin_init.
-* Fixed: Check for error in breadcrumbs is now also applicable for the term fetch, instead of doubling the cat check.
-* Fixed: Empty values can now be correctly debugged for value type through the debugger.
-* Fixed: Debugger no longer generates an error when parsing boolean values.
-* Fixed: Debugger no longer generates an error when fetching a non-existing excerpt on the front page.
-* Fixed: PHP Warning on transient generation when displaying multiple CPT on a page.
-* Fixed: PHP Fatal error when debugging a taxonomy.
-* Fixed: PHP Fatal errors when debugging the sitemap (unrelated fix).
-* Removed: Generic debug messages in the sitemap, these caused the sitemap syntax to fail on generation.
-* Removed: Doing it Wrong notice in the footer when the theme is outputting the title wrong on WordPress 4.4.0 and lower. This has been exchanged for a small html comment.
-* Removed: Genesis check for `wp_title` as it now supports the much required title tag.
-* Removed: IS_HMPL constant check, now only listens to the filter.
-* Removed: Override and front-page image arguments as it has been replaced with a more extensive and easier to understand filter.
-* Deprecated: `AudoDescription_Generate::generate_description_from_id()` 2nd argument. Exchanged for escape. 3rd parameter will still work until 2.6.0.
-* Deprecated: `AudoDescription_Generate::generate_excerpt()` 3rd argument. Exchanged for char length. 4th and 5th parameters are also deprecated and will work as max_char_length until 2.6.0.
-* Deprecated: `AutoDescription_Admin_Init::supported_screens` as it isn't used anymore. This also deprecates the `the_seo_framework_supported_screens` filter.
-* Note: On many places, `empty()` has been exchanged for type sensitive checks. If you do not wish to use a parameter, always input the default to maintain expected behavior.
-* Note: The description excerpt cache version has been bumped to refresh all excerpts.
-* Cleaned up code.
-
-**Notes:**
-
-* I am aware that the GeoDirectory plugin title settings are ignored by this plugin. A compatibility update is planned.
-
-= 2.5.1 - Undocumented Properties =
-
-**Summarized:**
-
-* This update addresses issues with the Facebook protocol caused by overlooked (and undocumented) terms. This makes sure the Facebook meta tags work correctly and as per standards.
-* Also, all Posts Page data has been fixed and is now being fetched correctly.
-
-**SEO Tip of the Update:**
-
-* Having a faster website will improve your Search Engine Results Page (SERP) ranking.
-* It will also prevent potential visitors from hitting the back button if they can't reach your website in a timely manner.
-* See SEO Tip of The Update (2.3.9) for related information on how page speed affects SEO. You can find all the previous SEO tips within the plugin folder.
-
-**For everyone:**
-
-* Added: The 'blog' og:type type for the blog page or homepage when it's a Post Page.
-* Changed: Page type has been set to `website` rather than `article` when no og:image has been provided on a post to adhere to the standard, this will still output an error in the validator although it's correct.
-* Improved: Standardized the default permalink structure URL and reduced memory usage.
-* Improved: Shortlink generation time.
-* Fixed: The Blog Page now listens to the robots settings.
-* Fixed: The Blog Page now listens the custom Title set.
-* Fixed: The Blog Page auto-description InPost Metabox placeholder is now what it outputs on the front-end.
-* Fixed: Usage of "name" instead of "property" in OG/Facebook meta tags. Sometimes Facebook fixed this automatically, see "List of property fixes" below for more information.
-
-**For developers:**
-
-* Added: New filter.
-* Added: Bumped year of copyright.
-* Changed: Space after each exclamation mark to maintain flow in PHP from being mixed.
-* Cleaned up code.
-
-**List of property fixes:**
-
-* article:author
-* article:publisher
-* fb:app_id
-* article:published_time
-* article:modified_time
+* **Added:**
+	/
+	* New filters! See **Filter Notes** below.
+	* More than 150 new functions to make this plugin more maintainable.
+	* `AutoDescription_Core` class, this class replaced `AutoDescription_Init` from being the latest class.
+	* `AutoDescription_Generate_Description` class.
+	* `AutoDescription_Generate_Title` class.
+	* `AutoDescription_Generate_Url` class.
+	* `AutoDescription_Generate_Ldjson` class.
+	* `AutoDescription_Generate_Image` class.
+	* `AutoDescription_Generate_Author` class.
+	* TODO `AutoDescription_Author` class.
+	* TODO `AutoDescription_PostInfo` class.
+	* `AutoDescription_TermInfo` class.
+	* `AutoDescription_Compat` class.
+	* `AutoDescription_Debug` class.
+	* `AutoDescription_Query` class, this class contains queries which use the default WP_Query class, but then extends it to be used in the admin area as well.
+	* `AutoDescription_Admin_Init::localize_admin_javascript()` function.
+	* `AutoDescription_Generate_Title::get_the_real_archive_title()` function, which also works in the admin area and has a term object argument and outputs no HTML, effectively speading the whole plugin up on archive pages.
+	* `AutoDescription_Detect::current_theme_supports_title_tag()` function, returns cached true if theme supports title tag.
+	* `AutoDescription_Siteoptions::get_all_options()` function.
+	* Customized error handlers.
+	* `THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS` boolean constant listener to disable transients.
+	* `the_seo_framework_is_settings_page()` function.
+	* Extra `$post_id` arguments, see **Filter notes** for more information below.
+	* Untitled Term Name when using WordPress core archive title filters when returning falsy.
+	* Debugging now shows memory usage and processing time.
+	* When debugging is enabled, the memory usage is also shown in the plugin indicator within HTML.
+* **Changed:**
+	/
+	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
+	* `AutoDescription_Core::get_the_real_ID()` now returns 0 instead of false if no ID is found.
+	* `AutoDescription_Generate_Title::build_title_notagline()` is now protected.
+	* `AutoDescription_Generate_Title::title_for_terms()` now uses `array $args` for parameters.
+	* `AutoDescription_Generate_Title::generate_title()` now uses `array $args` for parameters.
+	* `AutoDescription_Generate_Title::title()` admin functions now don't rely on `$args['meta']` anymore to bypass doing it wrong detection, but rather on `is_admin()` checks.
+	* `AutoDescription_Generate_Title::title()`'s `$args['meta']` is now set to default `false`.
+	* CSS and JS file identifiers have their duplicated `css` or `js` removed. So `autodescription-css-css` is now `autodescription-css`, and so forth.
+* **Updated:**
+	* JS files and cache.
+	* CSS files and cache.
+* **Reworked:**
+	/
+	* Class structure and order.
+	* `AutoDescription_DoingItRight` and all its contents.
+	* `AutoDescription_Generate_Description` and all its contents.
+	* `AutoDescription_Transients::generate_cache_key()`, it's much faster and more accurate now.
+	* `AutoDescription_Generate_Url` and all its contents.
+	* `AutoDescription_Generate_Ldjson` and all its contents.
+	* `AutoDescription_Generate_Title` and all its contents.
+	* Functions have been put in their respective aptly named classes where applicable.
+	* Debugging has been modified to clean up the code greatly.
+	* Metabox Setting Navigation Tabs, now your tabs are automatically styled and integrated when using the `AutoDescription_Metaboxes::nav_tab_wrapper()` function. It's also less "search-and-destroy" and thus easier on the browser.
+	* The metabox navigation tabs' content is now also automatically aligned.
+* **Improved:**
+	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Hertz!).
+	* Cached the SEO bar translations.
+	* render.class.php filters can now return empty string to disable its output.
+	* `The_SEO_Framework_Load::call_function()` consumes less memory.
+	* `the_seo_framework_knowledgegraph_settings_tabs` filter now has an argument parameter.
+	* `the_seo_framework_sitemaps_settings_tabs` filter now has an argument parameter.
+	* `the_seo_framework_social_settings_tabs` filter now has an argument parameter.
+	* `the_seo_framework_add_blogname_to_title` filter now has effect throughout the plugin.
+	* `the_seo_framework_canonical_force_scheme` filter now works on all URLs generated by this plugin and has now an `$scheme` argument which passes the current used scheme.
+	* WordPress Query detection.
+	* Blog page and Home Page query detection.
+	* Search query titles aren't escaped twice anymore.
+	* Removed duplicated term object calls on term pages, reducing memory usage.
+	* When the paged URLs filter is used, the then useless URLs aren't rendered.
+	* Plugin settings activation filter usage is now reflected throughout the plugin.
+	* When using the plugin settings activation filter, new default options are still applied (which are also filterable).
+	* Benchmarks have shown that an array flip to use an isset match only benefits huge arrays very little and only when you're certain the result is at the end of the array. Otherwise, it's a drastic performance decrease. Therefore `$this->is_array()` calls have been set back to the default PHP behavior.
+	* `og:image` resizing now doesn't use PCRE anymore, but regular PHP find and replace.
+	* `og:image` quality has been upped to 82 from 70. This is according to the [new WordPress 4.5.0 standards](https://make.wordpress.org/core/2016/02/22/proposal-increase-the-default-image-compression-in-wordpress/).
+	* This plugin's admin CSS and JS are now registered and cached prior to enqueueing. This speeds things up if multiple script calling hooks are used.
+	* The Term SEO box initialization now only happens on the term edit screens.
+	* Automated Description Example now uses ID's rather than classes for better JavaScript performance.
+* **Fixed:**
+	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
+	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
+	* `AutoDescription_Generate_Image::get_image()` now returns something when the third parameter is set to false.
+	* The SEO Bar column initialization filter used to be called as an action and mixed echoing and returning. It's now a consistent filter, as WP core suggests.
+	* Empty delimiter PHP warning when the theme is doing it wrong and no separator has been provided.
+	* Improperly sanitized option, disclosed. Although, it holds no security treat as all options always go through multiple sanitation processes.
+	* PHP Warning in the robots.txt output. This will make subdirectory sitemaps work again.
+	* JavaScript undefined TypeError on mobile screens and Microsoft Edge.
+	* `The_SEO_Framework_Load::call_function()` contained wrong error handling.
+	* `The_SEO_Framework_Load::call_function()` now converts and checks for `$this` correctly. Evidently speeding up the plugin greatly.
+	* `The_SEO_Framework_Load::call_function()` now doesn't return a fatal error anymore if class and method isn't found when the class is referred to as string.
+	* LD+Json Home Page flushing cache wasn't initialized correctly on SEO settings save.
+* **Deprecated:**
+	/
+	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
+	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use `$args['id']` instead.
+	* `AutoDescription_Debug::echo_debug_information()` function, replaced by `AutoDescription_Debug::get_debug_information()` and refactored.
+	* `AutoDescription_DoingItRight::seo_column()` function, replaced by `AutoDescription_DoingItRight::seo_bar()` to eliminate naming confusion.
+	* `AutoDescription_Sitemaps::setup_sitemap_transient()` function, replaced by `AutoDescription_Sitemaps::setup_sitemap()` to eliminate naming confusion.
+	* `AutoDescription_Detect::is_locale()` function, replaced by `AutoDescription_Detect::check_wp_locale()` to eliminate naming confusion.
+	* `AutoDescription_Generate_Title::get_placeholder_title()` function, use `AutoDescription_Generate_Title::title()` instead with the argument `notagline`.
+* **Removed:**
+	/
+	* Open Graph plugins check from Canonical URL output, these are unrelated.
+	* Filter/Constant/Action PHP comments indicating changes from 2.3.0 to clean up code.
+	* Title generation `placeholder` argument. Use `get_custom_field` and/or `notagline` instead.
+* **Other:**
+	* Cleaned up code, massively.
+* **Filter Notes:**
+	* **New:**
+		/
+		* `(string) the_seo_framework_shortlink_output`
+		* `(string) the_seo_framework_robots_output`
+		* `(string) the_seo_framework_paged_url_output_prev`
+		* `(string) the_seo_framework_paged_url_output_next`
+		* `(string) the_seo_framework_ldjson_scripts`
+		* `(bool) the_seo_framework_json_name_output`
+		* `(bool) the_seo_framework_use_archive_title_prefix`
+		* `(bool) the_seo_framework_update_options_at_update`
+		* TODO `(string) the_seo_framework_pre_add_title`
+		* TODO `(string) the_seo_framework_pro_add_title`
+		* `(string) the_seo_framework_metabox_priority`
+		* `(int) the_seo_framework_term_metabox_priority`
+		* `(bool) the_seo_framework_seo_bar_pill`
+		* `(int) the_seo_framework_bother_me_desc_length`
+		* `(array) the_seo_framework_description_settings_tabs`
+		* `(array) the_seo_framework_title_settings_tabs`
+		* `(string) the_seo_framework_feed_source_link_text`
+	* **Altered:**
+		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
+		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
+		* `(string) the_seo_framework_description_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogdescription_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_oglocale_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogtitle_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogtype_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogimage_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_ogsitename_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittercard_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittersite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittercreator_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twittertitle_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twitterdescription_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_twitterimage_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_facebookauthor_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_facebookpublisher_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_facebookappid_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_publishedtime_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_modifiedtime_output`, added `$post_id` parameter.
+		* `(bool) the_seo_framework_output_canonical`, added `$post_id` parameter.
+		* `(string) the_seo_framework_googlesite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_bingsite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_pintsite_output`, added `$post_id` parameter.
+		* `(string) the_seo_framework_robots_meta`, added `$post_id` parameter.
+		* `(array) the_seo_framework_robots_settings_tabs`, added `$args` parameter.
+		* `(array) the_seo_framework_social_settings_tabs`, added `$args` parameter.
+		* `(array) the_seo_framework_knowledgegraph_settings_tabs`, added `$args` parameter.
+		* `(array) the_seo_framework_sitemaps_settings_tabs`, added `$args` parameter.
+	* **Removed:**
+		/
+		* `(bool) the_seo_framework_seo_bar_squared`. Replaced by `(bool) the_seo_framework_seo_bar_pill`.
+* **Constant Notes:**
+	* **New:**
+		* `(bool) THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS`. Note: Does not disable transients for pinging search engines.
+	* **Removed:**
+		* `(bool) THE_SEO_FRAMEWORK_DEBUG_MORE`. It always shows more now.
+* **Notes:**
+	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
+	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace of The SEO Framework.
 
 = Full changelog =
 

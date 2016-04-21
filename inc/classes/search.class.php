@@ -23,7 +23,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Search extends AutoDescription_Generate {
+class AutoDescription_Search extends AutoDescription_Generate_Author {
 
 	/**
 	 * Constructor, load parent constructor
@@ -93,15 +93,15 @@ class AutoDescription_Search extends AutoDescription_Generate {
 	public function search_filter( $query ) {
 
 		// Don't exclude pages in wp-admin
-		if ( ! is_admin() ) {
+		if ( false === $this->is_admin() ) {
 			if ( $query->is_search ) {
 
 				$protected_posts = $this->exclude_search_ids();
-				if ( ! empty( $protected_posts ) ) {
+				if ( $protected_posts ) {
 					$get = $query->get( 'post__not_in' );
 
 					//* Merge user defined query.
-					if ( ! empty( $get ) )
+					if ( $get )
 						$protected_posts = array_merge( $protected_posts, $get );
 
 					$query->set( 'post__not_in', $protected_posts );
