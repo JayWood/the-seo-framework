@@ -58,7 +58,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 				return $id;
 		}
 
-		$id = $is_admin ? $this->check_the_real_ID() : '';
+		$id = $is_admin ? '' : $this->check_the_real_ID();
 
 		if ( empty( $id ) ) {
 			//* Does not always return false.

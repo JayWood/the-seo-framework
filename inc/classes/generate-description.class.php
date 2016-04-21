@@ -216,9 +216,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( empty( $description ) )
 			$description = $this->get_custom_archive_description( $args );
 
-		if ( $escape && $description ) {
+		if ( $escape && $description )
 			$description = $this->escape_description( $description );
-		}
 
 		return $description;
 	}
@@ -664,8 +663,9 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( '' === $id )
 			$id = $this->get_the_real_ID();
 
-		if ( $page_on_front ) {
-			$title = $this->get_blogdescription();
+		if ( $page_on_front || $this->is_static_frontpage( $id ) ) {
+			$tagline = $this->get_option( 'homepage_title_tagline' );
+			$title = $tagline ? $tagline : $this->get_blogdescription();
 		} else {
 			/**
 			 * No need to parse these when generating social description.
@@ -703,7 +703,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.2.8
 		 */
 		/* translators: Front-end output. */
-		$title = empty( $title ) ? __( 'Untitled', 'autodescription' ) : trim( $title );
+		$title = empty( $title ) ? $this->untitled() : trim( $title );
 
 		return $title;
 	}

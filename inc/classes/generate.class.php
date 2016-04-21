@@ -241,7 +241,9 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 		if ( isset( $description ) )
 			return $description;
 
-		return $description = trim( get_bloginfo( 'description', 'display' ) );
+		$description = trim( get_bloginfo( 'description', 'display' ) );
+
+		return $description = $description ? $description : $this->untitled();
 	}
 
 	/**

@@ -8,13 +8,14 @@ Stable tag: 2.5.2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-An automated, advanced, accessible, unbranded and extremely fast SEO solution for any WordPress website.
+The SEO Framework plugin provides an automated and advanced SEO solution for your WordPress website.
 
 == Description ==
 
 = The SEO Framework =
 
 **Easy for beginners, awesome for experts. WordPress SEO for Everyone.**
+An accessible, unbranded and extremely fast SEO solution for any WordPress website.
 
 > <strong>This plugin strongly helps you create better SEO value for your content.</strong><br>
 > But at the end of the day, it all depends on how entertaining or well-constructed your content or product is.
@@ -616,6 +617,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 	* Moved SEO Bar before bbPress Reply Created.
 	* The sitemap, theme doing it right, description and LD+Json transient keys have been invalidated.
 	* Open Graph plugin detection now only shows a notification, instead of removing OG output as well. These values may be duplicated (although undesired).
+	* When a Custom Home Page Title Tagline is set, it's now used for the Title on the description on the home page.
+	* When no Blog Tagline has been set, it will now return "Untitled".
 * **Updated:**
 	/
 	* Several sentences to have a better English structure to what they do.
