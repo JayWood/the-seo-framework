@@ -216,10 +216,9 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 * @param int|string|bool $page_id the Taxonomy or Post ID.
 	 * @param string $taxonomy The Taxonomy name.
 	 *
-	 * @staticvar array $cached_id
+	 * @staticvar array $cached_id : contains cache strings.
 	 *
 	 * @global $blog_id;
-	 * @TODO refactor, is smelly. var_dump() @since 2.6.0
 	 *
 	 * @since 2.3.3
 	 *
@@ -227,156 +226,147 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 */
 	public function generate_cache_key( $page_id, $taxonomy = '' ) {
 
+		$page_id = $page_id ? $page_id : $this->get_the_real_ID();
+
 		static $cached_id = array();
 
 		if ( isset( $cached_id[$page_id][$taxonomy] ) )
 			return $cached_id[$page_id][$taxonomy];
 
-		//get_locale(); === 5 characters
-
 		global $blog_id;
 
+		$locale = '_' . strtolower( get_locale() );
+
+		//* Placeholder ID.
 		$the_id = '';
 
-		/**
-		 * Generate home page cache key for the Home Page metabox.
-		 * @since 2.4.3.1
-		 */
-		if ( $this->is_admin() && $this->is_menu_page( $this->pagehook ) ) {
-			//* We're on the SEO Settings page now.
-
-			if ( 'posts' === get_option( 'show_on_front' ) ) {
-				/**
-				 * Detected home page.
-				 * @since 2.3.4
-				 */
-				$the_id = 'hblog_' . (string) get_option( 'page_on_front' );
+		if ( $this->is_404() ) {
+			//* 404.
+			$the_id = '_404_';
+		} else if ( ( $this->is_front_page( $page_id ) ) || ( $this->is_admin() && $this->is_menu_page( $this->pagehook ) ) ) {
+			//* Fetch Home key.
+			if ( $this->has_page_on_front() ) {
+				//* Home is page.
+				$the_id = 'hpage_' . $this->get_the_front_page_ID();
 			} else {
-				/**
-				 * Detected home page.
-				 * @since 2.3.4
-				 */
-				$the_id = 'hpage_' . (string) get_option( 'page_on_front' );
+				//* Home is blog.
+				$the_id = 'hblog_' . $this->get_the_front_page_ID();
+			}
+		} else if ( $this->is_blog_page( $page_id ) ) {
+			//* Blog page.
+			$the_id = 'blog_' . $page_id;
+		} else if ( $this->is_singular() ) {
+			if ( $this->is_page( $page_id ) ) {
+				//* Page.
+				$the_id = 'page_' . $page_id;
+			} else if ( $this->is_single( $page_id ) ) {
+				//* Post.
+				$the_id = 'post_' . $page_id;
+			} else if ( $this->is_attachment( $page_id ) ) {
+				//* Attachment.
+				$the_id = 'attach_' . $page_id;
+			} else {
+				//* Other.
+				$the_id = 'singular_' . $page_id;
+			}
+		} else if ( $this->is_search() ) {
+			//* Search query.
+			$query = '';
+
+			if ( function_exists( 'get_search_query' ) ) {
+				$search_query = get_search_query();
+
+				if ( $search_query )
+					$query = str_replace( ' ', '', $search_query );
+
+				//* Limit to 10 chars.
+				if ( mb_strlen( $query ) > 10 )
+					$query = mb_substr( $query, 0, 10 );
+
+				$query = esc_sql( $query );
 			}
 
-		} else {
-			//* All other pages, admin and front-end.
+			$the_id = $page_id . '_s_' . $query;
+		} else if ( $this->is_archive() ) {
+			if ( $this->is_category() || $this->is_tag() || $this->is_tax() ) {
+				//* Term.
 
-			if ( false === $this->is_search() ) {
-				if ( ( false === $page_id || false === $this->is_front_page( $page_id ) ) && ( 'posts' === get_option( 'show_on_front' ) ) ) {
-					if ( $this->is_404() ) {
-						$the_id = '_404_';
-					} else {
-						/**
-						 * Generate for home is blog page.
-						 * New transient name because of the conflicting bugfix on blog.
-						 * @since 2.3.4
-						 */
-						$the_id = 'hblog_' . (string) get_option( 'page_on_front' );
+				if ( empty( $taxonomy ) )
+					$taxonomy = get_query_var( 'taxonomy' );
+
+				$the_id = $this->generate_taxonomial_cache_key( $page_id, $taxonomy );
+
+				if ( $this->is_tax() )
+					$the_id = 'archives_' . $the_id;
+
+			} else if ( $this->is_author() ) {
+				//* Author page.
+				$the_id = 'author_' . $page_id;
+			} else if ( $this->is_date() ) {
+				//* Dates.
+				$post = get_post();
+
+				if ( $post && isset( $post->post_date ) ) {
+					$date = $post->post_date;
+
+					if ( $this->is_year() ) {
+						//* Year.
+						$the_id .= 'year_' . mysql2date( 'y', $date, false );
+					} else if ( $this->is_month() ) {
+						//* Month.
+						$the_id .= 'month_' . mysql2date( 'm_y', $date, false );
+					} else if ( $this->is_day() ) {
+						//* Day. The correct notation.
+						$the_id .= 'day_' . mysql2date( 'd_m_y', $date, false );
 					}
-				} else if ( ( false === $page_id || $this->is_front_page( $page_id ) || $page_id === get_option( 'page_on_front' ) ) && ( empty( $taxonomy ) && $this->has_page_on_front() ) ) {
-					if ( $this->is_404() ) {
-						$the_id = '_404_';
-					} else {
-						/**
-						 * Detected home page.
-						 * @since 2.3.4
-						 */
-						$the_id = 'hpage_' . (string) get_option( 'page_on_front' );
-					}
-				} else if ( false === $this->is_front_page( $page_id ) && empty( $taxonomy ) && ( ( $page_id === get_option( 'page_for_posts' ) && 0 !== get_option( 'page_for_posts' ) ) || ( false === $page_id && did_action( 'admin_init' ) ) ) ) {
-					/**
-					 * Generate key for blog page that's not the home page.
-					 * Bugfix
-					 * @since 2.3.4
-					 */
-					$the_id = 'blog_' . $page_id;
-				} else if ( false === $this->is_singular( $page_id ) && empty( $taxonomy ) && false === did_action( 'admin_init' ) ) {
-					//* Unsigned CPT, AnsPress question, etc.
-					global $wp_query;
-
-					/**
-					 * Generate for everything else.
-					 * Doesn't work on admin_init action.
-					 */
-
-					$query = isset( $wp_query->query ) ? (array) $wp_query->query : null;
+				} else {
+					//* Get seconds since UNIX Epoch. This is a failsafe.
 
 					/**
-					 * Automatically generate transient based on query.
-					 *
-					 * Adjusted to comply with the 45 char limit.
-					 * @since 2.3.4
+					 * @staticvar string $unix : Used to maintain a static timestamp for this query.
 					 */
-					if ( isset( $query ) ) {
-						$the_id = '';
+					static $unix = null;
 
-						// Trim key to 2 chars.
-						foreach ( $query as $key => $value ) {
-							/**
-							 * If array, combine keys.
-							 *
-							 * @NOTE Fixes unconfirmed bug.
-							 * @since 2.5.2
-							 */
-							if ( is_array( $value ) ) {
+					if ( ! isset( $unix ) )
+						$unix = date( 'U' );
 
-								$the_id .= substr( $key, 0, 2 ) . '_';
+					//* Temporarily disable transients to prevent database spam.
+					$this->the_seo_framework_use_transients = false;
+					$this->use_object_cache = false;
 
-								//* mb_substr will generate a notice if array to string conversion still takes place. All is good :).
-								foreach ( $value as $v )
-									$the_id .= mb_substr( $v, 0, 2 ) . '_';
-
-							} else {
-								$the_id .= substr( $key, 0, 2 ) . '_' . mb_substr( $value, 0, 2 ) . '_';
-							}
-						}
-
-						//* add Page ID.
-						$the_id .= (string) $this->get_the_real_ID();
-					}
-				} else if ( false === $this->is_singular( $page_id ) && $taxonomy ) {
-					//* Taxonomy
-
-					$the_id = '';
-
-					//* Save taxonomy name and split into words with 3 length.
-					$taxonomy_name = explode( '_', $taxonomy );
-					foreach ( $taxonomy_name as $name )
-						$the_id .= substr( $name, 0, 3 ) . '_';
-
-					$p_id = $page_id ? $page_id : $this->get_the_real_ID();
-
-					//* Put it all together.
-					$the_id = rtrim( $the_id, '_' ) . '_' . (string) $p_id;
-				} else if ( $page_id ) {
-					$the_id = $page_id;
+					$the_id = 'unix_' . $unix;
 				}
 			} else {
-				//* Search query.
-				$query = '';
+				//* Other taxonomial archives.
 
-				if ( function_exists( 'get_search_query' ) ) {
-					$search_query = get_search_query();
+				if ( empty( $taxonomy ) ) {
+					$post_type = get_query_var( 'post_type' );
 
-					if ( $search_query )
-						$query = str_replace( ' ', '', $search_query );
+					if ( is_array( $post_type ) )
+						reset( $post_type );
 
-					//* Limit to 10 chars.
-					if ( mb_strlen( $query ) > 10 )
-						$query = mb_substr( $query, 0, 10 );
+					if ( $post_type )
+						$post_type_obj = get_post_type_object( $post_type );
+
+					if ( isset( $post_type_obj->labels->name ) )
+						$taxonomy = $post_type_obj->labels->name;
 				}
 
-				$the_id = $page_id . '_s_' . $query;
+				//* Still empty? Try this.
+				if ( empty( $taxonomy ) )
+					$taxonomy = get_query_var( 'taxonomy' );
+
+				$the_id = $this->generate_taxonomial_cache_key( $page_id, $taxonomy );
+				$the_id = 'archives_' . $the_id;
 			}
 		}
 
 		/**
-		 * Static Front page isn't set. Causes all kinds of problems :(
+		 * Static Front page isn't set or something else is happening. Causes all kinds of problems :(
 		 * Noob. :D
 		 */
 		if ( empty( $the_id ) ) {
-			$the_id = 'home_noob';
+			$the_id = 'noob_' . $page_id . '_' . $taxonomy;
 		}
 
 		/**
@@ -384,7 +374,31 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 * Then some cache keys will conflict on every 10th blog ID from eachother which post something on the same day..
 		 * On the day archive. With the same description setting (short).
 		 */
-		return $cached_id[$page_id][$taxonomy] = (string) $the_id . '_' . (string) $blog_id;
+		return $cached_id[$page_id][$taxonomy] = $the_id . '_' . $blog_id . $locale;
+	}
+
+	/**
+	 * Generates Cache key for taxonomial archives.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int $page_id The taxonomy or page ID.
+	 * @param string $taxonomy The taxonomy name.
+	 *
+	 * @return string The Taxonomial Archive cache key.
+	 */
+	protected function generate_taxonomial_cache_key( $page_id = '', $taxonomy = '' ) {
+
+		$the_id = '';
+
+		$taxonomy_name = explode( '_', $taxonomy );
+		if ( is_array( $taxonomy_name ) ) {
+			foreach ( $taxonomy_name as $name )
+				$the_id .= mb_substr( $name, 0, 3 ) . '_';
+		}
+
+		//* Put it all together.
+		return rtrim( $the_id, '_' ) . '_' . $page_id;
 	}
 
 	/**
@@ -513,7 +527,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 */
 	public function delete_ld_json_transient( $page_id, $taxonomy = '' ) {
 
-		$flushed = null;
+		static $flushed = null;
 
 		if ( ! isset( $flushed ) ) {
 			$this->setup_ld_json_transient( $page_id, $taxonomy );

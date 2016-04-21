@@ -277,7 +277,6 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			'term_id' => $term_id,
 			'taxonomy' => $taxonomy,
 			'placeholder' => true,
-			'meta' => true,
 			'get_custom_field' => false,
 		);
 
@@ -426,6 +425,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 
 		$post_id = $this->get_the_real_ID();
 		$is_static_frontpage = $this->is_static_frontpage( $post_id );
+
 		$title = $this->get_custom_field( '_genesis_title', $post_id );
 
 		$page_on_front_option = get_option( 'page_on_front' );

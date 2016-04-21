@@ -167,8 +167,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					$name = isset( $value['name'] ) ? $value['name'] : '';
 
 					?>
-					<div class="hide-if-js">
-						<hr>
+					<div class="hide-if-js seoframework-content-no-js">
 						<div class="seoframework-tab seoframework-tab-no-js">
 							<span class="seoframework-nav-tab seoframework-active-tab">
 								<?php echo $dashicon ? '<span class="dashicons dashicons-' . esc_attr( $dashicon ) . ' seoframework-dashicons-tabs"></span>' : ''; ?>
@@ -201,17 +200,15 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 *
 	 * @since 2.2.2
 	 *
+	 * @param array $args The metabox arguments.
+	 *
 	 * @see $this->title_metabox()	Callback for Title Settings box.
 	 */
-	public function title_metabox() {
+	public function title_metabox( $args = array() ) {
 
 		do_action( 'the_seo_framework_title_metabox_before' );
 
-		$language = $this->google_language();
-
 		$title_separator = $this->title_separator;
-
-		$recommended = ' class="recommended" title="' . esc_attr__( 'Recommended', 'autodescription' ) . '"';
 
 		$latest_post_id = $this->get_latest_post_id();
 
@@ -227,10 +224,100 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$sep_option = $this->get_field_value( 'title_seperator' ); // Note: typo.
 		$sep = array_search( $sep_option, array_flip( $title_separator ), false );
 
-		$example_left = '<em><span class="title-additions-js">' . $blogname . '<span class="autodescription-sep-js">' . " $sep " . '</span></span>' . $title . '</em>';
-		$example_right = '<em>' . $title . '<span class="title-additions-js"><span class="autodescription-sep-js">' . " $sep " . '</span>' . $blogname . '</span></em>';
+		$additions_left = '<span class="title-additions-js">' . $blogname . '<span class="autodescription-sep-js">' . " $sep " . '</span></span>';
+		$additions_right = '<span class="title-additions-js"><span class="autodescription-sep-js">' . " $sep " . '</span>' . $blogname . '</span>';
 
-		$home_page_has_option = __( 'The Home Page has a specific option.', 'autodescription' );
+		$example_left = '<em>' . $additions_left . $title . '</em>';
+		$example_right = '<em>' . $title . $additions_right . '</em>';
+
+		$showleft = 'left' === $this->get_option( 'title_location' ) ? true : false;
+		//* Check left first, as right is default (and thus fallback).
+		$example_nojs = $showleft ? $example_left : $example_right;
+
+		?>
+		<h4><?php printf( __( 'Automated Title Settings', 'autodescription' ) ); ?></h4>
+		<p><span class="description"><?php printf( __( "The page title is prominently shown within the browser tab as well as within the Search Engine results pages.", 'autodescription' ) ); ?></span></p>
+
+		<h4><?php _e( 'Example Automated Title Output', 'autodescription' ); ?></h4>
+		<p>
+			<span class="title-additions-example-left" style="display:<?php echo $showleft ? 'inline' : 'none'; ?>"><?php echo $this->code_wrap_noesc( $example_left ); ?></span>
+			<span class="title-additions-example-right" style="display:<?php echo $showleft ? 'none' : 'inline'; ?>"><?php echo $this->code_wrap_noesc( $example_right ); ?></span>
+		</p>
+
+		<hr>
+		<?php
+
+		/**
+		 * Parse tabs content
+		 *
+		 * @param array $default_tabs { 'id' = The identifier =>
+		 *			array(
+		 *				'name' 		=> The name
+		 *				'callback' 	=> The callback function, use array for method calling (accepts $this, but isn't used here for optimization purposes)
+		 *				'dashicon'	=> Desired dashicon
+		 *			)
+		 * }
+		 *
+		 * @since 2.2.2
+		 */
+		$default_tabs = array(
+			'general' => array(
+				'name' 		=> __( 'General', 'autodescription' ),
+				'callback'	=> array( 'AutoDescription_Metaboxes', 'title_metabox_general_tab' ),
+				'dashicon'	=> 'admin-generic',
+			),
+			'additions' => array(
+				'name'		=> __( 'Additions', 'autodescription' ),
+				'callback'	=> array( 'AutoDescription_Metaboxes', 'title_metabox_additions_tab' ),
+				'dashicon'	=> 'plus',
+				'args'		=> array(
+					'examples' => array(
+						'left'	=> $example_left,
+						'right' => $example_right,
+					),
+				),
+			),
+			'prefixes' => array(
+				'name'		=> __( 'Prefixes', 'autodescription' ),
+				'callback'	=> array( 'AutoDescription_Metaboxes', 'title_metabox_prefixes_tab' ),
+				'dashicon'	=> 'plus-alt',
+				'args'		=> array(
+					'additions' => array(
+						'left'	=> $additions_left,
+						'right' => $additions_right,
+					),
+					'showleft' => $showleft,
+				),
+			)
+		);
+
+		/**
+		 * Applies filters the_seo_framework_title_settings_tabs : array see $default_tabs
+		 * @since 2.6.0
+		 *
+		 * Used to extend Description tabs.
+		 */
+		$defaults = (array) apply_filters( 'the_seo_framework_title_settings_tabs', $default_tabs, $args );
+
+		$tabs = wp_parse_args( $args, $defaults );
+
+		$this->nav_tab_wrapper( 'title', $tabs, '2.6.0' );
+
+		do_action( 'the_seo_framework_title_metabox_after' );
+	}
+
+	/**
+	 * Title meta box general tab.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @see $this->title_metabox() : Callback for Title Settings box.
+	 */
+	public function title_metabox_general_tab() {
+
+		$title_separator = $this->title_separator;
+
+		$recommended = ' class="recommended" title="' . esc_attr__( 'Recommended', 'autodescription' ) . '"';
 
 		?>
 		<fieldset>
@@ -243,22 +330,47 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</p>
 			<span class="description"><?php _e( 'If the title consists of two parts (original title and optional addition), then the separator will go in between them.', 'autodescription' ); ?></span>
 		</fieldset>
+		<?php
 
-		<hr>
+	}
 
+	/**
+	 * Title meta box general tab.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array $examples : array {
+	 * 		'left'	=> Left Example
+	 * 		'right'	=> Right Example
+	 * }
+	 *
+	 * @see $this->title_metabox() : Callback for Title Settings box.
+	 */
+	public function title_metabox_additions_tab( $examples = array() ) {
+
+		$example_left = $examples['left'];
+		$example_right = $examples['right'];
+
+		$language = $this->google_language();
+
+		$home_page_has_option = __( 'The Home Page has a specific option.', 'autodescription' );
+
+		?>
 		<fieldset>
 			<legend><h4><?php _e( 'Document Title Additions Location', 'autodescription' ); ?></h4></legend>
-			<span class="description"><?php _e( 'Determines which side the added title text will go on.', 'autodescription' ); ?></span>
 
+			<p>
+				<span class="description"><?php _e( 'Determines which side the added title text will go on.', 'autodescription' ); ?></span>
+			</p>
 			<p id="title-location" class="fields">
-				<span>
+				<span class="toblock">
 					<input type="radio" name="<?php $this->field_name( 'title_location' ); ?>" id="<?php $this->field_id( 'title_location_left' ); ?>" value="left" <?php checked( $this->get_field_value( 'title_location' ), 'left' ); ?> />
 					<label for="<?php $this->field_id( 'title_location_left' ); ?>">
 						<span><?php _e( 'Left:', 'autodescription' ); ?></span>
 						<?php echo $this->code_wrap_noesc( $example_left ) ?>
 					</label>
 				</span>
-				<span>
+				<span class="toblock">
 					<input type="radio" name="<?php $this->field_name( 'title_location' ); ?>" id="<?php $this->field_id( 'title_location_right' ); ?>" value="right" <?php checked( $this->get_field_value( 'title_location' ), 'right' ); ?> />
 					<label for="<?php $this->field_id( 'title_location_right' ); ?>">
 						<span><?php _e( 'Right:', 'autodescription' ); ?></span>
@@ -268,8 +380,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</p>
 			<span class="description"><?php echo $home_page_has_option; ?></span>
 		</fieldset>
-
 		<?php
+
 		//* Only add this option if the theme is doing it right.
 		if ( $this->can_manipulate_title() ) : ?>
 			<hr>
@@ -286,13 +398,82 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<span class="description"><?php echo $home_page_has_option; ?></span>
 		<?php endif;
 
-		do_action( 'the_seo_framework_title_metabox_after' );
+	}
+
+	/**
+	 * Title meta box prefixes tab.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array $additions : array {
+	 * 		'left'	=> Left Example Addtitions
+	 * 		'right'	=> Right Example Additions
+	 * }
+	 * @param bool $showleft The example location.
+	 *
+	 * @see $this->title_metabox() : Callback for Title Settings box.
+	 */
+	public function title_metabox_prefixes_tab( $additions = array(), $showleft = false ) {
+
+		$left_additions = $additions['left'];
+		$right_additions = $additions['right'];
+
+		//* Get translated category label, if it exists. Otherwise, fallback to translation.
+		$term_labels = $this->get_tax_labels( 'category' );
+		$label = isset( $term_labels->singular_name ) ? $term_labels->singular_name : __( 'Category', 'autodescription' );
+
+		$cats = get_terms( array( 'taxonomy' => 'category', 'fields' => 'ids', 'hide_empty' => false, 'order' => 'ASC', 'number' => 1 ) );
+		if ( is_array( $cats ) && ! empty( $cats ) ) {
+			//* Category should exist.
+			$cat = reset( $cats );
+		} else {
+			//* Default fallback category.
+			$cat = 1;
+		}
+		//* If cat is found, it will return its name. Otherwise it's an empty string.
+		$cat_name = get_cat_name( $cat );
+		$cat_name = $cat_name ? $cat_name : __( 'Example Category', 'autodescription' );
+
+		$display_prefix = $this->is_option_checked( 'title_rem_prefixes' ) ? 'none' : 'inline';
+		$title = '<span class="title-prefix-example" style="display:' . $display_prefix . '">' . $label . ': </span>' . $cat_name;
+
+		$example_left = '<em>' . $left_additions . $title . '</em>';
+		$example_right = '<em>' . $title . $right_additions . '</em>';
+
+		$example_nojs = $showleft ? $example_left : $example_right;
+
+		$language = $this->google_language();
+
+		?>
+		<h4><?php _e( 'Title prefix options', 'autodescription' ); ?></h4>
+		<p><span class="description"><?php _e( "On archives a descriptive prefix may be added to the title.", 'autodescription' ); ?></span></p>
+
+		<h4><?php _e( 'Example Automated Archive Title Output' ); ?></h4>
+		<p>
+			<span class="title-additions-example-left" style="display:<?php echo $showleft ? 'inline' : 'none'; ?>"><?php echo $this->code_wrap_noesc( $example_left ); ?></span>
+			<span class="title-additions-example-right" style="display:<?php echo $showleft ? 'none' : 'inline'; ?>"><?php echo $this->code_wrap_noesc( $example_right ); ?></span>
+		</p>
+
+		<hr>
+
+		<h4><?php _e( 'Remove Archive Title Prefixes', 'autodescription' ); ?></h4>
+		<p id="title-prefixes-toggle">
+			<label for="<?php $this->field_id( 'title_rem_prefixes' ); ?>">
+				<input type="checkbox" name="<?php $this->field_name( 'title_rem_prefixes' ); ?>" id="<?php $this->field_id( 'title_rem_prefixes' ); ?>" <?php $this->is_conditional_checked( 'title_rem_prefixes' ); ?> value="1" <?php checked( $this->get_field_value( 'title_rem_prefixes' ) ); ?> />
+				<?php _e( 'Remove Prefixes from title?', 'autodescription' ); ?>
+			</label>
+			<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php _e( "The prefix helps visitors and Search Engines determine what kind of page they're visiting", 'autodescription' ); ?>">[?]</a>
+		</p>
+		<?php
+
 	}
 
 	/**
 	 * Description meta box on the Site SEO Settings page.
 	 *
 	 * @since 2.3.4
+	 *
+	 * @param array $args The metabox arguments.
 	 *
 	 * @see $this->description_metabox()	Callback for Description Settings box.
 	 */
@@ -372,9 +553,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		);
 
 		/**
-		 * Applies filters the_seo_framework_social_settings_tabs : array see $default_tabs
+		 * Applies filters the_seo_framework_description_settings_tabs : array see $default_tabs
+		 * @since 2.6.0
 		 *
-		 * Used to extend Social tabs
+		 * Used to extend Description tabs.
 		 */
 		$defaults = (array) apply_filters( 'the_seo_framework_description_settings_tabs', $default_tabs, $args );
 
@@ -437,18 +619,18 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<h4><?php _e( 'Add descriptive Additions to Description', 'autodescription' ); ?></h4>
 		<p id="description-additions-toggle">
-			<label for="<?php $this->field_id( 'description_additions' ); ?>">
+			<label for="<?php $this->field_id( 'description_additions' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'description_additions' ); ?>" id="<?php $this->field_id( 'description_additions' ); ?>" <?php $this->is_conditional_checked( 'description_additions' ); ?> value="1" <?php checked( $this->get_field_value( 'description_additions' ) ); ?> />
 				<?php _e( 'Add Additions to automated description?', 'autodescription' ); ?>
 				<a href="<?php echo esc_url( $google_explanation ); ?>" target="_blank" class="description" title="<?php _e( 'This creates good meta descriptions', 'autodescription' ); ?>">[?]</a>
 			</label>
 		</p>
 
-		<h4><?php _e( 'Add Blogname to Description', 'autodescription' ); ?></h4>
+		<h4><?php _e( 'Add Blogname to Additions', 'autodescription' ); ?></h4>
 		<p id="description-onblogname-toggle">
-			<label for="<?php $this->field_id( 'description_blogname' ); ?>">
+			<label for="<?php $this->field_id( 'description_blogname' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'description_blogname' ); ?>" id="<?php $this->field_id( 'description_blogname' ); ?>" <?php $this->is_conditional_checked( 'description_blogname' ); ?> value="1" <?php checked( $this->get_field_value( 'description_blogname' ) ); ?> />
-				<?php _e( 'Add Blogname to automated description?', 'autodescription' ); ?>
+				<?php _e( 'Add Blogname to automated description additions?', 'autodescription' ); ?>
 			</label>
 		</p>
 		<?php
@@ -468,30 +650,30 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		//* Robots types
 		$types = array(
-			'category' => __( 'Category', 'autodescription'),
-			'tag' => __( 'Tag', 'autodescription'),
-			'author' => __( 'Author', 'autodescription'),
-			'date' => __( 'Date', 'autodescription'),
-			'search' => __( 'Search Pages', 'autodescription'),
-			'attachment' => __( 'Attachment Pages', 'autodescription'),
-			'site' => __( 'the entire site', 'autodescription'),
+			'category' => __( 'Category', 'autodescription' ),
+			'tag' => __( 'Tag', 'autodescription' ),
+			'author' => __( 'Author', 'autodescription' ),
+			'date' => __( 'Date', 'autodescription' ),
+			'search' => __( 'Search Pages', 'autodescription' ),
+			'attachment' => __( 'Attachment Pages', 'autodescription' ),
+			'site' => __( 'the entire site', 'autodescription' ),
 		);
 
 		//* Robots i18n
 		$robots = array(
 			'noindex' =>  array(
 				'value' => 'noindex',
-				'name' 	=> __( 'NoIndex', 'autodescription'),
+				'name' 	=> __( 'NoIndex', 'autodescription' ),
 				'desc' 	=> __( 'These options prevent indexing of the selected archives. If you enable this, the selected archives will be removed from Search Engine result pages.', 'autodescription' ),
 			),
 			'nofollow' =>  array(
 				'value' => 'nofollow',
-				'name'	=> __( 'NoFollow', 'autodescription'),
+				'name'	=> __( 'NoFollow', 'autodescription' ),
 				'desc'	=> __( 'These options prevent links from being followed on the selected archives. If you enable this, the selected archives in-page links will gain no SEO value, including your own links.', 'autodescription' ),
 			),
 			'noarchive' =>  array(
 				'value' => 'noarchive',
-				'name'	=> __( 'NoArchive', 'autodescription'),
+				'name'	=> __( 'NoArchive', 'autodescription' ),
 				'desc'	=> __( 'These options prevent caching of the selected archives. If you enable this, Search Engines will not create a cached copy of the selected archives.', 'autodescription' ),
 			),
 		);
@@ -524,13 +706,13 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					'args'		=> array( $types, $robots['noindex'] ),
 				),
 				'follow' => array(
-					'name'		=> __( 'Following', 'autodescription'),
+					'name'		=> __( 'Following', 'autodescription' ),
 					'callback'	=> array( $this, 'robots_metabox_no_tab' ),
 					'dashicon'	=> 'editor-unlink',
 					'args'		=> array( $types, $robots['nofollow'] ),
 				),
 				'archive' => array(
-					'name'		=> __( 'Archiving', 'autodescription'),
+					'name'		=> __( 'Archiving', 'autodescription' ),
 					'callback'	=> array( $this, 'robots_metabox_no_tab' ),
 					'dashicon'	=> 'download',
 					'args'		=> array( $types, $robots['noarchive'] ),
@@ -565,14 +747,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p><span class="description"><?php printf( __( "The Open Directory Project and the Yahoo! Directory may contain outdated SEO values. Therefore, it's best to leave these options checked.", 'autodescription' ) ); ?></span></p>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'noodp' ); ?>">
+			<label for="<?php $this->field_id( 'noodp' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'noodp' ); ?>" id="<?php $this->field_id( 'noodp' ); ?>" <?php $this->is_conditional_checked( 'noodp' ); ?> value="1" <?php checked( $this->get_field_value( 'noodp' ) ); ?> />
 				<?php printf( __( 'Apply %s to the entire site?', 'autodescription' ), $this->code_wrap( 'noodp' ) ) ?>
 			</label>
-
-			<br>
-
-			<label for="<?php $this->field_id( 'noydir' ); ?>">
+			<label for="<?php $this->field_id( 'noydir' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'noydir' ); ?>" id="<?php $this->field_id( 'noydir' ); ?>"  <?php $this->is_conditional_checked( 'noydir' ); ?> value="1" <?php checked( $this->get_field_value( 'noydir' ) ); ?> />
 				<?php printf( __( 'Apply %s to the entire site?', 'autodescription' ), $this->code_wrap( 'noydir' ) ) ?>
 			</label>
@@ -583,7 +762,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<h4><?php printf( __( 'Paginated Archive Settings', 'autodescription' ) ); ?></h4>
 		<p><span class="description"><?php printf( __( "Indexing the second or later page of any archive might cause duplication errors. Search Engines look down upon them; therefore, it's recommended to disable indexing of those pages.", 'autodescription' ), $this->code_wrap( 'noodp' ), $this->code_wrap( 'noydir' ) ); ?></span></p>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'paged_noindex' ); ?>">
+			<label for="<?php $this->field_id( 'paged_noindex' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'paged_noindex' ); ?>" id="<?php $this->field_id( 'paged_noindex' ); ?>" <?php $this->is_conditional_checked( 'paged_noindex' ); ?> value="1" <?php checked( $this->get_field_value( 'paged_noindex' ) ); ?> />
 				<?php printf( __( 'Apply %s to every second or later archive page?', 'autodescription' ), $this->code_wrap( 'noindex' ) ) ?>
 			</label>
@@ -616,25 +795,23 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					echo ( 'site' === $type ) ? '<hr>' : '';
 
 					?>
-					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>">
+					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>" class="toblock">
 						<input type="checkbox" name="<?php $this->field_name( $type . '_' . $ro_value ); ?>" <?php $this->is_conditional_checked( $type . '_' . $ro_value ); ?> id="<?php $this->field_id( $type . '_' . $ro_value ); ?>" value="1" <?php checked( $this->get_field_value( $type . '_' . $ro_value ) ); ?> />
 						<?php
 							/* translators: 1: Option, 2: Post Type */
 							printf( __( 'Apply %1$s to %2$s?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n );
 						?>
 					</label>
-					<br>
 					<?php
 				} else {
 					?>
-					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>">
+					<label for="<?php $this->field_id( $type . '_' . $ro_value ); ?>" class="toblock">
 						<input type="checkbox" name="<?php $this->field_name( $type . '_' . $ro_value ); ?>" <?php $this->is_conditional_checked( $type . '_' . $ro_value ); ?> id="<?php $this->field_id( $type . '_' . $ro_value ); ?>" value="1" <?php checked( $this->get_field_value( $type . '_' . $ro_value ) ); ?> />
 						<?php
 							/* translators: 1: Option, 2: Post Type */
 							printf( __( 'Apply %1$s to %2$s Archives?', 'autodescription' ), $this->code_wrap( $ro_name ), $i18n );
 						?>
 					</label>
-					<br>
 					<?php
 				}
 			}
@@ -887,17 +1064,19 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<fieldset>
 			<legend><h4><?php _e( 'Document Title Additions Location', 'autodescription' ); ?></h4></legend>
-			<span class="description"><?php _e( 'Determines which side the added title text will go on.', 'autodescription' ); ?></span>
+			<p>
+				<span class="description"><?php _e( 'Determines which side the added title text will go on.', 'autodescription' ); ?></span>
+			</p>
 
 			<p id="home-title-location" class="fields">
-				<span>
+				<span class="toblock">
 					<input type="radio" name="<?php $this->field_name( 'home_title_location' ); ?>" id="<?php $this->field_id( 'home_title_location_left' ); ?>" value="left" <?php checked( $this->get_field_value( 'home_title_location' ), 'left' ); ?> />
 					<label for="<?php $this->field_id( 'home_title_location_left' ); ?>">
 						<span><?php _e( 'Left:', 'autodescription' ); ?></span>
 						<?php echo ( $example_left ) ? $this->code_wrap_noesc( $example_left ) : ''; ?>
 					</label>
 				</span>
-				<span>
+				<span class="toblock">
 					<input type="radio" name="<?php $this->field_name( 'home_title_location' ); ?>" id="<?php $this->field_id( 'home_title_location_right' ); ?>" value="right" <?php checked( $this->get_field_value( 'home_title_location' ), 'right' ); ?> />
 					<label for="<?php $this->field_id( 'home_title_location_right' ); ?>">
 						<span><?php _e( 'Right:', 'autodescription' ); ?></span>
@@ -911,14 +1090,14 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<h4 style="margin-top:0;"><?php printf( __( '%s Tagline', 'autodescription' ), $home_page_i18n ); ?></h4>
 		<p id="title-tagline-toggle">
-			<label for="<?php $this->field_id( 'homepage_tagline' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_tagline' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_tagline' ); ?>" id="<?php $this->field_id( 'homepage_tagline' ); ?>" <?php $this->is_conditional_checked( 'homepage_tagline' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_tagline' ) ); ?> />
 				<?php printf( __( 'Add site description (tagline) to the Title on the %s?', 'autodescription' ), $home_page_i18n ); ?>
 			</label>
 		</p>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'homepage_title_tagline' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_title_tagline' ); ?>" class="toblock">
 				<strong><?php printf( __( 'Custom %s Title Tagline', 'autodescription' ), $home_page_i18n ); ?></strong>
 			</label>
 		</p>
@@ -929,7 +1108,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'homepage_title' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_title' ); ?>" class="toblock">
 				<strong><?php printf( __( 'Custom %s Title', 'autodescription' ), $home_page_i18n ); ?></strong>
 				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php _e( 'Recommended Length: 50 to 55 characters', 'autodescription' ) ?>">[?]</a>
 				<span class="description theseoframework-counter"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_title', false ) . '_chars">'. mb_strlen( $tit_len ) .'</span>' ); ?></span>
@@ -950,7 +1129,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'homepage_description' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_description' ); ?>" class="toblock">
 				<strong><?php printf( __( 'Custom %s Description', 'autodescription' ), $home_page_i18n ); ?></strong>
 				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' ); ?>" target="_blank" title="<?php _e( 'Recommended Length: 145 to 155 characters', 'autodescription' ) ?>">[?]</a>
 				<span class="description theseoframework-counter"><?php printf( __( 'Characters Used: %s', 'autodescription' ), '<span id="' . $this->field_id( 'homepage_description', false ) . '_chars">'. mb_strlen( $desc_len ) .'</span>' ); ?></span>
@@ -973,7 +1152,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<h4><?php _e( 'Homepage Robots Meta Settings', 'autodescription' ); ?></h4>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'homepage_noindex' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_noindex' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_noindex' ); ?>" id="<?php $this->field_id( 'homepage_noindex' ); ?>" <?php $this->is_conditional_checked( 'homepage_noindex' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_noindex' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Location */
@@ -982,10 +1161,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/93710?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $noindex_post ? $checked_home : ''; ?>
 			</label>
-
-			<br>
-
-			<label for="<?php $this->field_id( 'homepage_nofollow' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_nofollow' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_nofollow' ); ?>" id="<?php $this->field_id( 'homepage_nofollow' ); ?>" <?php $this->is_conditional_checked( 'homepage_nofollow' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_nofollow' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Location */
@@ -994,10 +1170,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/96569?hl=' . $language ); ?>" target="_blank" title="<?php printf( __( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ) ?>">[?]</a>
 				<?php echo $nofollow_post ? $checked_home : ''; ?>
 			</label>
-
-			<br>
-
-			<label for="<?php $this->field_id( 'homepage_noarchive' ); ?>">
+			<label for="<?php $this->field_id( 'homepage_noarchive' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'homepage_noarchive' ); ?>" id="<?php $this->field_id( 'homepage_noarchive' ); ?>" <?php $this->is_conditional_checked( 'homepage_noarchive' ); ?> value="1" <?php checked( $this->get_field_value( 'homepage_noarchive' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Location */
@@ -1102,9 +1275,9 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php _e( 'Site Shortlink Settings', 'autodescription' ); ?></h4>
-		<p><span class="description"><?php printf( __( 'The shortlink tag might have some use for 3rd party service discoverability, but it has little to no SEO value whatsoever.', 'autodescription') ); ?></span></p>
+		<p><span class="description"><?php printf( __( 'The shortlink tag might have some use for 3rd party service discoverability, but it has little to no SEO value whatsoever.', 'autodescription' ) ); ?></span></p>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'shortlink_tag' ); ?>">
+			<label for="<?php $this->field_id( 'shortlink_tag' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'shortlink_tag' ); ?>" id="<?php $this->field_id( 'shortlink_tag' ); ?>" <?php $this->is_conditional_checked( 'shortlink_tag' ); ?> value="1" <?php checked( $this->get_field_value( 'shortlink_tag' ) ); ?> />
 				<?php _e( 'Output shortlink tag?', 'autodescription' ); ?>
 			</label>
@@ -1118,7 +1291,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'og_tags' ); ?>">
+			<label for="<?php $this->field_id( 'og_tags' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'og_tags' ); ?>" id="<?php $this->field_id( 'og_tags' ); ?>" <?php $this->is_conditional_checked( 'og_tags' ); ?>  value="1" <?php checked( $this->get_field_value( 'og_tags' ) ); ?> />
 				<?php _e( 'Output Open Graph meta tags?', 'autodescription' ); ?>
 			</label>
@@ -1135,7 +1308,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'facebook_tags' ); ?>">
+			<label for="<?php $this->field_id( 'facebook_tags' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'facebook_tags' ); ?>" id="<?php $this->field_id( 'facebook_tags' ); ?>" <?php $this->is_conditional_checked( 'facebook_tags' ); ?> value="1" <?php checked( $this->get_field_value( 'facebook_tags' ) ); ?> />
 				<?php _e( 'Output Facebook meta tags?', 'autodescription' ); ?>
 			</label>
@@ -1145,7 +1318,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'twitter_tags' ); ?>">
+			<label for="<?php $this->field_id( 'twitter_tags' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'twitter_tags' ); ?>" id="<?php $this->field_id( 'twitter_tags' ); ?>" <?php $this->is_conditional_checked( 'twitter_tags' ); ?> value="1" <?php checked( $this->get_field_value( 'twitter_tags' ) ); ?> />
 				<?php _e( 'Output Twitter meta tags?', 'autodescription' ); ?>
 				<p class="description"><?php printf( __( 'Output various tags targetted at %s.', 'autodescription' ), 'Twitter' ); ?></p>
@@ -1192,7 +1365,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'facebook_author' ); ?>">
+			<label for="<?php $this->field_id( 'facebook_author' ); ?>" class="toblock">
 				<strong><?php _e( 'Article Author Facebook URL', 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( 'https://facebook.com/me' ); ?>" class="description" target="_blank" title="<?php _e( 'Your Facebook profile.', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1202,7 +1375,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 
 		<p>
-			<label for="<?php $this->field_id( 'facebook_publisher' ); ?>">
+			<label for="<?php $this->field_id( 'facebook_publisher' ); ?>" class="toblock">
 				<strong><?php _e( 'Article Publisher Facebook URL', 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( 'https://instantarticles.fb.com/' ); ?>" class="description" target="_blank" title="<?php _e( 'To use this, you need to be a verified business.', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1239,6 +1412,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$tw_creator = $this->get_field_value( 'twitter_creator' );
 		$tw_creator_placeholder = empty( $tw_creator ) ? _x( '@your-personal-username', 'Twitter @username', 'autodescription' ) : '';
 
+		$twitter_card = $this->twitter_card;
+
 		?>
 		<h4><?php _e( 'Default Twitter Integration Settings', 'autodescription' ); ?></h4>
 		<p><span class="description"><?php printf( __( 'Twitter post sharing works mostly through Open Graph. However, you can also link your Business and Personal Twitter pages, among various other options.', 'autodescription' ) ); ?></span></p>
@@ -1247,31 +1422,32 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<fieldset id="twitter-cards">
 			<legend><h4><?php _e( 'Twitter Card Type', 'autodescription' ); ?></h4></legend>
-			<span class="description"><?php printf( __( 'What kind of Twitter card would you like to use? It will default to %s if no image is found.', 'autodescription' ), $this->code_wrap( 'Summary' ) ); ?></span>
+			<p>
+				<span class="description"><?php printf( __( 'What kind of Twitter card would you like to use? It will default to %s if no image is found.', 'autodescription' ), $this->code_wrap( 'Summary' ) ); ?></span>
+			</p>
 
+			<p>
 			<?php
-			$twitter_card = $this->twitter_card;
 			foreach ( $twitter_card as $type => $name ) {
 				?>
-				<p>
-					<span>
+					<span class="toblock">
 						<input type="radio" name="<?php $this->field_name( 'twitter_card' ); ?>" id="<?php $this->field_id( 'twitter_card_' . $type ); ?>" value="<?php echo $type ?>" <?php checked( $this->get_field_value( 'twitter_card' ), $type ); ?> />
 						<label for="<?php $this->field_id( 'twitter_card_' . $type ); ?>">
 							<span><?php echo $this->code_wrap( ucfirst( $name ) ); ?></span>
 							<a class="description" href="<?php echo esc_url('https://dev.twitter.com/cards/types/' . $name ); ?>" target="_blank" title="Twitter Card <?php echo ucfirst( $name ) . ' ' . __( 'Example', 'autodescription' ); ?>"><?php _e( 'Example', 'autodescription' ); ?></a>
 						</label>
 					</span>
-				</p>
 				<?php
 			}
 			?>
+			</p>
 		</fieldset>
 
 		<hr>
 
 		<p><span class="description"><?php printf( __( 'When the following options are filled in, Twitter might link your Twitter Site or Personal Profile when your post or page is shared.', 'autodescription' ) ); ?></span></p>
 		<p>
-			<label for="<?php $this->field_id( 'twitter_site' ); ?>">
+			<label for="<?php $this->field_id( 'twitter_site' ); ?>" class="toblock">
 				<strong><?php _e( "Your Website's Twitter Profile", 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( 'https://twitter.com/home' ); ?>" target="_blank" class="description" title="<?php _e( 'Find your @username', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1281,7 +1457,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 
 		<p>
-			<label for="<?php $this->field_id( 'twitter_creator' ); ?>">
+			<label for="<?php $this->field_id( 'twitter_creator' ); ?>" class="toblock">
 				<strong><?php _e( 'Your Personal Twitter Profile', 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( 'https://twitter.com/home' ); ?>" target="_blank" class="description" title="<?php _e( 'Find your @username', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1311,15 +1487,14 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p><span class="description"><?php _e( "Some Search Engines output the publishing date and modified date next to the search results. These help Search Engines find new content and could impact the SEO value.", 'autodescription' ); ?></span></p>
 		<p><span class="description"><?php _e( "It's recommended on posts, but it's not recommended on pages unless you modify or create new pages frequently.", 'autodescription' ); ?></span></p>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'post_publish_time' ); ?>">
+			<label for="<?php $this->field_id( 'post_publish_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'post_publish_time' ); ?>" id="<?php $this->field_id( 'post_publish_time' ); ?>" <?php $this->is_conditional_checked( 'post_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_publish_time' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Post Type */
 					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $posts_i18n );
 				?>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'page_publish_time' ); ?>">
+			<label for="<?php $this->field_id( 'page_publish_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'page_publish_time' ); ?>" id="<?php $this->field_id( 'page_publish_time' ); ?>" <?php $this->is_conditional_checked( 'page_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'page_publish_time' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Post Type */
@@ -1328,15 +1503,14 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			</label>
 		</p>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'post_modify_time' ); ?>">
+			<label for="<?php $this->field_id( 'post_modify_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'post_modify_time' ); ?>" id="<?php $this->field_id( 'post_modify_time' ); ?>" <?php $this->is_conditional_checked( 'post_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'post_modify_time' ) ); ?> />
 				<<?php
 					/* translators: 1: Option, 2: Post Type */
 					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:modified_time' ), $posts_i18n );
 				?>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'page_modify_time' ); ?>">
+			<label for="<?php $this->field_id( 'page_modify_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'page_modify_time' ); ?>" id="<?php $this->field_id( 'page_modify_time' ); ?>" <?php $this->is_conditional_checked( 'page_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'page_modify_time' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Post Type */
@@ -1350,15 +1524,14 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<h4><?php printf( __( 'Home Page', 'autodescription' ) ); ?></h4>
 		<p><span class="description"><?php _e( "Because you only publish the Home Page once, Search Engines might think your site is outdated. This can be prevented by disabling the following options.", 'autodescription' ); ?></span></p>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'home_publish_time' ); ?>">
+			<label for="<?php $this->field_id( 'home_publish_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'home_publish_time' ); ?>" id="<?php $this->field_id( 'home_publish_time' ); ?>" <?php $this->is_conditional_checked( 'home_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_publish_time' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Post Type */
 					printf( __( 'Add %1$s to %2$s?', 'autodescription' ), $this->code_wrap( 'article:published_time' ), $home_i18n );
 				?>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'home_modify_time' ); ?>">
+			<label for="<?php $this->field_id( 'home_modify_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'home_modify_time' ); ?>" id="<?php $this->field_id( 'home_modify_time' ); ?>" <?php $this->is_conditional_checked( 'home_modify_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_modify_time' ) ); ?> />
 				<?php
 					/* translators: 1: Option, 2: Post Type */
@@ -1384,12 +1557,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p><span class="description"><?php _e( "It's recommended to turn this option on for better SEO consistency and to prevent duplicated content errors.", 'autodescription' ); ?></span></p>
 		<hr>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'prev_next_posts' ); ?>">
+			<label for="<?php $this->field_id( 'prev_next_posts' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'prev_next_posts' ); ?>" id="<?php $this->field_id( 'prev_next_posts' ); ?>" <?php $this->is_conditional_checked( 'prev_next_posts' ); ?> value="1" <?php checked( $this->get_field_value( 'prev_next_posts' ) ); ?> />
 				<?php printf( __( 'Add %s link tags to Posts and Pages?', 'autodescription' ), $this->code_wrap( 'rel' ) ); ?>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'prev_next_archives' ); ?>">
+			<label for="<?php $this->field_id( 'prev_next_archives' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'prev_next_archives' ); ?>" id="<?php $this->field_id( 'prev_next_archives' ); ?>" <?php $this->is_conditional_checked( 'prev_next_archives' ); ?> value="1" <?php checked( $this->get_field_value( 'prev_next_archives' ) ); ?> />
 				<?php printf( __( 'Add %s link tags to Archives?', 'autodescription' ), $this->code_wrap( 'rel' ) ); ?>
 			</label>
@@ -1421,7 +1593,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<p>
-			<label for="<?php $this->field_id( 'google_verification' ); ?>">
+			<label for="<?php $this->field_id( 'google_verification' ); ?>" class="toblock">
 				<strong><?php _e( "Google Webmaster Verification Code", 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( $google_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get the Google Verification code', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1431,7 +1603,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 
 		<p>
-			<label for="<?php $this->field_id( 'bing_verification' ); ?>">
+			<label for="<?php $this->field_id( 'bing_verification' ); ?>" class="toblock">
 				<strong><?php _e( "Bing Webmaster Verification Code", 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( $bing_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get the Bing Verification Code', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1441,7 +1613,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 
 		<p>
-			<label for="<?php $this->field_id( 'pint_verification' ); ?>">
+			<label for="<?php $this->field_id( 'pint_verification' ); ?>" class="toblock">
 				<strong><?php _e( "Pinterest Analytics Verification Code", 'autodescription' ); ?></strong>
 				<a href="<?php echo esc_url( $pint_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get the Pinterest Verification Code', 'autodescription' ); ?>">[?]</a>
 			</label>
@@ -1527,7 +1699,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<p><span class="description"><?php printf( __( "Google is becoming more of an 'Answer Engine' than a 'Search Engine'. Setting up these options has a huge positive impact on the SEO value of your website.", 'autodescription' ) ); ?></span></p>
 
 		<p class="fields">
-			<label for="<?php $this->field_id( 'knowledge_output' ); ?>">
+			<label for="<?php $this->field_id( 'knowledge_output' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'knowledge_output' ); ?>" id="<?php $this->field_id( 'knowledge_output' ); ?>" <?php $this->is_conditional_checked( 'knowledge_output' ); ?> value="1" <?php checked( $this->get_field_value( 'knowledge_output' ) ); ?> />
 				<?php _e( 'Output Knowledge tags?', 'autodescription' ); ?>
 			</label>
@@ -1540,7 +1712,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 			<h4><?php printf( _x( "Website logo", 'WordPress Customizer', 'autodescription' ) ); ?></h4>
 			<p class="fields">
-				<label for="<?php $this->field_id( 'knowledge_logo' ); ?>">
+				<label for="<?php $this->field_id( 'knowledge_logo' ); ?>" class="toblock">
 					<input type="checkbox" name="<?php $this->field_name( 'knowledge_logo' ); ?>" id="<?php $this->field_id( 'knowledge_logo' ); ?>" <?php $this->is_conditional_checked( 'knowledge_logo' ); ?> value="1" <?php checked( $this->get_field_value( 'knowledge_logo' ) ); ?> />
 					<?php _e( 'Use the Favicon from Customizer as the Organization Logo?', 'autodescription' ); ?>
 				</label>
@@ -1849,7 +2021,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 			<h4 style="margin-top:0;"><?php printf( __( 'Sitemap Output', 'autodescription' ) ); ?></h4>
 			<p>
-				<label for="<?php $this->field_id( 'sitemaps_output' ); ?>">
+				<label for="<?php $this->field_id( 'sitemaps_output' ); ?>" class="toblock">
 					<input type="checkbox" name="<?php $this->field_name( 'sitemaps_output' ); ?>" id="<?php $this->field_id( 'sitemaps_output' ); ?>" <?php $this->is_conditional_checked( 'sitemaps_output' ); ?> value="1" <?php checked( $this->get_field_value( 'sitemaps_output' ) ); ?> />
 					<?php printf( __( 'Output Sitemap?', 'autodescription' ) ); ?>
 				</label>
@@ -1858,7 +2030,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		}
 
 		if ( ! ( $has_sitemap_plugin || $sitemap_detected ) && $this->get_option( 'sitemaps_output' ) ) {
-			$here =  '<a href="' . $sitemap_url  . '" target="_blank" title="' . __( 'View sitemap', 'autodescription' ) . '">' . _x( 'here', 'The sitemap can be found %s.', 'autodescription' ) . '</a>';
+			$here = '<a href="' . $sitemap_url  . '" target="_blank" title="' . __( 'View sitemap', 'autodescription' ) . '">' . _x( 'here', 'The sitemap can be found %s.', 'autodescription' ) . '</a>';
 
 			?><p><span class="description"><?php printf( _x( 'The sitemap can be found %s.', '%s = here', 'autodescription' ), $here ); ?></span></p><?php
 		}
@@ -1888,7 +2060,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<h4><?php printf( __( 'Add sitemap location in robots.txt', 'autodescription' ) ); ?></h4>
 		<p>
-			<label for="<?php $this->field_id( 'sitemaps_robots' ); ?>">
+			<label for="<?php $this->field_id( 'sitemaps_robots' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'sitemaps_robots' ); ?>" id="<?php $this->field_id( 'sitemaps_robots' ); ?>" <?php $this->is_conditional_checked( 'sitemaps_robots' ); ?> value="1" <?php checked( $this->get_field_value( 'sitemaps_robots' ) ); ?> />
 				<?php printf( __( 'Add sitemap location in robots?', 'autodescription' ) ); ?>
 			</label>
@@ -1910,20 +2082,58 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 */
 	public function sitemaps_metabox_timestamps_tab() {
 
+		//* Sets timezone according to WordPress settings.
+		$this->set_timezone();
+
+		$timestamp_0 = date( 'Y-m-d' );
+
+		/**
+		 * @link https://www.w3.org/TR/NOTE-datetime
+		 * We use the second expression of the time zone offset handling.
+		 */
+		$timestamp_1 = date( 'Y-m-d\TH:iP' );
+
+		//* Reset timezone to default.
+		$this->reset_timezone();
+
 		?>
-		<h4><?php printf( __( 'Timestamps Settings', 'autodescription' ) ); ?></h4>
+		<h4><?php _e( 'Timestamps Settings', 'autodescription' ); ?></h4>
 		<p><span class="description"><?php printf( __( 'The modified time suggests to Search Engines where to look for content changes. It has no impact on the SEO value unless you drastically change pages or posts. It then depends on how well your content is constructed.', 'autodescription' ) ); ?></span></p>
 		<p><span class="description"><?php printf( __( "By default, the sitemap only outputs the modified date if you've enabled them within the Social Metabox. This setting overrides those settings for the Sitemap.", 'autodescription' ) ); ?></span></p>
 
 		<hr>
 
-		<h4><?php printf( __( 'Output Modified Date', 'autodescription' ) ); ?></h4>
+		<h4><?php _e( 'Output Modified Date', 'autodescription' ); ?></h4>
 		<p>
-			<label for="<?php $this->field_id( 'sitemaps_modified' ); ?>">
+			<label for="<?php $this->field_id( 'sitemaps_modified' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'sitemaps_modified' ); ?>" id="<?php $this->field_id( 'sitemaps_modified' ); ?>" <?php $this->is_conditional_checked( 'sitemaps_modified' ); ?> value="1" <?php checked( $this->get_field_value( 'sitemaps_modified' ) ); ?> />
 				<?php printf( __( 'Add %s to the sitemap?', 'autodescription' ), $this->code_wrap( '<lastmod>' ) ); ?>
 			</label>
 		</p>
+
+		<hr>
+
+		<fieldset>
+			<legend><h4><?php _e( 'Timestamp Format Settings', 'autodescription' ); ?></h4></legend>
+			<p>
+				<span class="description"><?php _e( 'Determines how specific the modification timestamp is.', 'autodescription' ); ?></span>
+			</p>
+
+			<p id="sitemaps-timestamp-format" class="fields">
+				<span class="toblock">
+					<input type="radio" name="<?php $this->field_name( 'sitemap_timestamps' ); ?>" id="<?php $this->field_id( 'sitemap_timestamps_0' ); ?>" value="0" <?php checked( $this->get_field_value( 'sitemap_timestamps' ), '0' ); ?> />
+					<label for="<?php $this->field_id( 'sitemap_timestamps_0' ); ?>">
+						<span title="<?php _e( 'Complete date', 'autodescription' ); ?>"><?php echo $this->code_wrap( $timestamp_0 ) ?> [?]</span>
+					</label>
+				</span>
+				<span class="toblock">
+					<input type="radio" name="<?php $this->field_name( 'sitemap_timestamps' ); ?>" id="<?php $this->field_id( 'sitemap_timestamps_1' ); ?>" value="1" <?php checked( $this->get_field_value( 'sitemap_timestamps' ), '1' ); ?> />
+					<label for="<?php $this->field_id( 'sitemap_timestamps_1' ); ?>">
+						<span title="<?php _e( 'Complete date plus hours, minutes and timezone', 'autodescription' ); ?>"><?php echo $this->code_wrap( $timestamp_1 ); ?> [?]</span>
+					</label>
+				</span>
+			</p>
+		</fieldset>
 		<?php
 
 	}
@@ -1946,17 +2156,15 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<h4><?php printf( __( 'Notify Search Engines', 'autodescription' ) ); ?></h4>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'ping_google' ); ?>">
+			<label for="<?php $this->field_id( 'ping_google' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'ping_google' ); ?>" id="<?php $this->field_id( 'ping_google' ); ?>" <?php $this->is_conditional_checked( 'ping_google' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_google' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Google' ); ?>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'ping_bing' ); ?>">
+			<label for="<?php $this->field_id( 'ping_bing' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'ping_bing' ); ?>" id="<?php $this->field_id( 'ping_bing' ); ?>" <?php $this->is_conditional_checked( 'ping_bing' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_bing' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Bing' ); ?>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'ping_yandex' ); ?>">
+			<label for="<?php $this->field_id( 'ping_yandex' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'ping_yandex' ); ?>" id="<?php $this->field_id( 'ping_yandex' ); ?>" <?php $this->is_conditional_checked( 'ping_yandex' ); ?> value="1" <?php checked( $this->get_field_value( 'ping_yandex' ) ); ?> />
 				<?php printf( __( 'Notify %s about sitemap changes?', 'autodescription' ), 'Yandex' ); ?>
 			</label>
@@ -1987,13 +2195,12 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<h4><?php _e( 'Change Feed Settings', 'autodescription' ); ?></h4>
 		<p class="fields">
-			<label for="<?php $this->field_id( 'excerpt_the_feed' ); ?>">
+			<label for="<?php $this->field_id( 'excerpt_the_feed' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'excerpt_the_feed' ); ?>" id="<?php $this->field_id( 'excerpt_the_feed' ); ?>" <?php $this->is_conditional_checked( 'excerpt_the_feed' ); ?> value="1" <?php checked( $this->get_field_value( 'excerpt_the_feed' ) ); ?> />
 				<?php _e( 'Convert feed content into excerpts?', 'autodescription' ); ?>
 				<span title="<?php _e( "By default the excerpt will be at most 400 characters long", 'autodescription' ); ?>">[?]</span>
 			</label>
-			<br>
-			<label for="<?php $this->field_id( 'source_the_feed' ); ?>">
+			<label for="<?php $this->field_id( 'source_the_feed' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'source_the_feed' ); ?>" id="<?php $this->field_id( 'source_the_feed' ); ?>" <?php $this->is_conditional_checked( 'source_the_feed' ); ?> value="1" <?php checked( $this->get_field_value( 'source_the_feed' ) ); ?> />
 				<?php _e( 'Add backlinks below the feed content?', 'autodescription' ); ?>
 				<span title="<?php _e( "This link will not be followed by Search Engines", 'autodescription' ); ?>">[?]</span>

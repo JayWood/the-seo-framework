@@ -253,7 +253,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	public function debug_screens() {
 		global $current_screen;
 
-		$this->debug_init( __CLASS__, __FUNCTION__, false, get_defined_vars() );
+		$this->debug_init( __CLASS__, __FUNCTION__, false, '', get_defined_vars() );
 
 	}
 
@@ -268,7 +268,8 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		if ( $this->debug_output ) {
 			if ( $this->the_seo_framework_debug_hidden ) echo "<!--\r\n";
 
-			?><div style="float:right;margin:3em;padding:1em;border:1px solid;background:#fff;color:#000;max-width:80%;max-width:calc( 100% - 280px )"><?php
+			?><div style="clear:both;float:right;position:absolute;margin:40px 20px 20px 180px;background:#fff;border-radius:3px;overflow:hidden"><?php
+				?><h3 style="font-size: 14px;padding: 8px 12px;margin: 0;line-height: 1.4;border-bottom:1px solid #aaa">SEO Debug Information</h3><?php
 				echo $this->debug_output;
 			?></div><?php
 
@@ -437,6 +438,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 * @param string $class The class name.
 	 * @param string $method The function name.
 	 * @param bool $store Whether to store the output in cache for next run to pick up on.
+	 * @param double $debug_key Use $debug_key as variable, it's reserved.
 	 *
 	 * @param mixed function args.
 	 *
@@ -444,26 +446,30 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 *
 	 * @return void early if debugging is disabled.
 	 */
-	protected function debug_init( $class, $method, $store = false ) {
+	protected function debug_init( $class, $method, $store, $debug_key ) {
 
 		if ( false === $this->the_seo_framework_debug || false === $this->is_admin() )
 			return;
 
 		$output = '';
 
-		if ( func_num_args() >= 4 ) {
+		if ( func_num_args() >= 5 ) {
 
 			//* Cache the args for $store.
 			static $cached_args = array();
+			static $hold_args = array();
 
-			$args = array_slice( func_get_args(), 3 );
-			$key = $class . '_' . $method;
+			$args = array_slice( func_get_args(), 4 );
+			$key = $class . '_' . $method . '_' . $debug_key;
 
 			if ( $store ) {
 				$this->profile( false, false, 'time', $key ) . ' seconds';
 				$this->profile( false, false, 'memory', $key ) . ' bytes';
 
+				unset( $args[0]['debug_key'] );
+
 				$cached_args[$class][$method] = $args;
+				$hold_args[$class][$method] = $args;
 				return;
 			} else {
 
@@ -475,10 +481,12 @@ class AutoDescription_Debug extends AutoDescription_Core {
 				 */
 				static $loop = 0;
 				$loop++;
-				$debug_key = '<p>[Debug key: ' . $loop . ' - ' . $method . ']</p>';
+				$debug_key = '[Debug key: ' . $loop . ' - ' . $method . ']';
 
-				echo $debug_key;
-				$output .= $debug_key;
+				if ( 'admin_footer' !== current_action() )
+					echo '<p>' . $debug_key . '</p>';
+
+				$output .= '<h3>' . $debug_key . '</h3>';
 
 				if ( isset( $cached_args[$class][$method] ) ) {
 					$args[] = array(
@@ -489,13 +497,32 @@ class AutoDescription_Debug extends AutoDescription_Core {
 					);
 
 					$args = array_merge( $cached_args[$class][$method], $args );
+
+					//* Reset args for next run.
 					$cached_args[$class][$method] = null;
 				}
 			}
 
 			if ( $args ) {
 
-				$output .= $class . '::' . $method . "\r\n";
+				if ( $class ) {
+					$output .= $class . '::' . $method . '( ';
+				} else {
+					$output .= $method . '( ';
+				}
+
+
+				if ( isset( $hold_args[$class][$method][0] ) ) {
+					if ( is_array( $hold_args[$class][$method][0] ) ) {
+						foreach ( $hold_args[$class][$method][0] as $var => $a ) {
+								$output .= '$' . $var . ', ';
+						}
+					}
+					$output = rtrim( $output, ', ' );
+					$hold_args[$class][$method] = null;
+				}
+
+				$output .= ' )' . "<br>\r\n";
 
 				foreach ( $args as $num => $a ) {
 					if ( is_array( $a ) ) {
@@ -526,8 +553,18 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		}
 
 		if ( $output ) {
+
+			static $odd = null;
+			if ( isset( $odd ) ) {
+				$bg = 'f1f1f1';
+				$odd = null;
+			} else {
+				$bg = 'dadada';
+				$odd = true;
+			}
+
 			//* Store debug output.
-			$this->debug_output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="background:#dadada;margin-bottom:6px">';
+			$this->debug_output .= $this->the_seo_framework_debug_hidden ? '' : '<div style="background:#' . $bg . ';margin-bottom:6px;padding:0px 14px 14px;clear:both;float:left;width:100%;display:inline-block;">';
 			$this->debug_output .= $output;
 			$this->debug_output .= $this->the_seo_framework_debug_hidden ? '' : '</div>';
 		}
@@ -552,62 +589,79 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	 */
 	public function profile( $echo = false, $from_last = false, $what = 'time', $key = '' ) {
 
-		if ( $this->the_seo_framework_profile ) {
+		static $timer_start = array();
+		static $memory_start = array();
+		static $plugin_time = array();
+		static $plugin_memory = array();
 
-			static $timer_start = array();
-			static $memory_start = array();
-			static $plugin_time = array();
-			static $plugin_memory = array();
+		$timer_start[$key] = isset( $timer_start[$key] ) ? $timer_start[$key] : 0;
+		$memory_start[$key] = isset( $memory_start[$key] ) ? $memory_start[$key] : 0;
+		$plugin_time[$key] = isset( $plugin_time[$key] ) ? $plugin_time[$key] : 0;
+		$plugin_memory[$key] = isset( $plugin_memory[$key] ) ? $plugin_memory[$key] : 0;
 
-			$timer_start[$key] = isset( $timer_start[$key] ) ? $timer_start[$key] : 0;
-			$memory_start[$key] = isset( $memory_start[$key] ) ? $memory_start[$key] : 0;
-			$plugin_time[$key] = isset( $plugin_time[$key] ) ? $plugin_time[$key] : 0;
-			$plugin_memory[$key] = isset( $plugin_memory[$key] ) ? $plugin_memory[$key] : 0;
+		//* Get now.
+		$time_now = microtime( true );
+		$memory_usage_now = memory_get_usage( true );
 
-			//* Get now.
-			$time_now = microtime( true );
-			$memory_usage_now = memory_get_usage();
+		//* Calculate difference.
+		$difference_time = $time_now - $timer_start[$key];
+		$difference_memory = $memory_usage_now - $memory_start[$key];
 
-			//* Calculate difference.
-			$difference_time = $time_now - $timer_start[$key];
-			$difference_memory = $memory_usage_now - $memory_start[$key];
+		//* Add difference to total.
+		$plugin_time[$key] = $plugin_time[$key] + $difference_time;
+		$plugin_memory[$key] = $plugin_memory[$key] + $difference_memory;
 
-			//* Add difference to total.
-			$plugin_time[$key] = $plugin_time[$key] + $difference_time;
-			$plugin_memory[$key] = $plugin_memory[$key] + $difference_memory;
+		//* Reset timer and memory
+		$timer_start[$key] = $time_now;
+		$memory_start[$key] = $memory_usage_now;
 
-			//* Reset timer and memory
-			$timer_start[$key] = $time_now;
-			$memory_start[$key] = $memory_usage_now;
+		if ( $from_last ) {
+			if ( false === $echo ) {
+				//* Return early if not allowed to echo.
+				if ( 'time' === $what )
+					return number_format( $difference_time, 5 );
 
-			if ( $from_last ) {
-				if ( false === $echo ) {
-					//* Return early if not allowed to echo.
-					if ( 'time' === $what )
-						return number_format( $difference_time, 5 );
-
-					return $difference_memory;
-				}
-
-				//* Convert to string and echo if not returned yet.
-				echo (string) "\r\n" . $difference_time . "s\r\n";
-				echo (string) ( $difference_memory / 1024 ) . "kiB\r\n";
-			} else {
-				if ( false === $echo ) {
-					//* Return early if not allowed to echo.
-					if ( 'time' === $what )
-						return number_format( $plugin_time[$key], 5 );
-
-					return $plugin_memory[$key];
-				}
-
-				//* Convert to string and echo if not returned yet.
-				echo (string) "\r\n" . $plugin_time[$key] . "s\r\n";
-				echo (string) ( $plugin_memory[$key] / 1024 ) . "kiB\r\n";
+				return $difference_memory;
 			}
 
+			//* Convert to string and echo if not returned yet.
+			echo (string) "\r\n" . $difference_time . "s\r\n";
+			echo (string) ( $difference_memory / 1024 ) . "kiB\r\n";
+		} else {
+			if ( false === $echo ) {
+				//* Return early if not allowed to echo.
+				if ( 'time' === $what )
+					return number_format( $plugin_time[$key], 5 );
+
+				return $plugin_memory[$key];
+			}
+
+			//* Convert to string and echo if not returned yet.
+			echo (string) "\r\n" . $plugin_time[$key] . "s\r\n";
+			echo (string) ( $plugin_memory[$key] / 1024 ) . "kiB\r\n";
 		}
 
+	}
+
+	/**
+	 * Times code until it's called again.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return float PHP Microtime for code execution.
+	 */
+	protected function timer() {
+
+		static $previous = null;
+
+		if ( isset( $previous ) ) {
+			$output = $previous - microtime( true );
+			$previous = null;
+		} else {
+			$output = $previous = microtime( true );
+		}
+
+		return $output;
 	}
 
 }

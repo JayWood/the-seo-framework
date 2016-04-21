@@ -218,7 +218,7 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 	 */
 	public function get_blogname() {
 
-		$blogname = null;
+		static $blogname = null;
 
 		if ( isset( $blogname ) )
 			return $blogname;
@@ -236,12 +236,14 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 	 */
 	public function get_blogdescription() {
 
-		$description = null;
+		static $description = null;
 
 		if ( isset( $description ) )
 			return $description;
 
-		return $description = trim( get_bloginfo( 'description', 'display' ) );
+		$description = trim( get_bloginfo( 'description', 'display' ) );
+
+		return $description = $description ? $description : $this->untitled();
 	}
 
 	/**

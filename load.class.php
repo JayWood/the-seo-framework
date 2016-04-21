@@ -122,11 +122,8 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	 * @var bool The SEO Framework Debug/Profile constants is/are defined.
 	 */
 	public $the_seo_framework_debug = false;
-	public $the_seo_framework_debug_more = false;
 	public $the_seo_framework_debug_hidden = false;
 	public $the_seo_framework_use_transients = true;
-	public $the_seo_framework_profile = false;
-	public $the_seo_framework_profile_specific = false;
 	public $script_debug = false;
 
 	/**
@@ -149,18 +146,13 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 		$this->the_seo_framework_debug = defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG ? true : $this->the_seo_framework_debug;
 		if ( $this->the_seo_framework_debug ) {
 			//* No need to set these to true if no debugging is enabled.
-			$this->the_seo_framework_debug_more = defined( 'THE_SEO_FRAMEWORK_DEBUG_MORE' ) && THE_SEO_FRAMEWORK_DEBUG_MORE ? true : $this->the_seo_framework_debug_more;
 			$this->the_seo_framework_debug_hidden = defined( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN' ) && THE_SEO_FRAMEWORK_DEBUG_HIDDEN ? true : $this->the_seo_framework_debug_hidden;
 		}
 
-		$this->the_seo_framework_profile = defined( 'THE_SEO_FRAMEWORK_PROFILE' ) && THE_SEO_FRAMEWORK_PROFILE ? true : $this->the_seo_framework_profile;
-		if ( $this->the_seo_framework_profile ) {
-			//* No need to set these to true if no profiling is enabled.
-			$this->the_seo_framework_profile_specific = defined( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC' ) && THE_SEO_FRAMEWORK_PROFILE_SPECIFIC ? true : $this->the_seo_framework_profile_specific;
-		}
-
-		$this->script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? true : $this->script_debug;
 		$this->the_seo_framework_use_transients = defined( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS' ) && THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS ? false : $this->the_seo_framework_use_transients;
+
+		//* WP Core definition.
+		$this->script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? true : $this->script_debug;
 
 	}
 
@@ -235,7 +227,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 						$output = call_user_func_array( array( $class, $method ), $args );
 					}
 				} else {
-					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
+					$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
 				}
 			}
 		} else if ( is_string( $class ) && is_string( $method ) ) {
@@ -249,7 +241,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 					$output = call_user_func_array( array( $class, $method ), $args );
 				}
 			} else {
-				$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found. Needs to be called statically.", 'autodescription' ), $version );
+				$this->_doing_it_wrong( (string) $class . '::' . (string) $method, __( "Class or Method not found.", 'autodescription' ), $version );
 			}
 		} else if ( is_string( $class ) ) {
 			//* Class is function.

@@ -58,7 +58,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 				return $id;
 		}
 
-		$id = $is_admin ? $this->check_the_real_ID() : '';
+		$id = $is_admin ? '' : $this->check_the_real_ID();
 
 		if ( empty( $id ) ) {
 			//* Does not always return false.
@@ -491,9 +491,11 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	 * @staticvar bool $cache
 	 * @since 2.6.0
 	 *
+	 * @param int $id The page or Post ID.
+	 *
 	 * @return bool
 	 */
-	public function is_front_page() {
+	public function is_front_page( $id = 0 ) {
 
 		static $cache = null;
 
@@ -502,6 +504,16 @@ class AutoDescription_Query extends AutoDescription_Compat {
 
 		if ( is_front_page() )
 			return $cache = true;
+
+		if ( $id ) {
+			$sof = get_option( 'show_on_front' );
+
+			if ( 'page' === $sof && $id === get_option( 'page_on_front' ) )
+				return $cache = true;
+
+			if ( 'posts' === $sof && $id === get_option( 'page_for_posts' ) )
+				return $cache = true;
+		}
 
 		return $cache = false;
 	}
@@ -567,10 +579,36 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		if ( isset( $cache[$page] ) )
 			return $cache[$page];
 
-		if ( $this->is_singular( $page ) && is_page( $page ) )
-			return $cache[$page] = true;
+		if ( $this->is_singular( $page ) ) {
+			if ( is_page( $page ) )
+				return $cache[$page] = true;
+
+			if ( $this->is_admin() )
+				return $cache[$page] = $this->is_page_admin( $page );
+		}
 
 		return $cache[$page] = false;
+	}
+
+	/**
+	 * Detects pages within the admin area.
+	 *
+	 * @since 2.6.0
+	 * @see $this->is_page()
+	 *
+	 * @global object $current_screen;
+	 *
+	 * @param int|string|array $page Optional. Page ID, title, slug, or array of such. Default empty.
+	 *
+	 * @return bool
+	 */
+	public function is_page_admin( $page = '' ) {
+		global $current_screen;
+
+		if ( isset( $current_screen->post_type ) && 'page' === $current_screen->post_type )
+			return true;
+
+		return false;
 	}
 
 	/**
@@ -633,10 +671,36 @@ class AutoDescription_Query extends AutoDescription_Compat {
 		if ( isset( $cache[$post] ) )
 			return $cache[$post];
 
-		if ( $this->is_singular( $post ) && is_single( $post ) )
-			return $cache[$post] = true;
+		if ( $this->is_singular( $post ) ) {
+			if ( is_single( $post ) )
+				return $cache[$post] = true;
+
+			if ( $this->is_admin() )
+				return $cache[$post] = $this->is_single_admin( $post );
+		}
 
 		return $cache[$post] = false;
+	}
+
+	/**
+	 * Detects posts within the admin area.
+	 *
+	 * @since 2.6.0
+	 * @see $this->is_single()
+	 *
+	 * @global object $current_screen;
+	 *
+	 * @param int|string|array $post Optional. Page ID, title, slug, or array of such. Default empty.
+	 *
+	 * @return bool
+	 */
+	public function is_single_admin( $post = '' ) {
+		global $current_screen;
+
+		if ( isset( $current_screen->post_type ) && 'post' === $current_screen->post_type )
+			return true;
+
+		return false;
 	}
 
 	/**

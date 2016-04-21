@@ -32,13 +32,15 @@
 //add_action( 'plugins_loaded', function() { if ( is_super_admin() ) {
 	//if ( is_admin() ) {
 	//		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
-	//		define( 'THE_SEO_FRAMEWORK_DEBUG_MORE', true );
 	//		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
-	//		define( 'THE_SEO_FRAMEWORK_PROFILE', true );
-	//		define( 'THE_SEO_FRAMEWORK_PROFILE_SPECIFIC', true );
 			define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
 	//}
 //}},0);
+
+// Regex finding possible static initiators: ([$])([a-z_A-Z])([^=].*(null;))
+// Regex finding possible static initiators: ([$])([a-z_A-Z])([^=].*(array\(\);))
+// Regex finding static initiators: (static [$])([a-z_A-Z])([^=].*(null;))
+// Regex finding static initiators: (static [$])([a-z_A-Z])([^=].*(array\(\);))
 
 /**
  * CDN Cache buster. 3 to 4 point.
@@ -46,7 +48,7 @@
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-DEV1' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA' );
 
 /**
  * Plugin options filter

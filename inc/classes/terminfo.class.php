@@ -116,9 +116,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			}
 		} else {
 			if ( $this->is_category() || $this->is_tag() ) {
-				global $wp_query;
-
-				$term[$id] = $wp_query->get_queried_object();
+				$term[$id] = get_queried_object();
 			} else if ( $this->is_tax() ) {
 				$term[$id] = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 			}
@@ -203,10 +201,36 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 	 * @param object $term The Taxonomy Term object.
 	 * @param bool $singular Whether to fetch a singular or plural name.
 	 * @param bool $fallback Whether to fallback on a generic name.
+	 * @param bool $use_cache Whether to read from cache.
 	 *
 	 * @return string the Term name.
 	 */
-	protected function get_the_term_name( $term, $singular = true, $fallback = true ) {
+	protected function get_the_term_name( $term, $singular = true, $fallback = true, $use_cache = true ) {
+
+		if ( false === $use_cache ) {
+			//* No cache. Short circuit.
+
+			if ( $term && is_object( $term ) ) {
+				$tax_type = $term->taxonomy;
+				$term_labels = $this->get_tax_labels( $tax_type );
+
+				if ( $singular ) {
+					if ( isset( $term_labels->singular_name ) )
+						return $term_labels->singular_name;
+				} else {
+					if ( isset( $term_labels->name ) )
+						return $term_labels->name;
+				}
+			}
+
+			if ( $fallback ) {
+				//* Fallback to Page as it is generic.
+				if ( $singular )
+					return __( 'Page', 'autodescription' );
+
+				return __( 'Pages', 'autodescription' );
+			}
+		}
 
 		static $term_name = array();
 

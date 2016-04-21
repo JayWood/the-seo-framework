@@ -667,9 +667,9 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 		$title_is_from_custom_field = (bool) $title_custom_field;
 		if ( $title_is_from_custom_field ) {
-			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'meta' => true, 'get_custom_field' => true ) );
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'get_custom_field' => true ) );
 		} else {
-			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'meta' => true, 'get_custom_field' => false ) );
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'taxonomy' => $taxonomy, 'get_custom_field' => false ) );
 		}
 
 		$description_is_from_custom_field = (bool) $description_custom_field;
@@ -734,9 +734,9 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 		$title_is_from_custom_field = (bool) $title_custom_field;
 		if ( $title_is_from_custom_field ) {
-			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'meta' => true, 'get_custom_field' => true ) );
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'get_custom_field' => true ) );
 		} else {
-			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'meta' => true, 'get_custom_field' => false ) );
+			$title = $this->title( '', '', '', array( 'term_id' => $post_id, 'page_on_front' => $page_on_front, 'get_custom_field' => false ) );
 		}
 
 		$description_is_from_custom_field = (bool) $description_custom_field;

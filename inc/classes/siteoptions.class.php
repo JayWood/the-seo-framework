@@ -71,15 +71,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	protected $o_plugin_updated;
 
 	/**
-	 * Holds the update notification.
-	 *
-	 * @since 2.6.0
-	 *
-	 * @var string The updated notification.
-	 */
-	protected $plugin_updated_notification;
-
-	/**
 	 * Constructor, load parent constructor and set up cachable variables.
 	 */
 	public function __construct() {
@@ -135,9 +126,10 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		 */
 		$this->default_site_options = array(
 			// Title.
-			'title_seperator'		=> 'pipe',	// Title separator (note: TYPO)
+			'title_seperator'		=> 'pipe',		// Title separator (note: TYPO)
 			'title_location'		=> $titleloc,	// Title separation location
-			'title_rem_additions'	=> 0,		// Remove title additions
+			'title_rem_additions'	=> 0,			// Remove title additions
+			'title_rem_prefixes'	=> 0, 			// Remove title prefixes
 
 			// Description.
 			'description_separator'	=> 'pipe',	// Description separator
@@ -250,6 +242,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Sitemaps.
 			'sitemaps_output'		=> 1,	// Output of sitemaps
 			'sitemaps_modified'		=> 1,	// Add sitemaps modified time
+			'sitemap_timestamps'	=> '1',	// Sitemaps modified time format
 			'sitemaps_robots'		=> 1,	// Add sitemaps location to robots.txt
 			'ping_google'			=> 1,	// Ping Google
 			'ping_bing'				=> 1,	// Ping Bing
@@ -281,7 +274,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function initialize_defaults_admin() {
 
-		if ( ! $this->is_admin() )
+		if ( false === $this->is_admin() )
 			return;
 
 		/**
@@ -295,6 +288,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		 */
 		$this->warned_site_options = array(
 			'title_rem_additions'	=> 1, 	// Title remove additions.
+			'title_rem_prefixes'	=> 0, 	// Title remove prefixes.
 
 			'noodp'					=> 0, 	// Site noopd robots settings
 			'noydir'				=> 0, 	// Site noydir robots settings

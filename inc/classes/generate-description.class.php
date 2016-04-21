@@ -26,6 +26,15 @@
 class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 	/**
+	 * Whether we're parsing the manual Excerpt for the automated description.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @var bool Using manual excerpt.
+	 */
+	protected $using_manual_excerpt = false;
+
+	/**
 	 * Constructor, load parent constructor
 	 */
 	public function __construct() {
@@ -68,7 +77,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		}
 
 		//* Still no description found? Create an auto description based on content.
-		if ( empty( $description ) || ! is_string( $description ) )
+		if ( empty( $description ) || ! is_scalar( $description ) )
 			$description = $this->generate_description_from_id( $args, false );
 
 		/**
@@ -207,9 +216,8 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( empty( $description ) )
 			$description = $this->get_custom_archive_description( $args );
 
-		if ( $escape && $description ) {
+		if ( $escape && $description )
 			$description = $this->escape_description( $description );
-		}
 
 		return $description;
 	}
@@ -334,7 +342,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 */
 	public function generate_description_from_id( $args = array(), $escape = true ) {
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, get_defined_vars() );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, $debug_key = microtime(true), get_defined_vars() );
 
 		/**
 		 * Applies filters bool 'the_seo_framework_enable_auto_description' : Enable or disable the description.
@@ -342,15 +350,15 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		$autodescription = (bool) apply_filters( 'the_seo_framework_enable_auto_description', true );
-		if ( ! $autodescription )
+		if ( false === $autodescription )
 			return '';
 
-		$description = $this->generate_the_description( $args );
+		$description = $this->generate_the_description( $args, false );
 
 		if ( $escape )
 			$description = $this->escape_description( $description );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'description' => $description ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, $debug_key, array( 'description' => $description, 'transient_key' => $this->auto_description_transient ) );
 
 		return (string) $description;
 	}
@@ -367,12 +375,13 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 * 		@param bool $get_custom_field Do not fetch custom title when false.
 	 * 		@param bool $social Generate Social Description when true.
 	 * }
+	 * @param bool $escape Whether to escape the description.
 	 *
 	 * @staticvar string $title
 	 *
 	 * @return string The description.
 	 */
-	protected function generate_the_description( $args ) {
+	protected function generate_the_description( $args, $escape = true ) {
 
 		/**
 		 * Parse args.
@@ -389,14 +398,15 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 
 		$term = $args['term'];
 
+		//* Whether the post ID has a manual excerpt.
+		if ( empty( $term ) && has_excerpt( $args['id'] ) )
+			$this->using_manual_excerpt = true;
+
 		$title_on_blogname = $this->generate_description_additions( $args['id'], $term, false );
 		$title = $title_on_blogname['title'];
 		$on = $title_on_blogname['on'];
 		$blogname = $title_on_blogname['blogname'];
 		$sep = $title_on_blogname['sep'];
-
-		//* Whether to add "on blogname"
-		$blogname_addition = $this->get_option( 'description_blogname' );
 
 		/**
 		 * Setup transient.
@@ -415,9 +425,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( false === $excerpt ) {
 
 			/**
-			 * Get max char length
-			 * 154 will count for the added (single char) ...: makes 155
-			 *
+			 * Get max char length.
 			 * Default to 200 when $args['social'] as there are no additions.
 			 */
 			$additions = trim( $title . " $on " . $blogname );
@@ -425,7 +433,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 			if ( $additions )
 				$additions .= " ";
 
-			$max_char_length_normal = 154 - mb_strlen( html_entity_decode( $additions ) );
+			$max_char_length_normal = 155 - mb_strlen( html_entity_decode( $additions ) );
 			$max_char_length_social = 200;
 
 			//* Generate Excerpts.
@@ -456,31 +464,37 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.5.0
 		 */
 		if ( $args['social'] ) {
-			/**
-			 * @since 2.5.2
-			 */
-			$excerpt_exists = ! empty( $excerpt['social'] );
-
-			if ( $excerpt_exists ) {
+			if ( $excerpt['social'] ) {
 				$description = $excerpt['social'];
 			} else {
-				$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
+				//* No social description if nothing is found.
+				$description = '';
 			}
 		} else {
-			$excerpt_exists = ! empty( $excerpt['normal'] );
 
-			if ( $excerpt_exists ) {
-				if ( $blogname_addition ) {
-					$description = (string) sprintf( '%s %s %s %s %s', $title, $on, $blogname, $sep, $excerpt['normal'] );
-				} else {
-					$description = (string) sprintf( '%s %s %s', $title, $sep, $excerpt['normal'] );
-				}
+			if ( empty( $excerpt['normal'] ) ) {
+				//* Fetch additions ignoring options.
+
+				$title_on_blogname = $this->generate_description_additions( $args['id'], $term, true );
+				$title = $title_on_blogname['title'];
+				$on = $title_on_blogname['on'];
+				$blogname = $title_on_blogname['blogname'];
+				$sep = $title_on_blogname['sep'];
+			}
+
+			$title_on_blogname = trim( sprintf( _x( '%1$s %2$s %3$s', '1: Title, 2: on, 3: Blogname', 'autodescription' ), $title, $on, $blogname ) );
+
+			if ( $excerpt['normal'] ) {
+				$description = sprintf( _x( '%1$s %2$s %3$s', '1: Title on Blogname, 2: Separator, 3: Excerpt', 'autodescription' ), $title_on_blogname, $sep, $excerpt['normal'] );
 			} else {
 				//* We still add the additions when no excerpt has been found.
 				// i.e. home page or empty/shortcode filled page.
-				$description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
+				$description = $title_on_blogname;
 			}
 		}
+
+		if ( $escape )
+			$description = $this->escape_description( $description );
 
 		return $description;
 	}
@@ -505,7 +519,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 */
 		if ( $custom_field ) {
 			$description = $this->get_custom_homepage_description( array( 'is_home' => true ) );
-			if ( '' !== $description )
+			if ( $description )
 				return $description;
 		}
 
@@ -515,19 +529,17 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		$on = $title_on_blogname['on'];
 		$blogname = $title_on_blogname['blogname'];
 
-		return $description = (string) sprintf( '%s %s %s', $title, $on, $blogname );
+		return $description = sprintf( '%s %s %s', $title, $on, $blogname );
 	}
 
 	/**
 	 * Whether to add description additions. (╯°□°）╯︵ ┻━┻
 	 *
-	 * @param int $id The current page or post ID.
-	 * @param object|emptystring $term The current Term.
-	 *
-	 * Applies filters the_seo_framework_add_description_additions : boolean
-	 *
 	 * @staticvar bool $cache
 	 * @since 2.6.0
+	 *
+	 * @param int $id The current page or post ID.
+	 * @param object|emptystring $term The current Term.
 	 *
 	 * @return bool
 	 */
@@ -538,10 +550,20 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( isset( $cache ) )
 			return $cache;
 
-		$option = (bool) $this->get_option( 'description_additions' );
+		/**
+		 * Applies filters the_seo_framework_add_description_additions : {
+		 *		@param bool true to add prefix.
+		 * 		@param int $id The Term object ID or The Page ID.
+		 * 		@param object $term The Term object.
+		 *	}
+		 *
+		 * @since 2.6.0
+		 */
 		$filter = (bool) apply_filters( 'the_seo_framework_add_description_additions', true, $id, $term );
+		$option = (bool) $this->get_option( 'description_additions' );
+		$excerpt = ! $this->using_manual_excerpt;
 
-		return $cache = $option && $filter ? true : false;
+		return $cache = $option && $filter && $excerpt ? true : false;
 	}
 
 	/**
@@ -573,7 +595,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *
 	 * @param int $id The post or term ID
 	 * @param object|empty $term The term object
-	 * @param bool $page_on_front Whether the page is on front.
+	 * @param bool $ignore Whether to ignore options and filters.
 	 *
 	 * @staticvar array $title string of titles.
 	 * @staticvar string $on
@@ -585,15 +607,15 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *		$sep		=> The separator
 	 * }
 	 */
-	public function generate_description_additions( $id, $term, $page_on_front ) {
+	public function generate_description_additions( $id = '', $term = '', $ignore = false ) {
 
-		if ( $page_on_front || $this->add_description_additions( $id, $term ) ) {
+		if ( $ignore || $this->add_description_additions( $id, $term ) ) {
 
 			static $title = array();
 			if ( ! isset( $title[$id] ) )
-				$title[$id] = $this->generate_description_title( $id, $term, $page_on_front );
+				$title[$id] = $this->generate_description_title( $id, $term, $ignore );
 
-			if ( $this->is_option_checked( 'description_blogname' ) ) {
+			if ( $ignore || $this->is_option_checked( 'description_blogname' ) ) {
 
 				static $on = null;
 				if ( is_null( $on ) ) {
@@ -641,8 +663,9 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		if ( '' === $id )
 			$id = $this->get_the_real_ID();
 
-		if ( $page_on_front ) {
-			$title = $this->get_blogdescription();
+		if ( $page_on_front || $this->is_static_frontpage( $id ) ) {
+			$tagline = $this->get_option( 'homepage_title_tagline' );
+			$title = $tagline ? $tagline : $this->get_blogdescription();
 		} else {
 			/**
 			 * No need to parse these when generating social description.
@@ -659,14 +682,14 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				// @TODO create option.
 				/* translators: Front-end output. */
 				$title = __( 'Latest posts:', 'autodescription' ) . ' ' . $title;
-			} else if ( '' !== $term && is_object( $term ) ) {
+			} else if ( $term && is_object( $term ) ) {
 				//* We're on a taxonomy now.
 
-				if ( isset( $term->admeta['doctitle'] ) && '' !== $term->admeta['doctitle'] ) {
+				if ( isset( $term->admeta['doctitle'] ) && $term->admeta['doctitle'] ) {
 					$title = $term->admeta['doctitle'];
-				} else if ( isset( $term->name ) && '' !== $term->name ) {
+				} else if ( isset( $term->name ) && $term->name ) {
 					$title = $term->name;
-				} else if ( isset( $term->slug ) && '' !== $term->slug ) {
+				} else if ( isset( $term->slug ) && $term->slug ) {
 					$title = $term->slug;
 				}
 			} else {
@@ -680,7 +703,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 		 * @since 2.2.8
 		 */
 		/* translators: Front-end output. */
-		$title = empty( $title ) ? __( 'Untitled', 'autodescription' ) : trim( $title );
+		$title = empty( $title ) ? $this->untitled() : trim( $title );
 
 		return $title;
 	}
@@ -699,7 +722,7 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 *
 	 * Please note that this does not reflect the actual output becaue the $max_char_length isn't calculated on direct call.
 	 */
-	public function generate_excerpt( $page_id, $term = '', $max_char_length = 155 ) {
+	public function generate_excerpt( $page_id, $term = '', $max_char_length = 154 ) {
 
 		static $excerpt_cache = array();
 		static $excerptlength_cache = array();

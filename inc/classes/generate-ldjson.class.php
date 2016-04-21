@@ -44,7 +44,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		$this->setup_ld_json_transient( $this->get_the_real_ID() );
 
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, true, $debug_key = microtime(true), array( 'LD Json transient' => $this->ld_json_transient, 'Is output' => (bool) $this->get_transient( $this->ld_json_transient ) ) );
 
 		$output = $this->get_transient( $this->ld_json_transient );
 		if ( false === $output ) {
@@ -89,7 +89,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		 * Debug output.
 		 * @since 2.4.2
 		 */
-		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, array( 'LD Json transient output' => $output ) );
+		if ( $this->the_seo_framework_debug ) $this->debug_init( __CLASS__, __FUNCTION__, false, $debug_key, array( 'LD Json transient output' => $output ) );
 
 		return $output;
 	}
@@ -496,7 +496,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 				$id = json_encode( $this->the_url( '', array( 'get_custom_field' => false, 'external' => true, 'id' => $parent_id ) ) );
 
 				$custom_field_name = $this->get_custom_field( '_genesis_title', $parent_id );
-				$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
+				$parent_name = $custom_field_name ? $custom_field_name : $this->title( '', '', '', array( 'term_id' => $parent_id, 'meta' => true, 'get_custom_field' => false, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
 
 				$name = json_encode( $parent_name );
 
@@ -606,7 +606,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		if ( ! isset( $name ) ) {
 			$custom_field = $this->get_custom_field( '_genesis_title', $post_id );
-			$name = $custom_field ? $custom_field : $this->title( '', '', '', array( 'term_id' => $post_id, 'placeholder' => true, 'notagline' => true, 'description_title' => true ) );
+			$name = $custom_field ? $custom_field : $this->title( '', '', '', array( 'term_id' => $post_id, 'placeholder' => true, 'meta' => true, 'notagline' => true, 'description_title' => true ) );
 			$name = json_encode( $name );
 		}
 
