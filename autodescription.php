@@ -129,3 +129,54 @@ function the_seo_framework_locale_init() {
  * @uses THE_SEO_FRAMEWORK_DIR_PATH
  */
 require_once( THE_SEO_FRAMEWORK_DIR_PATH . '/load.class.php' );
+
+add_filter( 'the_seo_framework_after_output', 'my_itemprop_description_init', 11 );
+/**
+ * Special filter to keep adding onto The SEO Framework.
+ *
+ * @param array $functions All the hooked functions.
+ * @return array $functions The hooked functions.
+ */
+function my_itemprop_description_init( $functions ) {
+
+	$functions[] = array(
+		'callback' => array( 'my_itemprop_description_output' ),
+	);
+	$functions[] = array(
+		'callback' => array( 'my_itemprop_title_output' ),
+	);
+
+	return $functions;
+}
+
+/**
+ * Output Google+ Social Description.
+ *
+ * @return string The Google+ description.
+ */
+function my_itemprop_description_output() {
+
+	//* Call the class.
+	$the_seo_framework = the_seo_framework();
+
+	//* Get the social description. Already escaped.
+	$description = $the_seo_framework->description_from_cache( true );
+
+	return '<meta itemprop="description" content="' . $description . '" />' . "\r\n";
+}
+
+/**
+ * Output Google+ Social Title.
+ *
+ * @return string The Google+ title.
+ */
+function my_itemprop_title_output() {
+
+	//* Call the class.
+	$the_seo_framework = the_seo_framework();
+
+	//* Get the title from cache. Already escaped.
+	$title = $the_seo_framework->title_from_cache( '', '', '', true );
+
+	return '<meta itemprop="name" content="' . $title . '" />' . "\r\n";
+}

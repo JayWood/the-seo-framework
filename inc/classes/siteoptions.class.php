@@ -379,11 +379,8 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	/**
 	 * Updates option from default options at plugin update.
 	 *
-	 * Applies filters 'the_seo_framework_update_options_at_update' : bool
-	 *
 	 * @since 2.6.0
 	 * @access private
-	 *
 	 *
 	 * @return void early if already has been updated.
 	 */
@@ -402,6 +399,10 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		if ( $this->get_option( $plugin_updated ) || empty( $this->settings_field ) )
 			return;
 
+		/**
+		 * Applies filters 'the_seo_framework_update_options_at_update' : bool
+		 * @since 2.6.0
+		 */
 		if ( ! apply_filters( 'the_seo_framework_update_options_at_update', true ) )
 			return;
 
@@ -409,6 +410,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		$options = $this->get_all_options();
 		$default_options = $this->default_site_options();
 
+		//* Merge the options. Add to if it's non-existent.
 		foreach ( $default_options as $key => $value ) {
 			if ( ! isset( $options[$key] ) ) {
 				if ( isset( $default_options[$key] ) && ! empty( $default_options[$key] ) ) {
@@ -436,15 +438,16 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	protected function pre_output_site_updated_plugin_notice() {
 
-		//* Redirect to current page if on options page to correct option values. Once.
-		if ( $this->is_seo_settings_page() && ( ! isset( $_REQUEST['seo-updated'] ) || 'true' !== $_REQUEST['seo-updated'] ) )
-			$this->admin_redirect( $this->page_id, array( 'seo-updated' => 'true' ) );
+		if ( $this->is_seo_settings_page() ) {
+			//* Redirect to current page if on options page to correct option values. Once.
+			if ( ! isset( $_REQUEST['seo-updated'] ) || 'true' !== $_REQUEST['seo-updated'] )
+				$this->admin_redirect( $this->page_id, array( 'seo-updated' => 'true' ) );
 
-		//* Notice has already been sent.
-		if ( $this->is_seo_settings_page() )
+			//* Notice has already been sent.
 			return;
+		}
 
-		//* Make sure this plugin's scripts are being added.
+		//* Make sure this plugin's scripts are being loaded.
 		$this->init_admin_scripts();
 
 		//* Output notice.

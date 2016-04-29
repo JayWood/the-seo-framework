@@ -429,46 +429,84 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		if ( ! isset( $post_id ) )
 			$post_id = $this->get_the_real_ID();
 
-		//* Cache the definition.
-		static $icl_exists = null;
-		if ( ! isset( $icl_exists ) )
-			$icl_exists = (bool) defined( 'ICL_LANGUAGE_CODE' );
-
 		//* WPML support.
-		if ( $icl_exists )
+		if ( $this->is_wpml_active() )
 			$path = $this->get_relative_wmpl_url( $path, $post_id );
 
-		/**
-		 * @since 2.5.2
-		 */
-		static $qt_exists = null;
+		//* qTranslate X support. Can't work externally as we can't fetch the post's current language.
+		if ( ! $external && $this->is_qtranslate_active() )
+			$path = $this->get_relative_qtranslate_url( $path, $post_id );
 
-		if ( ! isset( $qt_exists ) )
-			$qt_exists = (bool) class_exists( 'QTX_Translator' );
+		return $path;
+	}
 
-		//* qTranslate X support. Can't work externally as we can't fetch post current language.
-		if ( ! $external && $qt_exists ) {
-			static $q_config = null;
+	/**
+	 * Generates qtranslate URL.
+	 *
+	 * @param string $path The current path.
+	 * @param int $post_id The Post ID. Unused.
+	 *
+	 * @staticvar int $q_config_mode
+	 *
+	 * @since 2.6.0
+	 */
+	public function get_relative_qtranslate_url( $path = '', $post_id = '' ) {
 
-			if ( ! isset( $q_config ) )
-				global $q_config;
+		//* Reset cache.
+		$this->url_slashit = true;
+		$this->add_subdomain = '';
 
-			$mode = $q_config['url_mode'];
+		static $q_config_mode = null;
 
-			//* Only change URL on Pre-Path mode.
-			if ( (int) 2 === $mode ) {
+		if ( ! isset( $q_config ) ) {
+			global $q_config;
+			$q_config_mode = $q_config['url_mode'];
+		}
 
-				//* If false, change canonical URL for every page.
-				$hide = $q_config['hide_default_language'];
+		//* If false, change canonical URL for every page.
+		$hide = isset( $q_config['hide_default_language'] ) ? $q_config['hide_default_language'] : true;
 
-				$current_lang = $q_config['language'];
-				$default_lang = $q_config['default_language'];
+		$current_lang = isset( $q_config['language'] ) ? $q_config['language'] : false;
+		$default_lang = isset( $q_config['default_language'] ) ? $q_config['default_language'] : false;
 
-				//* Add prefix to path.
-				if ( ! $hide || $current_lang !== $default_lang )
-					$path = '/' . $current_lang . '/' . ltrim( $path, '\/ ' );
+		//* Don't to anything on default language when path is hidden.
+		if ( $hide && $current_lang === $default_lang )
+			return $path;
 
-			}
+		switch ( $q_config_mode ) {
+
+			case '1' :
+				//* Negotiation type query var.
+
+				//* Don't slash it further.
+				$this->url_slashit = false;
+
+				/**
+				 * Path must have trailing slash for pagination permalinks to work.
+				 * So we remove the query string and add it back with slash.
+				 */
+				if ( strpos( $path, '?lang=' . $current_lang ) !== false )
+					$path = str_replace( '?lang=' . $current_lang, '', $path );
+
+				return user_trailingslashit( $path ) . '?lang=' . $current_lang;
+				break;
+
+			case '2' :
+				//* Subdirectory
+				if ( 0 === strpos( $path, '/' . $current_lang . '/' ) )
+					return $path;
+				else
+					return $path = trailingslashit( $current_lang ) . ltrim( $path, '\/ ' );
+				break;
+
+			case '3' :
+				//* Notify cache of subdomain addition.
+				$this->add_subdomain = $current_lang;
+
+				//* No need to alter the path.
+				return $path;
+				break;
+
 		}
 
 		return $path;
@@ -548,9 +586,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 				switch ( $negotiation_type ) {
 
 					case '1' :
-						$contains_path = strpos( $path, '/' . $current_lang . '/' );
 						//* Subdirectory
-						if ( $contains_path !== false && (int) 0 === $contains_path )
+
+						$contains_path = strpos( $path, '/' . $current_lang . '/' );
+						if ( false !== $contains_path && 0 === $contains_path )
 							return $path;
 						else
 							return $path = trailingslashit( $current_lang ) . ltrim( $path, '\/ ' );
@@ -574,10 +613,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 						 * Path must have trailing slash for pagination permalinks to work.
 						 * So we remove the query string and add it back with slash.
 						 */
-						if ( strpos( $path, '?lang=' . $current_lang ) !== false )
+						if ( false !== strpos( $path, '?lang=' . $current_lang ) )
 							$path = str_replace( '?lang=' . $current_lang, '', $path );
 
-						return trailingslashit( $path ) . '?lang=' . $current_lang;
+						return user_trailingslashit( $path ) . '?lang=' . $current_lang;
 						break;
 
 				}

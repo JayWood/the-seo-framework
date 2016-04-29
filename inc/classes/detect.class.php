@@ -340,11 +340,10 @@ class AutoDescription_Detect extends AutoDescription_Render {
 				'amt_plugin_actions'
 			),
 			'constants' => array(
-
 			),
 		);
 
-		return $has_plugin = (bool) $this->detect_plugin( $plugins );
+		return $has_plugin = $this->detect_plugin( $plugins );
 	}
 
 	/**
@@ -370,7 +369,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		$plugins = array( 'classes' => array( 'WPSEO_JSON_LD' ) );
 
-		return $has_plugin = (bool) $this->detect_plugin( $plugins );
+		return $has_plugin = $this->detect_plugin( $plugins );
 	}
 
 	/**
@@ -425,7 +424,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 				),
 			);
 
-		return $has_plugin = (bool) $this->detect_plugin( $plugins );
+		return $has_plugin = $this->detect_plugin( $plugins );
 	}
 
 	/**
@@ -444,9 +443,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		$path = get_home_path() . 'robots.txt';
 
-		$found = (bool) file_exists( $path );
-
-		return $has_robots = $found;
+		return $has_robots = file_exists( $path );
 	}
 
 	/**
@@ -465,9 +462,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		$path = get_home_path() . 'sitemap.xml';
 
-		$found = (bool) file_exists( $path );
-
-		return $has_map = $found;
+		return $has_map = file_exists( $path );
 	}
 
 	/**
@@ -606,10 +601,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 
 		global $_wp_theme_features;
 
-		if ( ! isset( $_wp_theme_features['title-tag'] ) )
-			return $supports = false;
-
-		if ( true === $_wp_theme_features['title-tag'] )
+		if ( isset( $_wp_theme_features['title-tag'] ) && true === $_wp_theme_features['title-tag'] )
 			return $supports = true;
 
 		return $supports = false;
@@ -678,7 +670,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 * @since 2.3.0
 	 * @staticvar bool $active
 	 *
-	 * @return bool false if Domain Mapping isn't active
+	 * @return bool
 	 */
 	public function is_domainmapping_active() {
 
@@ -687,16 +679,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( isset( $active ) )
 			return $active;
 
-		/**
-		 * Now uses $this->detect_plugin()
-		 *
-		 * @since 2.3.1
-		 */
-		if ( $this->detect_plugin( array( 'classes' => array( 'domain_map' ) ) ) ) {
-			return $active = true;
-		} else {
-			return $active = false;
-		}
+		return $active = $this->detect_plugin( array( 'classes' => array( 'domain_map' ) ) );
 	}
 
 	/**
@@ -705,7 +688,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 * @since 2.4.0
 	 * @staticvar bool $active
 	 *
-	 * @return bool false if Domain Mapping isn't active
+	 * @return bool
 	 */
 	public function is_donncha_domainmapping_active() {
 
@@ -714,16 +697,43 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		if ( isset( $active ) )
 			return $active;
 
-		/**
-		 * Now uses $this->detect_plugin()
-		 *
-		 * @since 2.3.1
-		 */
-		if ( $this->detect_plugin( array( 'functions' => array( 'redirect_to_mapped_domain' ) ) ) ) {
-			return $active = true;
-		} else {
-			return $active = false;
-		}
+		return $active = $this->detect_plugin( array( 'functions' => array( 'redirect_to_mapped_domain' ) ) );
+	}
+
+	/**
+	 * Detect WPML plugin.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $active
+	 *
+	 * @return bool
+	 */
+	public function is_wpml_active() {
+
+		static $active = null;
+
+		if ( isset( $active ) )
+			return $active;
+
+		return $active = $this->detect_plugin( array( 'constants' => array( 'ICL_LANGUAGE_CODE' ) ) );
+	}
+
+	/**
+	 * Detect qTranslate X plugin.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $active
+	 *
+	 * @return bool
+	 */
+	public function is_qtranslate_active() {
+
+		static $active = null;
+
+		if ( isset( $active ) )
+			return $active;
+
+		return $active = $this->detect_plugin( array( 'constants' => array( 'QTX_VERSION' ) ) );
 	}
 
 	/**

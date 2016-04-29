@@ -1672,11 +1672,10 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( isset( $cache ) )
 			return $cache;
 
-		//* var_dump() TODO miscelaneous option.
-		$option = false;
+		//* TODO add option.
 		$filter = (bool) apply_filters( 'the_seo_framework_seo_bar_pill', false );
 
-		return $cache = $option || $filter ? true : false;
+		return $cache = $filter ? true : false;
 	}
 
 }

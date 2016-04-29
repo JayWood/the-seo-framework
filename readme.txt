@@ -413,7 +413,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Extended Title Fix extension support.
 * Improved performance, more efficient cache key generation.
 * New Sitemap Date output options.
-* Adaptive WPML URL generation.
+* Adaptive WPML & qTranslate X URL generation.
 * Improved editorial translations.
 * Automatic option merging.
 * New AJAX integration when adding tags.
@@ -628,6 +628,7 @@ Not all planned features made it into 2.6.0.
 	* URL generation.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
+	* qTranslate X URL generation, it will now work with all kinds of settings.
 	* Massively improved URL generation time by adding more layers of cache on often used and also heavy scripts.
 	* Massively improved LD-json script generation time by adding more layers of cache and exchanging heavy operations for more efficient ones.
 	* Metabox setting tabs no longer rely on WordPress Core admin navigation tabs.
@@ -637,7 +638,7 @@ Not all planned features made it into 2.6.0.
 	/
 	* The SEO Bar's now more reliable in its data.
 	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
-	* The SEO Bar buttons are now converted to placeholder hyperlinks.
+	* The SEO Bar buttons are now converted to placeholder hyperlinks. So screen-readers know they're clickable.
 	* The SEO Bar's text is now easier on the eyes due to added text-shadow.
 	* The SEO Bar's hover balloon is now aligned with its bar on Posts and Pages overview and to column in Term overview.
 	* The Custom Home Page Title JavaScript placeholder now updates to default when the Tagline is emptied.

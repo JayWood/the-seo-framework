@@ -63,7 +63,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 *
 	 * Called outside autodescription_run
 	 *
-	 * Applies filters the_seo_framework_seobox_output : Return false to disable the meta boxes
+	 * Applies filters the_seo_framework_seobox_output : bool
 	 *
 	 * @since 2.0.0
 	 */

@@ -468,7 +468,7 @@ class AutoDescription_Core {
 	 *
 	 * @since 2.6.0
 	 *
-	 * @return string The SEO Settings page URL.
+	 * @return string The escaped SEO Settings page URL.
 	 */
 	public function seo_settings_page_url() {
 
