@@ -263,12 +263,12 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$default_tabs = array(
 			'general' => array(
 				'name' 		=> __( 'General', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'title_metabox_general_tab' ),
+				'callback'	=> array( $this, 'title_metabox_general_tab' ),
 				'dashicon'	=> 'admin-generic',
 			),
 			'additions' => array(
 				'name'		=> __( 'Additions', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'title_metabox_additions_tab' ),
+				'callback'	=> array( $this, 'title_metabox_additions_tab' ),
 				'dashicon'	=> 'plus',
 				'args'		=> array(
 					'examples' => array(
@@ -279,7 +279,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			),
 			'prefixes' => array(
 				'name'		=> __( 'Prefixes', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'title_metabox_prefixes_tab' ),
+				'callback'	=> array( $this, 'title_metabox_prefixes_tab' ),
 				'dashicon'	=> 'plus-alt',
 				'args'		=> array(
 					'additions' => array(
@@ -542,12 +542,12 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$default_tabs = array(
 			'general' => array(
 				'name' 		=> __( 'General', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'description_metabox_general_tab' ),
+				'callback'	=> array( $this, 'description_metabox_general_tab' ),
 				'dashicon'	=> 'admin-generic',
 			),
 			'additions' => array(
 				'name'		=> __( 'Additions', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'description_metabox_additions_tab' ),
+				'callback'	=> array( $this, 'description_metabox_additions_tab' ),
 				'dashicon'	=> 'plus',
 			),
 		);
@@ -1224,27 +1224,27 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$default_tabs = array(
 			'general' => array(
 				'name' 		=> __( 'General', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'social_metabox_general_tab' ),
+				'callback'	=> array( $this, 'social_metabox_general_tab' ),
 				'dashicon'	=> 'admin-generic',
 			),
 			'facebook' => array(
 				'name'		=> 'Facebook',
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'social_metabox_facebook_tab' ),
+				'callback'	=> array( $this, 'social_metabox_facebook_tab' ),
 				'dashicon'	=> 'facebook-alt',
 			),
 			'twitter' => array(
 				'name'		=> 'Twitter',
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'social_metabox_twitter_tab' ),
+				'callback'	=> array( $this, 'social_metabox_twitter_tab' ),
 				'dashicon'	=> 'twitter',
 			),
 			'postdates' => array(
 				'name'		=> __( 'Post Dates', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'social_metabox_postdates_tab' ),
+				'callback'	=> array( $this, 'social_metabox_postdates_tab' ),
 				'dashicon'	=> 'backup',
 			),
 			'relationships' => array(
 				'name'		=> __( 'Link Relationships', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'social_metabox_relationships_tab' ),
+				'callback'	=> array( $this, 'social_metabox_relationships_tab' ),
 				'dashicon'	=> 'leftright',
 			),
 		);
@@ -1654,17 +1654,17 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$default_tabs = array(
 			'general' => array(
 				'name' 		=> __( 'General', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'knowledge_metabox_general_tab' ),
+				'callback'	=> array( $this, 'knowledge_metabox_general_tab' ),
 				'dashicon'	=> 'admin-generic',
 			),
 			'website' => array(
 				'name'		=> __( 'Website', 'autodescription' ),
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'knowledge_metabox_about_tab' ),
+				'callback'	=> array( $this, 'knowledge_metabox_about_tab' ),
 				'dashicon'	=> 'admin-home',
 			),
 			'social' => array(
 				'name'		=> 'Social Sites',
-				'callback'	=> array( 'AutoDescription_Metaboxes', 'knowledge_metabox_social_tab' ),
+				'callback'	=> array( $this, 'knowledge_metabox_social_tab' ),
 				'dashicon'	=> 'networking',
 			),
 		);
@@ -1923,22 +1923,22 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			$default_tabs = array(
 				'general' => array(
 					'name' 		=> __( 'General', 'autodescription' ),
-					'callback'	=> array( 'AutoDescription_Metaboxes', 'sitemaps_metabox_general_tab' ),
+					'callback'	=> array( $this, 'sitemaps_metabox_general_tab' ),
 					'dashicon'	=> 'admin-generic',
 				),
 				'robots' => array(
 					'name'		=> 'Robots.txt',
-					'callback'	=> array( 'AutoDescription_Metaboxes', 'sitemaps_metabox_robots_tab' ),
+					'callback'	=> array( $this, 'sitemaps_metabox_robots_tab' ),
 					'dashicon'	=> 'share-alt2',
 				),
 				'timestamps' => array(
 					'name'		=> __( 'Timestamps', 'autodescription' ),
-					'callback'	=> array( 'AutoDescription_Metaboxes', 'sitemaps_metabox_timestamps_tab' ),
+					'callback'	=> array( $this, 'sitemaps_metabox_timestamps_tab' ),
 					'dashicon'	=> 'backup',
 				),
 				'notify' => array(
 					'name'		=> _x( 'Ping', 'Ping or notify Search Engine', 'autodescription' ),
-					'callback'	=> array( 'AutoDescription_Metaboxes', 'sitemaps_metabox_notify_tab' ),
+					'callback'	=> array( $this, 'sitemaps_metabox_notify_tab' ),
 					'dashicon'	=> 'megaphone',
 				),
 			);

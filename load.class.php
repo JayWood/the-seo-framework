@@ -220,10 +220,8 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 			} else {
 				if ( method_exists( $class, $method ) ) {
 					if ( empty( $args ) ) {
-						// Static calling
 						$output = call_user_func( array( $class, $method ) );
 					} else {
-						// Static calling
 						$output = call_user_func_array( array( $class, $method ), $args );
 					}
 				} else {
@@ -234,10 +232,8 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 			//* This could be combined with the one above.
 			if ( method_exists( $class, $method ) ) {
 				if ( empty( $args ) ) {
-					// Static calling
 					$output = call_user_func( array( $class, $method ) );
 				} else {
-					// Static calling
 					$output = call_user_func_array( array( $class, $method ), $args );
 				}
 			} else {
@@ -266,7 +262,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	 */
 	public function the_seo_framework_version( $version = '' ) {
 
-		$output = empty( $version ) ? '' : sprintf( __( '%s of The SEO Framework', 'autodescription' ), esc_attr( $version ) );
+		$output = $version ? sprintf( __( '%s of The SEO Framework', 'autodescription' ), esc_attr( $version ) ) : '';
 
 		return $output;
 	}
