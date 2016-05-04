@@ -1240,7 +1240,7 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 		if ( $this->is_option_checked( 'site_nofollow' ) ) {
 			$but_and = isset( $fol_but ) ? $and_i18n : $but_i18n;
 			/* translators: %s = But or And */
-			$fol_notice .= '<br>' . sprintf( __( "%s you've disabled following of links for the whole site.", 'autodescription' ), $but_and );
+			$fol_notice .= '<br>' . sprintf( __( "%s you've disabled the following of links for the whole site.", 'autodescription' ), $but_and );
 			$fol_class = $unknown;
 			$fol_but = true;
 

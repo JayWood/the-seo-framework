@@ -569,6 +569,7 @@ Not all planned features made it into 2.6.0.
 	* TODO Schema SEO will allow you to enable and disable global Schema.org features.
 	* LD+Json Schema.org website name and URL header markup on the front-page. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
 	* Time display options for the sitemap. Now you can select how the time is output. Default "Complete date plus hours, minutes and timezone".
+	* Buffer cleaner before the sitemap begins outputting. This makes sure the sitemap can't be erroneous through other plugin or theme errors.
 	* New global Automated Description options.
 	* Removal of the three dots after the description if the excerpt ends with a dot, question mark or exclamation point.
 	* Removal commas if the excerpt ends with one in the automated description.
@@ -595,7 +596,8 @@ Not all planned features made it into 2.6.0.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
 	* The blog page is now also shown within the Sitemap.
-	* TODO Front Page pagination index options.
+	* TODO Front Page pagination robots index option. The Front page now only listens to this option. Default off.
+	* Front Page link relationship option. The Front page now only listens to this option. Default on.
 	* Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
 	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
 	* Descriptive URL on Title Blogname removal option.
@@ -688,6 +690,7 @@ Not all planned features made it into 2.6.0.
 	* External URLs to a root domain without slash now work correctly in custom 301 redirect.
 	* Servers that don't support PCRE will now have 301 redirects parsed correctly.
 	* Archive rel next/prev pagination links now also work on the Blog Page.
+	* Second or later archive pages now allow for pagination in the Canonical URL.
 	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily.
 	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
 	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
@@ -714,8 +717,8 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Generate_Ldjson` class.
 	* `AutoDescription_Generate_Image` class.
 	* `AutoDescription_Generate_Author` class.
-	* TODO `AutoDescription_Author` class.
-	* TODO `AutoDescription_PostInfo` class.
+	* `AutoDescription_Author` class (placeholder for upcoming Author update; holding user/author data).
+	* `AutoDescription_PostInfo` class (placeholder for upcoming Author update; holding post publish/author meta).
 	* `AutoDescription_TermInfo` class.
 	* `AutoDescription_Compat` class.
 	* `AutoDescription_Debug` class.
@@ -724,6 +727,9 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Generate_Title::get_the_real_archive_title()` function, which also works in the admin area and has a term object argument and outputs no HTML, effectively speading the whole plugin up on archive pages.
 	* `AutoDescription_Detect::current_theme_supports_title_tag()` function, returns cached true if theme supports title tag.
 	* `AutoDescription_Siteoptions::get_all_options()` function.
+	* `AutoDescription_Generate_Url::get_relative_term_url()` second parameter `(array) $args` replaces `(bool) $no_request`.
+	* `AutoDescription_Render::the_url_from_cache()` now has a fifth parameter `$paged_plural`. Default true.
+	* `AutoDescription_Generate_Url::the_url()`'s `$args` parameter now accepts the 'paged_plural' index. Default true.
 	* Customized error handlers.
 	* `THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS` boolean constant listener to disable transients.
 	* `the_seo_framework_is_settings_page()` function.
@@ -733,6 +739,7 @@ Not all planned features made it into 2.6.0.
 	* When debugging is enabled, the memory usage is also shown in the plugin indicator within HTML.
 * **Changed:**
 	/
+	* Sitemap debug memory usage shows peak usage rather than current usage now.
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
 	* `AutoDescription_Core::get_the_real_ID()` now returns 0 instead of false if no ID is found.
 	* `AutoDescription_Generate_Title::build_title_notagline()` is now protected.
@@ -817,12 +824,14 @@ Not all planned features made it into 2.6.0.
 		* `(string) the_seo_framework_paged_url_output_prev`
 		* `(string) the_seo_framework_paged_url_output_next`
 		* `(string) the_seo_framework_ldjson_scripts`
+		* `(bool) the_seo_framework_ogimage_output_switch`
 		* `(bool) the_seo_framework_json_name_output`
 		* `(bool) the_seo_framework_use_archive_title_prefix`
 		* `(bool) the_seo_framework_update_options_at_update`
-		* TODO `(string) the_seo_framework_pre_add_title`
-		* TODO `(string) the_seo_framework_pro_add_title`
+		* `(string) the_seo_framework_pre_add_title`, used for embedding the title.
+		* `(string) the_seo_framework_pro_add_title`, used to fetch the written title and adjusting it accordingly.
 		* `(string) the_seo_framework_metabox_priority`
+		* `(string) the_seo_framework_metabox_id` (Warning: Do not use. Will break JS and CSS. It's a placeholder for a future update).
 		* `(int) the_seo_framework_term_metabox_priority`
 		* `(bool) the_seo_framework_seo_bar_pill`
 		* `(int) the_seo_framework_bother_me_desc_length`
@@ -869,7 +878,8 @@ Not all planned features made it into 2.6.0.
 		* `(bool) THE_SEO_FRAMEWORK_DEBUG_MORE`. It always shows more now.
 * **Notes:**
 	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
-	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace of The SEO Framework.
+	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace for The SEO Framework.
+	* At the moment this plugin is hooking into more than 90 actions and filters. WordPress hold the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, many class variables will be put into cached functions in an upcoming update.
 
 = Full changelog =
 

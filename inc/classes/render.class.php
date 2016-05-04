@@ -69,20 +69,21 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 * @param int $page_id the page id, if empty it will fetch the requested ID, else the page uri
 	 * @param bool $paged Return current page URL without pagination
 	 * @param bool $from_option Get the canonical uri option
+	 * @param bool $paged_plural Whether to allow pagination on second later pages.
 	 *
 	 * @staticvar array $url_cache
 	 *
 	 * @since 2.2.2
 	 * @return string The url
 	 */
-	public function the_url_from_cache( $url = '', $page_id = '', $paged = false, $from_option = true ) {
+	public function the_url_from_cache( $url = '', $page_id = '', $paged = false, $from_option = true, $paged_plural = true ) {
 
 		static $url_cache = array();
 
-		if ( isset( $url_cache[$url][$page_id][$paged][$from_option] ) )
-			return $url_cache[$url][$page_id][$paged][$from_option];
+		if ( isset( $url_cache[$url][$page_id][$paged][$from_option][$paged_plural] ) )
+			return $url_cache[$url][$page_id][$paged][$from_option][$paged_plural];
 
-		return $url_cache[$url][$page_id][$paged][$from_option] = $this->the_url( $url, array( 'paged' => $paged, 'get_custom_field' => $from_option, 'id' => $page_id ) );
+		return $url_cache[$url][$page_id][$paged][$from_option][$paged_plural] = $this->the_url( $url, array( 'paged' => $paged, 'get_custom_field' => $from_option, 'id' => $page_id, 'paged_plural' => $paged_plural ) );
 	}
 
 	/**
@@ -335,7 +336,16 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function og_image() {
 
-		if ( $this->use_og_tags() ) {
+		$id = $this->get_the_real_ID();
+
+		/**
+		 * Whether to render the OG image.
+		 * Applies filters 'the_seo_framework_ogimage_output_switch' : bool
+		 * @since 2.6.0
+		 */
+		$render = $this->use_og_tags() && (bool) apply_filters( 'the_seo_framework_ogimage_output_switch', true, $id );
+
+		if ( $render ) {
 
 			/**
 			 * Applies filters 'the_seo_framework_ogimage_output' : string
@@ -346,7 +356,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			 *
 			 * @todo deprecate or place in cache.
 			 */
-			$image = (string) apply_filters( 'the_seo_framework_ogimage_output', '', $this->get_the_real_ID() );
+			$image = (string) apply_filters( 'the_seo_framework_ogimage_output', '', $id );
 
 			if ( empty( $image ) )
 				$image = $this->get_image_from_cache();
@@ -964,13 +974,13 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	}
 
 	/**
-	 * Outputs shortlink meta tag
+	 * Outputs paged urls meta tag
 	 *
 	 * @since 2.2.2
 	 *
 	 * @uses $this->get_paged_url()
 	 *
-	 * @return string|null shortlink url meta
+	 * @return string
 	 */
 	public function paged_urls() {
 
@@ -994,7 +1004,6 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			$output .= sprintf( '<link rel="prev" href="%s" />' . "\r\n", $prev );
 		if ( $next )
 			$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
-
 
 		return $output;
 	}

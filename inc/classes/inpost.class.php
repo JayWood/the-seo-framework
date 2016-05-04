@@ -135,8 +135,13 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 					$title = isset( $labels->singular_name ) ? $labels->singular_name : $labels->name;
 					$args = array( $title, 'is_post_page' );
 
-					//* Metabox HTML class/id
-					$id = 'theseoframework-inpost-box';
+					/**
+					 * Applies filters the_seo_framework_metabox_id : string The metabox priority and class ID.
+					 * @since 2.6.0
+					 * @NOTE warning: might cause CSS and JS conflicts.
+					 * @TODO solve note.
+					 */
+					$id = (string) apply_filters( 'the_seo_framework_metabox_id', 'theseoframework-inpost-box' );
 					$context = 'normal';
 
 					/**
@@ -175,7 +180,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			$page = $args_split[1];
 
 			// Return $args as array on post/page
-			if ( $page === 'is_post_page' ) {
+			if ( 'is_post_page' === $page ) {
 				// Note: Passes through object.
 				return $this->inpost_seo_box( $object, (array) $args );
 			}
@@ -184,12 +189,15 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			// Empty the arguments, if any.
 			return $this->inpost_seo_box( $object, $args = '' );
 		}
+
+		return '';
 	}
 
 	/**
 	 * Callback for in-post SEO meta box.
 	 *
 	 * @since 2.0.0
+	 * @access private
 	 *
 	 * @param array $post		The post object
 	 *
@@ -219,7 +227,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 				wp_nonce_field( 'inpost_seo_save', 'hmpl_ad_inpost_seo_nonce' );
 			} else {
 				// This shouldn't happen.
-				return '';
+				return;
 			}
 		} else if ( is_object( $object ) ) {
 
@@ -238,6 +246,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 			$is_term = true;
 		}
 
+		//* Echo output.
 		if ( $is_term ) {
 			$this->tt_inpost_box( $type, $object );
 		} else {
@@ -250,6 +259,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 * Callback function for Taxonomy and Terms inpost box.
 	 *
 	 * @since 2.3.5
+	 * @access private
 	 *
 	 * @param string $type The TT type name.
 	 * @param object $object The TT object.
@@ -407,12 +417,14 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		<?php
 
 		do_action( 'the_seo_framework_pro_tt_inpost_box' );
+
 	}
 
 	/**
 	 * Callback function for Post and Pages inpost metabox.
 	 *
 	 * @since 2.3.5
+	 * @access private
 	 *
 	 * @param string $type The post type name.
 	 */
@@ -646,6 +658,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 		<?php endif;
 
 		do_action( 'the_seo_framework_pro_page_inpost_box' );
+
 	}
 
 }

@@ -328,7 +328,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<label for="<?php $this->field_id( 'title_seperator_' . $name ); ?>" <?php echo ( $name === 'pipe' || $name === 'dash' ) ? $recommended : ''; ?>><?php echo $html ?></label>
 			<?php } ?>
 			</p>
-			<span class="description"><?php _e( 'If the title consists of two parts (original title and optional addition), then the separator will go in between them.', 'autodescription' ); ?></span>
+			<span class="description"><?php _e( 'If the title consists of two parts (original title and optional addition), then the separator will go in-between them.', 'autodescription' ); ?></span>
 		</fieldset>
 		<?php
 
@@ -592,7 +592,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<label for="<?php $this->field_id( 'description_separator' . $name ); ?>" <?php echo ( 'pipe' === $name || 'dash' === $name ) ? $recommended : ''; ?>><?php echo $html ?></label>
 			<?php } ?>
 			</p>
-			<span class="description"><?php _e( 'If the Automated Description consists of two parts (title and excerpt), then the separator will go in between them.', 'autodescription' ); ?></span>
+			<span class="description"><?php _e( 'If the Automated Description consists of two parts (title and excerpt), then the separator will go in-between them.', 'autodescription' ); ?></span>
 		</fieldset>
 		<?php
 
@@ -1522,7 +1522,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<h4><?php printf( __( 'Home Page', 'autodescription' ) ); ?></h4>
-		<p><span class="description"><?php _e( "Because you only publish the Home Page once, Search Engines might think your site is outdated. This can be prevented by disabling the following options.", 'autodescription' ); ?></span></p>
+		<p><span class="description"><?php _e( "Because you only publish the Home Page once, Search Engines might think your website is outdated. This can be prevented by disabling the following options.", 'autodescription' ); ?></span></p>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'home_publish_time' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'home_publish_time' ); ?>" id="<?php $this->field_id( 'home_publish_time' ); ?>" <?php $this->is_conditional_checked( 'home_publish_time' ); ?> value="1" <?php checked( $this->get_field_value( 'home_publish_time' ) ); ?> />
@@ -1554,7 +1554,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		?>
 		<h4><?php printf( __( 'Link Relationship Settings', 'autodescription' ) ); ?></h4>
 		<p><span class="description"><?php _e( "Some Search Engines look for relations between the content of your pages. If you have multiple pages for a single Post or Page, or have archives indexed, this option will help Search Engines look for the right page to display in the Search Results.", 'autodescription' ); ?></span></p>
-		<p><span class="description"><?php _e( "It's recommended to turn this option on for better SEO consistency and to prevent duplicated content errors.", 'autodescription' ); ?></span></p>
+		<p><span class="description"><?php _e( "It's recommended to turn this option on for better SEO consistency and to prevent duplicate content errors.", 'autodescription' ); ?></span></p>
 		<hr>
 		<p class="fields">
 			<label for="<?php $this->field_id( 'prev_next_posts' ); ?>" class="toblock">
@@ -1564,6 +1564,10 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<label for="<?php $this->field_id( 'prev_next_archives' ); ?>" class="toblock">
 				<input type="checkbox" name="<?php $this->field_name( 'prev_next_archives' ); ?>" id="<?php $this->field_id( 'prev_next_archives' ); ?>" <?php $this->is_conditional_checked( 'prev_next_archives' ); ?> value="1" <?php checked( $this->get_field_value( 'prev_next_archives' ) ); ?> />
 				<?php printf( __( 'Add %s link tags to Archives?', 'autodescription' ), $this->code_wrap( 'rel' ) ); ?>
+			</label>
+			<label for="<?php $this->field_id( 'prev_next_frontpage' ); ?>" class="toblock">
+				<input type="checkbox" name="<?php $this->field_name( 'prev_next_frontpage' ); ?>" id="<?php $this->field_id( 'prev_next_frontpage' ); ?>" <?php $this->is_conditional_checked( 'prev_next_frontpage' ); ?> value="1" <?php checked( $this->get_field_value( 'prev_next_frontpage' ) ); ?> />
+				<?php printf( __( 'Add %s link tags to the Home Page?', 'autodescription' ), $this->code_wrap( 'rel' ) ); ?>
 			</label>
 		</p>
 		<?php
@@ -1587,7 +1591,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php _e( 'Webmaster Integration Settings', 'autodescription' ); ?></h4>
-		<p><span class="description"><?php printf( __( "When adding your site to Google, Bing and other Webmaster Tools, you'll be asked to add a code or file to your site for verification purposes. These options will help you easily integrate those codes.", 'autodescription' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( "When adding your website to Google, Bing and other Webmaster Tools, you'll be asked to add a code or file to your website for verification purposes. These options will help you easily integrate those codes.", 'autodescription' ) ); ?></span></p>
 		<p><span class="description"><?php printf( __( "Verifying your website has no SEO value whatsoever. But you might gain added benefits such as search ranking insights to help you improve your Website's content.", 'autodescription' ) ); ?></span></p>
 
 		<hr>
@@ -1717,7 +1721,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 					<?php _e( 'Use the Favicon from Customizer as the Organization Logo?', 'autodescription' ); ?>
 				</label>
 			</p>
-			<p><span class="description"><?php printf( __( "This option only has effect when this site represents an Organization. If left disabled, Search Engines will look elsewhere for a logo, if it exists and is assigned as a logo.", 'autodescription' ) ); ?></span></p>
+			<p><span class="description"><?php printf( __( "This option only has an effect when this site represents an Organization. If left disabled, Search Engines will look elsewhere for a logo, if it exists and is assigned as a logo.", 'autodescription' ) ); ?></span></p>
 
 		<?php
 		endif;
@@ -2014,7 +2018,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			<?php
 		} else {
 			?>
-			<p><span class="description"><?php printf( __( "The Sitemap is an XML file that lists pages and posts for your site along with optional metadata about each post or page. This helps Search Engines crawl your website more easy.", 'autodescription' ) ); ?></span></p>
+			<p><span class="description"><?php printf( __( "The Sitemap is an XML file that lists pages and posts for your website along with optional metadata about each post or page. This helps Search Engines crawl your website more easy.", 'autodescription' ) ); ?></span></p>
 			<p><span class="description"><?php printf( __( "The optional metadata include the post and page modified time and a page priority indication, which is automated.", 'autodescription' ) ); ?></span></p>
 
 			<hr>
@@ -2188,7 +2192,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php _e( 'Content Feed Settings', 'autodescription' ); ?></h4>
-		<p><span class="description"><?php printf( __( "Sometimes, your content can get stolen by robots through the WordPress feeds. This can cause duplicated content issues. To prevent these issues from happening, it's recommended to convert the feed's content into an excerpt.", 'autodescription' ) ); ?></span></p>
+		<p><span class="description"><?php printf( __( "Sometimes, your content can get stolen by robots through the WordPress feeds. This can cause duplicate content issues. To prevent these issues from happening, it's recommended to convert the feed's content into an excerpt.", 'autodescription' ) ); ?></span></p>
 		<p><span class="description"><?php printf( __( "Adding a backlink below the feed's content will also let the visitors know where the content came from.", 'autodescription' ) ); ?></span></p>
 
 		<hr>

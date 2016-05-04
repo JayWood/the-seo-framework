@@ -268,10 +268,14 @@ class AutoDescription_Debug extends AutoDescription_Core {
 		if ( $this->debug_output ) {
 			if ( $this->the_seo_framework_debug_hidden ) echo "<!--\r\n";
 
-			?><div style="clear:both;float:right;position:absolute;margin:40px 20px 20px 180px;background:#fff;border-radius:3px;overflow:hidden"><?php
-				?><h3 style="font-size: 14px;padding: 8px 12px;margin: 0;line-height: 1.4;border-bottom:1px solid #aaa">SEO Debug Information</h3><?php
-				echo $this->debug_output;
-			?></div><?php
+			?>
+			<div style="clear: both;float: left;position: relative;width: calc( 100% - 200px );min-height: 700px;padding: 0;margin: 20px 20px 40px 180px;overflow: hidden;border: 1px solid #ccc;border-radius: 3px;">
+				<h3 style="font-size: 14px;padding: 0 12px;margin: 0;line-height: 39px;border-bottom: 2px solid #aaa;position: absolute;z-index: 1;width: 100%;right: 0;left: 0;top: 0;background: #fff;border-radius: 3px 3px 0 0;height: 39px;">SEO Debug Information</h3>
+				<div style="position: absolute;bottom: 0;right: 0;left: 0;top: 41px;margin: 0;padding: 0;background: #fff;border-radius: 3px;overflow-x: hidden;">
+					<?php echo $this->debug_output; ?>
+				</div>
+			</div>
+			<?php
 
 			if ( $this->the_seo_framework_debug_hidden ) echo "\r\n-->";
 		}

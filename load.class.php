@@ -115,7 +115,7 @@ require_once( THE_SEO_FRAMEWORK_DIR_PATH . 'inc/deprecated/deprecated.class.php'
 class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 
 	/**
-	 * Cached debug/profile constants. Initialized on plugins_loaded.
+	 * Cached debug/profile constants. Initialized on plugins_loaded priority 5.
 	 *
 	 * @since 2.2.9
 	 *

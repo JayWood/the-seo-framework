@@ -168,6 +168,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				/**
 				 * Set at least 2000 variables free.
 				 * Freeing 0.15MB on a clean WordPress installation.
+				 * @since 2.6.0
 				 */
 				$this->clean_up_globals();
 
@@ -180,16 +181,30 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	/**
 	 * Destroy unused $GLOBALS.
 	 *
+	 * @param bool $get_freed_memory Whether to return the freed memory in bytes.
+	 *
 	 * @since 2.6.0
+	 *
+	 * @return int $freed_memory
 	 */
-	protected function clean_up_globals() {
+	protected function clean_up_globals( $get_freed_memory = false ) {
+
+		static $freed_memory = null;
+
+		if ( $get_freed_memory )
+			return $freed_memory;
+
+		if ( $this->the_seo_framework_debug ) $memory = memory_get_usage();
 
 		$remove = array(
 			'wp_filter' => array(
 				'wp_head',
+				'admin_head',
 				'the_content',
 				'the_content_feed',
 				'the_excerpt_rss',
+				'wp_footer',
+				'admin_footer',
 			),
 			'wp_registered_widgets',
 			'wp_registered_sidebars',
@@ -209,6 +224,8 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			}
 		}
 
+		if ( $this->the_seo_framework_debug ) $freed_memory = $memory - memory_get_usage();
+
 	}
 
 	/**
@@ -220,6 +237,12 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 		if ( ! headers_sent() )
 			header( 'Content-type: text/xml; charset=utf-8' );
+
+		//* Remove output, if any.
+		if ( ob_get_level() > 0 ) {
+			if ( ob_get_contents() )
+				ob_clean();
+		}
 
 		//* Fetch sitemap content.
 		$xml_content = $this->get_sitemap_content();
@@ -266,8 +289,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		 * @since 2.3.7
 		 */
 		if ( $this->the_seo_framework_debug ) {
-			$content .= "\r\n<!-- Site current usage: " . ( memory_get_usage() / 1024 / 1024 ) . " MB -->";
-			$content .= "\r\n<!-- System current usage: " . ( memory_get_usage( true ) / 1024 / 1024 ) . " MB -->";
+			$content .= "\r\n<!-- Site estimated peak usage: " . ( memory_get_peak_usage() / 1024 / 1024 ) . " MB -->";
+			$content .= "\r\n<!-- System estimated peak usage: " . ( memory_get_peak_usage( true ) / 1024 / 1024 ) . " MB -->";
+			$content .= "\r\n<!-- Freed memory prior to generation: " . $this->clean_up_globals( true ) / 1024 . " kB -->";
 			$content .= "\r\n<!-- Sitemap generation time: " . ( number_format( microtime( true ) - $timer_start, 6 ) ) . " seconds -->";
 		}
 
@@ -336,7 +360,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		$totalpages = (int) apply_filters( 'the_seo_framework_sitemap_pages_count', $this->max_posts );
 		$totalposts = (int) apply_filters( 'the_seo_framework_sitemap_posts_count', $this->max_posts );
 		$total_cpt_posts = (int) apply_filters( 'the_seo_framework_sitemap_custom_posts_count', $this->max_posts );
-		$total_cpt_posts_bool = $total_cpt_posts ? true : false;
 
 		$latest_pages = array();
 		$latest_posts = array();
@@ -347,70 +370,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		$this->set_timezone();
 		$timestamp_format = $this->get_option( 'sitemap_timestamps' );
 		$timestamp_format = '1' === $timestamp_format ? 'Y-m-d\TH:iP' : 'Y-m-d';
-
-		if ( $totalpages ) {
-			//* Ascend by the date for normal pages. Older pages get to the top of the list.
-			$args = array(
-				'numberposts' 		=> $totalpages,
-				'posts_per_page' 	=> $totalpages,
-				'post_type' 		=> 'page',
-				'orderby' 			=> 'date',
-				'order' 			=> 'ASC',
-				'post_status' 		=> 'publish',
-				'cache_results' 	=> false,
-			);
-			$latest_pages = get_posts( $args );
-		}
-
-		if ( $totalposts ) {
-			//* Descend by the date for posts. The latest posts get to the top of the list after pages.
-			$args = array(
-				'numberposts' 		=> $totalposts,
-				'posts_per_page' 	=> $totalposts,
-				'post_type' 		=> 'post',
-				'orderby' 			=> 'date',
-				'order' 			=> 'DESC',
-				'post_status' 		=> 'publish',
-				'cache_results' 	=> false,
-			);
-			$latest_posts = get_posts( $args );
-		}
-
-		if ( $total_cpt_posts_bool ) {
-			$post_page = (array) get_post_types( array( 'public' => true ) );
-
-			/**
-			 * Applies filters Array the_seo_framework_sitemap_exclude_cpt : Excludes these CPT
-			 * @since 2.5.0
-			 */
-			$excluded_cpt = (array) apply_filters( 'the_seo_framework_sitemap_exclude_cpt', array() );
-
-			$notcpt = array( 'post', 'page', 'attachment' );
-
-			foreach ( $post_page as $post_type ) {
-				if ( ! in_array( $post_type, $notcpt ) ) {
-					if ( empty( $excluded_cpt ) || ! in_array( $post_type, $excluded_cpt ) ) {
-						if ( $this->post_type_supports_custom_seo( $post_type ) ) {
-							$cpt[] = $post_type;
-						}
-					}
-				}
-			}
-		}
-
-		if ( $total_cpt_posts_bool && $cpt ) {
-			//* Descend by the date for CPTs. The latest posts get to the top of the list after pages.
-			$args = array(
-				'numberposts' 		=> $total_cpt_posts,
-				'posts_per_page' 	=> $total_cpt_posts,
-				'post_type' 		=> $cpt,
-				'orderby' 			=> 'date',
-				'order' 			=> 'DESC',
-				'post_status' 		=> 'publish',
-				'cache_results' 	=> false,
-			);
-			$latest_cpt_posts = get_posts( $args );
-		}
 
 		/**
 		 * Fetch the page/post modified options.
@@ -437,6 +396,19 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $timestamp )
 			$content .= '<!-- ' . __( 'Sitemap is generated on', 'autodescription' ) . ' ' . current_time( "Y-m-d H:i:s" ) . ' -->' . "\r\n";
 
+		if ( $totalpages ) {
+			//* Ascend by the date for normal pages. Older pages get to the top of the list.
+			$args = array(
+				'numberposts' 		=> $totalpages,
+				'posts_per_page' 	=> $totalpages,
+				'post_type' 		=> 'page',
+				'orderby' 			=> 'date',
+				'order' 			=> 'ASC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
+			);
+			$latest_pages = get_posts( $args );
+		}
 		$latest_pages_amount = (int) count( $latest_pages );
 
 		if ( $latest_pages_amount > 0 ) {
@@ -483,8 +455,24 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 					}
 				}
 			}
+
+			//* Free memory.
+			unset( $latest_pages );
 		}
 
+		if ( $totalposts ) {
+			//* Descend by the date for posts. The latest posts get to the top of the list after pages.
+			$args = array(
+				'numberposts' 		=> $totalposts,
+				'posts_per_page' 	=> $totalposts,
+				'post_type' 		=> 'post',
+				'orderby' 			=> 'date',
+				'order' 			=> 'DESC',
+				'post_status' 		=> 'publish',
+				'cache_results' 	=> false,
+			);
+			$latest_posts = get_posts( $args );
+		}
 		$latest_posts_amount = (int) count( $latest_posts );
 
 		if ( $latest_posts_amount > 0 ) {
@@ -552,8 +540,46 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 					}
 				}
 			}
+
+			//* Free memory.
+			unset( $latest_posts );
 		}
 
+		if ( $total_cpt_posts ) {
+			$post_page = (array) get_post_types( array( 'public' => true ) );
+
+			/**
+			 * Applies filters Array the_seo_framework_sitemap_exclude_cpt : Excludes these CPT
+			 * @since 2.5.0
+			 */
+			$excluded_cpt = (array) apply_filters( 'the_seo_framework_sitemap_exclude_cpt', array() );
+
+			$not_cpt = array( 'post', 'page', 'attachment' );
+
+			foreach ( $post_page as $post_type ) {
+				if ( false === in_array( $post_type, $not_cpt ) ) {
+					if ( empty( $excluded_cpt ) || false === in_array( $post_type, $excluded_cpt ) ) {
+						if ( $this->post_type_supports_custom_seo( $post_type ) ) {
+							$cpt[] = $post_type;
+						}
+					}
+				}
+			}
+
+			if ( $cpt ) {
+				//* Descend by the date for CPTs. The latest posts get to the top of the list after pages.
+				$args = array(
+					'numberposts' 		=> $total_cpt_posts,
+					'posts_per_page' 	=> $total_cpt_posts,
+					'post_type' 		=> $cpt,
+					'orderby' 			=> 'date',
+					'order' 			=> 'DESC',
+					'post_status' 		=> 'publish',
+					'cache_results' 	=> false,
+				);
+				$latest_cpt_posts = get_posts( $args );
+			}
+		}
 		$latest_cpt_posts_amount = (int) count( $latest_cpt_posts );
 
 		if ( $latest_cpt_posts_amount > 0 ) {
@@ -615,6 +641,9 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 					}
 				}
 			}
+
+			//* Free memory.
+			unset( $latest_cpt_posts );
 		}
 
 		/**
@@ -657,14 +686,13 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		}
 
 		/**
-		 * Applies filters the_seo_framework_sitemap_extend
-		 *
+		 * Applies filters the_seo_framework_sitemap_extend : string
 		 * @since 2.5.2
 		 */
 		$extend = (string) apply_filters( 'the_seo_framework_sitemap_extend', '' );
 
 		if ( '' !== $extend )
-			$content .= "	" . $extend . "\r\n";
+			$content .= "\t" . $extend . "\r\n";
 
 		//* Reset timezone to default.
 		$this->reset_timezone();

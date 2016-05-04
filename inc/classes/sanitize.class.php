@@ -175,6 +175,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 				'prev_next_posts',
 				'prev_next_archives',
+				'prev_next_frontpage',
 
 				'og_tags',
 				'facebook_tags',

@@ -218,6 +218,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		if ( empty( $defaults ) ) {
 			$defaults = array(
 				'paged' 			=> false,
+				'paged_plural' 		=> true,
 				'get_custom_field'	=> true,
 				'external'			=> false,
 				'is_term' 			=> false,
@@ -238,6 +239,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 		//* Array merge doesn't support sanitation. We're simply type casting here.
 		$args['paged'] 				= isset( $args['paged'] ) 				? (bool) $args['paged'] 			: $defaults['paged'];
+		$args['paged_plural'] 		= isset( $args['paged_plural'] ) 		? (bool) $args['paged_plural'] 		: $defaults['paged_plural'];
 		$args['get_custom_field'] 	= isset( $args['get_custom_field'] ) 	? (bool) $args['get_custom_field'] 	: $defaults['get_custom_field'];
 		$args['external'] 			= isset( $args['external'] ) 			? (bool) $args['external'] 			: $defaults['external'];
 		$args['is_term'] 			= isset( $args['is_term'] ) 			? (bool) $args['is_term'] 			: $defaults['is_term'];
@@ -274,7 +276,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 			if ( isset( $term->taxonomy ) ) {
 				//* Registered Terms and Taxonomies.
-				$path = $this->get_relative_term_url( $term, $args['external'] );
+				$path = $this->get_relative_term_url( $term, $args );
 			} else if ( ! $args['external'] ) {
 				//* Everything else.
 				global $wp;
@@ -635,16 +637,32 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * @global Paged $paged
 	 *
 	 * @param object $term The term object.
-	 * @param bool $no_request wether to fetch the WP Request or get the permalink by Post Object.
+	 * @param bool $args {
+	 *		'external' : Whether to fetch the WP Request or get the permalink by Post Object.
+	 *		'paged'	: Whether to add pagination for all types.
+	 *		'paged_plural' : Whether to add pagination for the second or later page.
+	 * }
 	 *
 	 * @since 2.4.2
 	 *
 	 * @return Relative term or taxonomy URL.
 	 */
-	public function get_relative_term_url( $term = null, $no_request = false ) {
+	public function get_relative_term_url( $term = null, $args = array() ) {
+
+		if ( ! is_array( $args ) ) {
+			/**
+			 * @since 2.6.0
+			 * '$args = array()' replaced '$no_request = false'.
+			 */
+			$this->_doing_it_wrong( __CLASS__ . '::' . __FUNCTION__, 'Use $args = array() for parameters.', '2.6.0' );
+
+			$no_request = (bool) $args;
+			$args = $this->parse_url_args( '', '', true );
+			$args['external'] = $no_request;
+		}
 
 		// We can't fetch the Term object within sitemaps.
-		if ( $no_request && is_null( $term ) )
+		if ( $args['external'] && is_null( $term ) )
 			return '';
 
 		if ( is_null( $term ) ) {
@@ -652,7 +670,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			$term = $wp_query->get_queried_object();
 		}
 
-		$paged = $this->paged();
+		$paged = $this->maybe_get_paged( $this->paged(), $args['paged'], $args['paged_plural'] );
 
 		$taxonomy = $term->taxonomy;
 
@@ -666,9 +684,9 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			if ( 'category' === $taxonomy ) {
 				$termlink = '?cat=' . $term->term_id;
 			} elseif ( isset( $t->query_var ) && '' !== $t->query_var ) {
-				$termlink = "?$t->query_var=$slug";
+				$termlink = '?' . $t->query_var . '=' . $slug;
 			} else {
-				$termlink = "?taxonomy=$taxonomy&term=$slug";
+				$termlink = '?taxonomy=' . $taxonomy . '&term=' . $slug;
 			}
 
 			if ( $paged )
@@ -725,7 +743,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		}
 
 		$url = trim( $url );
-		if ( substr( $url, 0, 2 ) === '//' )
+		if ( '//' === substr( $url, 0, 2 ) )
 			$url = 'http:' . $url;
 
 		if ( 'relative' === $scheme ) {
@@ -738,7 +756,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			$url = preg_replace( '#^\w+://#', $scheme . '://', $url );
 		}
 
-		if ( false !== $use_filter )
+		if ( $use_filter )
 			return $this->set_url_scheme_filter( $url, $scheme );
 
 		return $url;
@@ -754,7 +772,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 *
 	 * @return $url with applied filters.
 	 */
-	public function set_url_scheme_filter( $url, $scheme ) {
+	public function set_url_scheme_filter( $url, $current_scheme ) {
 
 		/**
 		 * Applies filters the_seo_framework_canonical_force_scheme : Changes scheme.
@@ -767,11 +785,13 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 * (string) 'relative' 	:	Scheme relative
 		 * (void) null			: 	Do nothing
 		 *
-		 * @param string $scheme the current used scheme.
+		 * @param string $current_scheme the current used scheme.
 		 *
 		 * @since 2.4.2
 		 */
-		$scheme_settings = apply_filters( 'the_seo_framework_canonical_force_scheme', null, $scheme );
+		$scheme_settings = apply_filters( 'the_seo_framework_canonical_force_scheme', null, $current_scheme );
+
+		//* @TODO add options metabox.
 
 		if ( isset( $scheme_settings ) ) {
 			if ( 'https' ===  $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {
@@ -1062,6 +1082,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * Generates Previous and Next links
 	 *
 	 * @since 2.2.4
+	 * @global object $wp_query
 	 *
 	 * @param string $prev_next Previous or next page link
 	 * @param int $post_id The post ID
@@ -1070,45 +1091,53 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 */
 	public function get_paged_url( $prev_next = 'next', $post_id = 0 ) {
 
-		if ( ! $this->get_option( 'prev_next_posts' ) && ! $this->get_option( 'prev_next_archives' ) )
+		if ( ! $this->get_option( 'prev_next_posts' ) && ! $this->get_option( 'prev_next_archives' ) && ! $this->get_option( 'prev_next_frontpage' ) )
 			return '';
-
-		global $wp_query;
 
 		$prev = '';
 		$next = '';
 
-		if ( $this->get_option( 'prev_next_archives' ) && ! $this->is_singular() ) {
+		if ( $this->is_singular() ) {
 
-			$paged = $this->paged();
-
-			if ( 'prev' === $prev_next )
-				$prev = $paged > 1 ? get_previous_posts_page_link() : $prev;
-
-			if ( 'next' === $prev_next )
-				$next = $paged < $wp_query->max_num_pages ? get_next_posts_page_link() : $next;
-
-		} else if ( $this->get_option( 'prev_next_posts' ) && $this->is_singular() ) {
-
-			$page = $this->page();
-			$numpages = substr_count( $wp_query->post->post_content, '<!--nextpage-->' ) + 1;
-
-			if ( ! $page && $numpages ) {
-				$page = 1;
+			$output_singular_paged = false;
+			if ( $this->is_front_page() ) {
+				$output_singular_paged = $this->is_option_checked( 'prev_next_frontpage' );
+			} else {
+				$output_singular_paged = $this->is_option_checked( 'prev_next_posts' );
 			}
 
-			if ( 'prev' === $prev_next ) {
-				if ( $page > 1 ) {
-					$prev = (string) $this->get_paged_post_url( $page - 1, $post_id, 'prev' );
-				}
+			if ( $output_singular_paged ) {
+
+				$page = $this->page();
+				$numpages = substr_count( $this->get_post_content( $this->get_the_real_ID() ), '<!--nextpage-->' ) + 1;
+
+				if ( ! $page && $numpages )
+					$page = 1;
+
+				if ( 'prev' === $prev_next )
+					$prev = $page > 1 ? (string) $this->get_paged_post_url( $page - 1, $post_id, 'prev' ) : $prev;
+
+				if ( 'next' === $prev_next )
+					$next = $page < $numpages ? (string) $this->get_paged_post_url( $page + 1, $post_id, 'next' ) : $next;
+			}
+		} else if ( $this->is_archive() || $this->is_home() ) {
+
+			$output_archive_paged = false;
+			if ( $this->is_front_page() ) {
+				$output_archive_paged = $this->is_option_checked( 'prev_next_frontpage' );
+			} else {
+				$output_archive_paged = $this->is_option_checked( 'prev_next_archives' );
 			}
 
-			if ( 'next' === $prev_next ) {
-				if ( $page < $numpages ) {
-					$next = (string) $this->get_paged_post_url( $page + 1, $post_id, 'next' );
-				}
-			}
+			if ( $output_archive_paged ) {
+				$paged = $this->paged();
 
+				if ( 'prev' === $prev_next )
+					$prev = $paged > 1 ? get_previous_posts_page_link() : $prev;
+
+				if ( 'next' === $prev_next )
+					$next = $paged < $GLOBALS["wp_query"]->max_num_pages ? get_next_posts_page_link() : $next;
+			}
 		}
 
 		if ( $prev )
@@ -1210,6 +1239,30 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 			return $structure;
 
 		return $structure = get_option( 'permalink_structure' );
+	}
+
+	/**
+	 * Add $paged if Paginated and allowed through arguments.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int $paged
+	 * @param bool $singular Whether to allow plural and singular.
+	 * @param bool $plural Whether to allow plural regardless.
+	 *
+	 * @return int|bool $paged. False if not allowed. Int if allowed.
+	 */
+	protected function maybe_get_paged( $paged = 0, $singular = false, $plural = true ) {
+
+		if ( $paged ) {
+			if ( $singular )
+				return $paged;
+
+			if ( $plural && $paged >= 2 )
+				return $paged;
+		}
+
+		return false;
 	}
 
 }

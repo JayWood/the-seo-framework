@@ -579,9 +579,15 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 */
 	public function ld_json_breadcrumb_last( $item_type = null, $pos = null, $post_id = null ) {
 
-		// 2 (becomes 3) holds mostly true for single term items. This shouldn't run anyway. Pos should always be provided.
+		/**
+		 * 2 (becomes 3) holds mostly true for single term items.
+		 * This shouldn't run anyway. Pos should always be provided.
+		 */
 		if ( is_null( $pos ) )
 			$pos = '2';
+
+		//* Add current page.
+		$pos = $pos + 1;
 
 		if ( is_null( $item_type ) ) {
 			static $type = null;
@@ -592,11 +598,8 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			$item_type = $type;
 		}
 
-		if ( is_null( $post_id ) || empty( $post_id ) )
+		if ( empty( $post_id ) )
 			$post_id = $this->get_the_real_ID();
-
-		//* Add current page.
-		$pos = $pos + 1;
 
 		static $id = null;
 		static $name = null;

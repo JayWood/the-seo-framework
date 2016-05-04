@@ -187,6 +187,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'shortlink_tag'			=> 0,	// Adds shortlink tag
 			'prev_next_posts'		=> 0,	// Adds next/prev tags
 			'prev_next_archives'	=> 1,	// Adds next/prev tags
+			'prev_next_frontpage'	=> 1,	// Adds next/prev tags
 
 			// Facebook.
 			'facebook_publisher'	=> '',	// Facebook Business Url
@@ -279,7 +280,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		/**
 		 * Warned site settings. Only accepts checkbox options.
-		 * When listed as 1, it's a feature which can destroy your site's SEO value when checked.
+		 * When listed as 1, it's a feature which can destroy your website's SEO value when checked.
 		 *
 		 * Unchecking a box is simply "I'm not active." - Removing features generally do not negatively impact SEO value.
 		 * Since it's all about the content.
@@ -332,6 +333,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 			'prev_next_posts'		=> 0,	// Adds next/prev tags
 			'prev_next_archives'	=> 0,	// Adds next/prev tags
+			'prev_next_frontpage'	=> 0,	// Adds next/prev tags
 
 			'post_publish_time'		=> 0,	// Article Published Time
 			'post_modify_time'		=> 0,	// Article Modified Time
