@@ -909,17 +909,20 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	/**
 	 * Enqueue rewrite flush for activation.
 	 *
-	 * @staticvar bool $flush Only true
-	 *
 	 * @since 2.3.0
 	 * @access private
+	 * @staticvar bool $flush Only true
+	 *
+	 * @param bool $enqueue Whether to enqueue the flush or return its state.
+	 *
+	 * @return bool Whether to flush.
 	 */
 	public function enqueue_rewrite_activate( $enqueue = false ) {
 
 		static $flush = null;
 
 		if ( isset( $flush ) )
-			return (bool) $flush;
+			return $flush;
 
 		if ( $enqueue )
 			return $flush = true;
@@ -930,17 +933,20 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	/**
 	 * Enqueue rewrite flush for deactivation.
 	 *
-	 * @staticvar bool $flush Only true
-	 *
 	 * @since 2.3.0
 	 * @access private
+	 * @staticvar bool $flush Only true
+	 *
+	 * @param bool $enqueue Whether to enqueue the flush or return its state.
+	 *
+	 * @return bool Whether to flush.
 	 */
 	public function enqueue_rewrite_deactivate( $enqueue = false ) {
 
 		static $flush = null;
 
 		if ( isset( $flush ) )
-			return (bool) $flush;
+			return $flush;
 
 		if ( $enqueue )
 			return $flush = true;
@@ -951,17 +957,20 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	/**
 	 * Enqueue rewrite flush for deactivation.
 	 *
-	 * @staticvar bool $flush Only true
-	 *
 	 * @since 2.6.0
 	 * @access private
+	 * @staticvar bool $flush Only true
+	 *
+	 * @param bool $enqueue Whether to enqueue the flush or return its state.
+	 *
+	 * @return bool Whether to flush.
 	 */
 	public function enqueue_rewrite_flush_other( $enqueue = false ) {
 
 		static $flush = null;
 
 		if ( isset( $flush ) )
-			return (bool) $flush;
+			return $flush;
 
 		if ( $enqueue )
 			return $flush = true;
@@ -1023,22 +1032,19 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 					add_rewrite_endpoint( Domainmap_Module_Cdsso::SSO_ENDPOINT, EP_ALL );
 
 					//* Force extra flush on init.
-					if ( class_exists( 'domain_map' ) ) {
-						$key = 'the_seo_framework_wpmdev_dm' . get_current_blog_id() . '_extra_flush';
+					$key = 'the_seo_framework_wpmdev_dm' . get_current_blog_id() . '_extra_flush';
 
-						if ( $options_saved ) {
-							//* Reset the flush on option change.
-							if ( get_site_option( $key ) ) {
-								update_site_option( $key, false );
-							}
-						} else {
-							if ( false === get_site_option( $key ) ) {
-								//* Prevent flushing multiple times.
-								update_site_option( $key, true );
+					if ( $options_saved ) {
+						//* Reset the flush on option change.
+						if ( get_site_option( $key ) )
+							update_site_option( $key, false );
+					} else {
+						if ( false === get_site_option( $key ) ) {
+							//* Prevent flushing multiple times.
+							update_site_option( $key, true );
 
-								//* Now flush
-								$this->flush_rewrite_rules();
-							}
+							//* Now flush
+							$this->flush_rewrite_rules();
 						}
 					}
 				}

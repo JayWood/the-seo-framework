@@ -265,6 +265,12 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 		$valid_locales = (array) $this->fb_locales();
 		$default = 'en_US';
 
+		if ( $match_len > 5 ) {
+			//* More than full is used. Make it just full.
+			$match = substr( $match, 0, 5 );
+			$match_len = 5;
+		}
+
 		if ( 5 === $match_len ) {
 			//* Full locale is used.
 

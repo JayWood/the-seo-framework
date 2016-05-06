@@ -695,7 +695,7 @@ Not all planned features made it into 2.6.0.
 	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
 	* Blogname cache wasn't initialized correctly.
 	* Blog Description cache wasn't initialized correctly.
-	* TODO When using subsets of languages, e.g. "nl-NL-formal", it no longer falls back to "en_US", but to "nl_NL".
+	* When using subsets of languages, e.g. "nl-NL-formal", it no longer falls back to "en_US", but to "nl_NL".
 * **Removed:**
 	/
 	* Shortlink URL from Homepage, as it's quite useless and self referring there.
