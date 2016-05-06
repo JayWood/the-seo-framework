@@ -309,7 +309,7 @@ function the_seo_framework_php_benchmark() {
 	}
 	$falsefliptime = microtime(true) - $t;
 
-	//* With PHP 7 results @ 10,000,000 iterations.
+	//* PHP 7 FCGI results @ 10,000,000 iterations.
 	echo 'Loose time: ' . $loosetime . " seconds\r\n"; 					// 0.1115360260009765625 seconds
 	echo 'Strict time: ' . $stricttime . " seconds\r\n";				// 0.1202042102813720703125 seconds
 	echo 'Strict Neg time: ' . $strictnegtime . " seconds\r\n";			// 0.1270349025726318359375 seconds
@@ -336,7 +336,6 @@ function the_seo_framework_php_benchmark() {
 	echo 'In array begin function 5: ' . $inarraybegin5function . " seconds\r\n"; 		// 2.0675928592681884765625 seconds <- VERY bad (1. function call, 2. array sorting. 3. Triple check)
 	echo 'In array end 5: ' . $inarrayend5 . " seconds\r\n"; 							// 0.5424749851226806640625 seconds
 	echo 'In array end function 5: ' . $inarrayend5function . " seconds\r\n"; 			// 2.0651528835296630859375 seconds <- VERY bad
-
 
 	echo "\r\n";
 

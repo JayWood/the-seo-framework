@@ -333,6 +333,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 	 * @param $hook the current page
 	 *
 	 * @todo get_network_option
+	 * @priority low 3.0.0
 	 */
 	public function enqueue_admin_css( $hook ) {
 
@@ -446,9 +447,12 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 
 			$options = $this->get_all_options();
 
-			//* Count up, reset to 0 if needed. We have 4 options: 0, 1, 2, 3
-			// We're not accepting any $_POST values. Keeping it clean.
-			// Yet we should for consistency. @TODO
+			/**
+			 * Count up, reset to 0 if needed. We have 4 options: 0, 1, 2, 3
+			 * We're not accepting any $_POST values. Keeping it clean.
+			 * Yet we should for consistency. @TODO
+			 * @priority high 2.6.2
+			 */
 			$options['counter_type'] = $options['counter_type'] + 1;
 			if ( $options['counter_type'] > 3 )
 				$options['counter_type'] = 0;

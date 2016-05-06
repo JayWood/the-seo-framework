@@ -93,12 +93,13 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 *			$tabs['args'] => mixed optional callback function args
 	 *		)
 	 *	}
-	 * @param string $version the The SEO Framework version
-	 * @param bool $use_tabs Wether to output tabs, only works when $tabs only has one count.
+	 * @param string $version the The SEO Framework version for debugging. May be emptied.
+	 * @param bool $use_tabs Whether to output tabs, only works when $tabs only has one count.
 	 *
 	 * @since 2.3.6
 	 *
-	 * @todo (2.5.3) Rework with radio buttons without WP Core dependancies.
+	 * @refactored
+	 * @since 2.6.0
 	 */
 	public function nav_tab_wrapper( $id, $tabs = array(), $version = '2.3.6', $use_tabs = true ) {
 

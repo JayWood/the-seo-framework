@@ -139,7 +139,6 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 		/**
 		 * When the caching mechanism changes. Change this value.
-		 *
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
 		$revision = '3';
@@ -162,7 +161,6 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 
 		/**
 		 * When the caching mechanism changes. Change this value.
-		 *
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 *
 		 * @since 2.3.4
@@ -174,7 +172,6 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		if ( $additions ) {
 			/**
 			 * Two different cache keys for two different settings.
-			 *
 			 * @since 2.3.4
 			 */
 			if ( $this->get_option( 'description_blogname' ) ) {
@@ -205,7 +202,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 *
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
-		$revision = '4';
+		$revision = '5';
 
 		$this->ld_json_transient = 'the_seo_f' . $revision . '_ldjs_' . $cache_key;
 	}
@@ -218,9 +215,12 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 *
 	 * @staticvar array $cached_id : contains cache strings.
 	 *
-	 * @global $blog_id;
+	 * @global int $blog_id;
 	 *
 	 * @since 2.3.3
+	 *
+	 * @refactored
+	 * @since 2.6.0
 	 *
 	 * @return string The generated page id key.
 	 */
@@ -245,13 +245,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 			$the_id = '_404_';
 		} else if ( ( $this->is_front_page( $page_id ) ) || ( $this->is_admin() && $this->is_menu_page( $this->pagehook ) ) ) {
 			//* Fetch Home key.
-			if ( $this->has_page_on_front() ) {
-				//* Home is page.
-				$the_id = 'hpage_' . $this->get_the_front_page_ID();
-			} else {
-				//* Home is blog.
-				$the_id = 'hblog_' . $this->get_the_front_page_ID();
-			}
+			$the_id = $this->generate_front_page_cache_key();
 		} else if ( $this->is_blog_page( $page_id ) ) {
 			//* Blog page.
 			$the_id = 'blog_' . $page_id;
@@ -365,9 +359,8 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 * Static Front page isn't set or something else is happening. Causes all kinds of problems :(
 		 * Noob. :D
 		 */
-		if ( empty( $the_id ) ) {
+		if ( empty( $the_id ) )
 			$the_id = 'noob_' . $page_id . '_' . $taxonomy;
-		}
 
 		/**
 		 * This should be at most 25 chars. Unless the $blog_id is higher than 99,999,999.
@@ -375,6 +368,27 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 * On the day archive. With the same description setting (short).
 		 */
 		return $cached_id[$page_id][$taxonomy] = $the_id . '_' . $blog_id . $locale;
+	}
+
+	/**
+	 * Returns the front page partial transient key.
+	 *
+	 * @param string $type
+	 *
+	 * @return string the front page transient key.
+	 */
+	public function generate_front_page_cache_key( $type = '' ) {
+
+		if ( empty( $type ) ) {
+			if ( $this->has_page_on_front() )
+				$type = 'page';
+			else
+				$type = 'blog';
+		} else {
+			$type = esc_sql( $type );
+		}
+
+		return $the_id = 'h' . $type . '_' . $this->get_the_front_page_ID();
 	}
 
 	/**
@@ -446,11 +460,11 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	}
 
 	/**
-	 * Checks wether the permalink structure is updated.
+	 * Checks whether the permalink structure is updated.
 	 *
 	 * @since 2.3.0
 	 *
-	 * @return bool Wether if sitemap transient is deleted.
+	 * @return bool Whether if sitemap transient is deleted.
 	 */
 	public function delete_sitemap_transient_permalink_updated() {
 
@@ -586,18 +600,17 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 	 *
 	 * @staticvar bool $flushed
 	 * @since 2.6.0
+	 *
+	 * @return bool Whether it's flushed on current call.
 	 */
 	public function delete_front_ld_json_transient() {
 
 		static $flushed = null;
 
 		if ( isset( $flushed ) )
-			return;
+			return false;
 
 		$front_id = $this->get_the_front_page_ID();
-
-		if ( 0 === $front_id )
-			$front_id = 'hblog_' . (string) get_option( 'page_on_front' );
 
 		$this->delete_ld_json_transient( $front_id );
 

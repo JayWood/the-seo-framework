@@ -875,24 +875,25 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * Add and Flush rewrite rules on plugin activation.
 	 *
 	 * @since 2.2.9
+	 * @access private
+	 *
 	 * Do not return anything. Just be here. Thanks.
 	 */
 	public static function flush_rewrite_rules_activation() {
-		global $wp_rewrite;
-
 		// This function is called statically.
 		$the_seo_framework = the_seo_framework();
 
 		$the_seo_framework->rewrite_rule_sitemap( true );
 
-		$wp_rewrite->init();
-		$wp_rewrite->flush_rules( true );
+		$this->flush_rewrite_rules();
 	}
 
 	/**
 	 * Flush rewrite rules on plugin deactivation.
 	 *
 	 * @since 2.2.9
+	 * @access private
+	 *
 	 * Do not return anything. Just be here. Thanks.
 	 */
 	public static function flush_rewrite_rules_deactivation() {
@@ -911,6 +912,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @staticvar bool $flush Only true
 	 *
 	 * @since 2.3.0
+	 * @access private
 	 */
 	public function enqueue_rewrite_activate( $enqueue = false ) {
 
@@ -931,8 +933,30 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * @staticvar bool $flush Only true
 	 *
 	 * @since 2.3.0
+	 * @access private
 	 */
 	public function enqueue_rewrite_deactivate( $enqueue = false ) {
+
+		static $flush = null;
+
+		if ( isset( $flush ) )
+			return (bool) $flush;
+
+		if ( $enqueue )
+			return $flush = true;
+
+		return false;
+	}
+
+	/**
+	 * Enqueue rewrite flush for deactivation.
+	 *
+	 * @staticvar bool $flush Only true
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 */
+	public function enqueue_rewrite_flush_other( $enqueue = false ) {
 
 		static $flush = null;
 
@@ -949,6 +973,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * Flush rewrite rules based on static variables.
 	 *
 	 * @since 2.3.0
+	 * @access private
 	 */
 	public function maybe_flush_rewrite() {
 
@@ -958,6 +983,22 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $this->enqueue_rewrite_deactivate() )
 			$this->flush_rewrite_rules_deactivation();
 
+		if ( $this->enqueue_rewrite_flush_other() )
+			$this->flush_rewrite_rules();
+
+	}
+
+	/**
+	 * Initialize and flush rewrite rules.
+	 *
+	 * @since 2.6.0
+	 * @access private
+	 */
+	public function flush_rewrite_rules() {
+		global $wp_rewrite;
+
+		$wp_rewrite->init();
+		$wp_rewrite->flush_rules( true );
 	}
 
 	/**
@@ -996,7 +1037,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 								update_site_option( $key, true );
 
 								//* Now flush
-								flush_rewrite_rules();
+								$this->flush_rewrite_rules();
 							}
 						}
 					}

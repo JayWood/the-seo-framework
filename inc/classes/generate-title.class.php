@@ -649,7 +649,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * @return array {
 	 *		'title' => (string) $title : The Generated Title
 	 *		'blogname' => (string) $blogname : The Generated Blogname
-	 *		'add_tagline' => (bool) $add_tagline : Wether to add the tagline
+	 *		'add_tagline' => (bool) $add_tagline : Whether to add the tagline
 	 *		'seplocation' => (string) $seplocation : The Separator Location
 	 *	}
 	 */

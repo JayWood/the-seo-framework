@@ -209,6 +209,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 *
 	 * @return escaped LD+json search helper string.
 	 * @TODO Create option for output.
+	 * @priority high 2.6.0
 	 */
 	public function ld_json_search() {
 
@@ -248,6 +249,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 *
 	 * @return escaped LD+json search helper string.
 	 * @TODO Create option for output.
+	 * @priority high 2.6.0
 	 */
 	public function ld_json_breadcrumbs() {
 
@@ -294,18 +296,18 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		//* Get categories.
 		$r = is_object_in_term( $post_id, $cat_type, '' );
 
-		if ( is_wp_error( $r ) || ! $r )
+		if ( ! $r || is_wp_error( $r ) )
 			return '';
 
 		$cats = wp_get_object_terms( $post_id, $cat_type, array( 'fields' => 'all_with_object_id', 'orderby' => 'parent' ) );
 
-		if ( is_wp_error( $cats ) || empty( $cats ) )
+		if ( empty( $cats ) || is_wp_error( $cats ) )
 			return '';
 
 		$assigned_ids = array();
 		$kittens = array();
-
-		$trees = array();
+		$parents = array();
+		$parents_merge = array();
 
 		//* Fetch cats children id's, if any.
 		foreach ( $cats as $cat ) {
@@ -317,61 +319,88 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 			// Check if they have kittens.
 			$children = get_term_children( $cat_id, $cat->taxonomy );
-
-			//* No need to fetch them again, save object in the array.
-			$cat_obj[$cat_id] = $cat;
+			$ancestors = get_ancestors( $cat_id, $cat->taxonomy );
 
 			//* Save children id's as kittens.
 			$kittens[$cat_id] = $children;
+			$parents[$cat_id] = $ancestors;
 		}
 
-		/**
-		 * Seed out children that aren't assigned.
-		 * (from levels too deep as get_term_children gets them all).
-		 */
 		foreach ( $kittens as $kit_id => $child_id ) {
 			foreach ( $child_id as $ckey => $cid ) {
-				if ( false === in_array( $cid, $assigned_ids ) )
+
+				/**
+				 * Seed out children that aren't assigned.
+				 * (from levels too deep as get_term_children gets them all).
+				 */
+				if ( $cid && false === in_array( $cid, $assigned_ids ) )
 					unset( $kittens[$kit_id][$ckey] );
-			}
-		}
 
-		/**
-		 * Build category ID trees.
-		 */
-		foreach ( $kittens as $parent => $kitten ) {
-			if ( empty( $kitten ) ) {
-				//* Final cat.
-				$trees[] = $parent;
-			} else {
-				if ( 1 === count( $kitten ) ) {
-					//* Single tree.
-					$trees[] = array( reset( $kitten ), $parent );
-				} else {
-					//* Nested categories.
-					$add = array();
-
-					foreach ( $kitten as $kit => $kat ) {
-						//* Only add if non-existent in $trees.
-						if ( ! in_array( $kat, $trees ) )
-							$add[] = $kat;
-					}
-
-					//* Put children in right order.
-					$add = array_reverse( $add );
-
-					$trees[] = array_merge( $add, array( $parent ) );
+				/**
+				 * Make the tree count down multiple children are assigned.
+				 * This fetches the array from the ancestors.
+				 *
+				 * What we want is that the latest child ID gets its own single tree.
+				 * All ancestors should be a representation of the previous assigned trees.
+				 *
+				 * E.g. We have this structure, all assigned:
+				 *	- Cat 1
+				 *		- Cat 2
+				 *			- Cat 3
+				 *
+				 * We want a tree for "Cat 1+2+3", "Cat 1+2", and "Cat 3".
+				 *
+				 * We could add Cat 1, but that's will give two single category lines, which could be misinterperted.
+				 * So we only use what we know: The kittens (child tree).
+				 */
+				if ( isset( $parents[$cid] ) && ! empty( $parents[$kit_id] ) ) {
+					$parents_merge[$kit_id] = $parents[$kit_id];
+					unset( $kittens[$kit_id] );
 				}
 			}
 		}
 
 		/**
-		 * Sort by number of id's. Provides a cleaner layout, better Search Engine understanding and more consitent cache.
-		 * Requires PHP 5.3.0+
-		 *
-		 * @todo drop PHP 5.2.x support as this version compare requires 0.00005s :(
+		 * Build category ID trees for kittens.
 		 */
-		if ( version_compare( PHP_VERSION, '5.3.0', '>=' ) >= 0 )
+		$trees = $this->build_breadcrumb_trees( $kittens );
+
+		//* Empty parents.
+		$parents = array();
+
+		if ( ! empty( $parents_merge ) ) {
+			foreach ( $parents_merge as $child_id => $parents_ids ) {
+
+				//* Reset kitten.
+				$kitten = array();
+
+				//* Last element should be parent.
+				$pid = array_pop( $parents_ids );
+
+				if ( isset( $pid ) ) {
+					//* Parents are reversed children. Let's fix that.
+					$parents_ids = array_reverse( $parents_ids );
+
+					//* Add previous parent at the end of the rest.
+					array_push( $parents_ids, $child_id );
+
+					//* Temporarily array.
+					$kitten[$pid] = $parents_ids;
+
+					$trees = $this->build_breadcrumb_trees( $kitten, $trees );
+				} else {
+					//* Parents are reversed children. Let's fix that.
+					$parents_ids = array_reverse( $parents_ids );
+
+					$trees = $this->build_breadcrumb_trees( $parents_ids, $trees );
+				}
+			}
+		}
+
+		/**
+		 * Sort by number of id's. Provides a cleaner layout, better Search Engine understanding and more consistent cache.
+		 */
+		if ( count( $trees ) > 1 )
 			array_multisort( array_map( 'count', $trees ), SORT_DESC, $trees );
 
 		$context = $this->schema_context();
@@ -393,7 +422,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 					$items = '';
 
 					//* Put the children in the right order.
-					$tree_ids = array_reverse( $tree_ids );
+					$tree_ids = array_reverse( $tree_ids, false );
 
 					foreach ( $tree_ids as $position => $child_id ) {
 						if ( in_array( $child_id, $assigned_ids ) ) {
@@ -401,8 +430,12 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 							//* Fetch item from cache if available.
 							if ( isset( $item_cache[$child_id] ) ) {
-								$items .= $item_cache[$child_id];
+								$pos = $position + 2;
+								$item_cache[$child_id]['pos'] = $pos;
+								$items .= $this->make_breadcrumb( $item_cache[$child_id], true );
+
 							} else {
+
 								$pos = $position + 2;
 
 								$cat = get_term_by( 'id', $child_id, $cat_type, OBJECT, 'raw' );
@@ -414,9 +447,14 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 								$name = json_encode( $cat_name );
 
 								//* Store in cache.
-								$item_cache[$child_id] = sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
+								$item_cache[$child_id] = array(
+									'type'	=> $item_type,
+									'pos'	=> (string) $pos,
+									'id'	=> $id,
+									'name'	=> $name
+								);
 
-								$items .= $item_cache[$child_id];
+								$items .= $this->make_breadcrumb( $item_cache[$child_id], true );
 							}
 						}
 					}
@@ -500,7 +538,14 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 				$name = json_encode( $parent_name );
 
-				$items .= sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, (string) $pos, $id, $name );
+				$breadcrumb = array(
+					'type'	=> $item_type,
+					'pos'	=> (string) $pos,
+					'id'	=> $id,
+					'name'	=> $name
+				);
+
+				$items .= $this->make_breadcrumb( $breadcrumb, true );
 			}
 
 			if ( $items ) {
@@ -554,10 +599,14 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 
 		$custom_name = json_encode( $custom_name );
 
-		//* Add trailing comma.
-		$first_item = sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}},', $item_type, '1', $id, $custom_name );
+		$breadcrumb = array(
+			'type'	=> $item_type,
+			'pos'	=> '1',
+			'id'	=> $id,
+			'name'	=> $custom_name
+		);
 
-		return $first_item;
+		return $first_item = $this->make_breadcrumb( $breadcrumb, true );
 	}
 
 	/**
@@ -575,7 +624,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 * @staticvar string $id The current post/page/archive url.
 	 * @staticvar string $name The current post/page/archive title.
 	 *
-	 * @return string Lat Breadcrumb item
+	 * @return string Last Breadcrumb item
 	 */
 	public function ld_json_breadcrumb_last( $item_type = null, $pos = null, $post_id = null ) {
 
@@ -613,9 +662,76 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			$name = json_encode( $name );
 		}
 
-		$last_item = sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}}', $item_type, (string) $pos, $id, $name );
+		$breadcrumb = array(
+			'type'	=> $item_type,
+			'pos'	=> (string) $pos,
+			'id'	=> $id,
+			'name'	=> $name
+		);
 
-		return $last_item;
+		return $this->make_breadcrumb( $breadcrumb, false );
+	}
+
+	/**
+	 * Builds a breadcrumb.
+	 *
+	 * @since 2.6.0
+	 * @param array $item : {
+	 *		'type',
+	 *		'pos',
+	 *		'id',
+	 *		'name'
+	 * }
+	 * @param bool $comma Whether to add a trailing comma.
+	 *
+	 * @return string The LD+Json breadcrumb.
+	 */
+	public function make_breadcrumb( $item, $comma = true ) {
+		$comma = $comma ? ',' : '';
+		return sprintf( '{"@type":%s,"position":%s,"item":{"@id":%s,"name":%s}}%s', $item['type'], $item['pos'], $item['id'], $item['name'], $comma );
+	}
+
+	/**
+	 * Build breadcrumb trees.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param array The breadcrumb trees, with the key as parent.
+	 * @param array $previous_tree A previous set tree to compare to, if set.
+	 *
+	 * @return trees in order.
+	 */
+	protected function build_breadcrumb_trees( $kittens, array $previous_tree = array() ) {
+
+		$trees = $previous_tree;
+
+		foreach ( $kittens as $parent => $kitten ) {
+			if ( empty( $kitten ) ) {
+				//* Final cat.
+				$trees[] = $parent;
+			} else {
+				if ( 1 === count( $kitten ) ) {
+					//* Single tree.
+					$trees[] = array( reset( $kitten ), $parent );
+				} else {
+					//* Nested categories.
+					$add = array();
+
+					foreach ( $kitten as $kit => $kat ) {
+						//* Only add if non-existent in $trees.
+						if ( ! in_array( $kat, $trees ) )
+							$add[] = $kat;
+					}
+
+					//* Put children in right order.
+					$add = array_reverse( $add );
+
+					$trees[] = array_merge( $add, array( $parent ) );
+				}
+			}
+		}
+
+		return $trees;
 	}
 
 	/**

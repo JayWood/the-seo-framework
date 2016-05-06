@@ -260,14 +260,14 @@ class AutoDescription_Core {
 	}
 
 	/**
-	 * Wether to allow external redirect through the 301 redirect option.
+	 * Whether to allow external redirect through the 301 redirect option.
 	 *
 	 * Applies filters the_seo_framework_allow_external_redirect : bool
 	 * @staticvar bool $allowed
 	 *
 	 * @since 2.6.0
 	 *
-	 * @return bool Wether external redirect is allowed.
+	 * @return bool Whether external redirect is allowed.
 	 */
 	public function allow_external_redirect() {
 
@@ -308,8 +308,8 @@ class AutoDescription_Core {
 	 *
 	 * @param string $key The Object cache key.
 	 * @param string $group The Object cache group.
-	 * @param bool $force Wether to force an update of the local cache.
-	 * @param bool $found Wether the key was found in the cache. Disambiguates a return of false, a storable value.
+	 * @param bool $force Whether to force an update of the local cache.
+	 * @param bool $found Whether the key was found in the cache. Disambiguates a return of false, a storable value.
 	 *
 	 * @since 2.4.3
 	 *

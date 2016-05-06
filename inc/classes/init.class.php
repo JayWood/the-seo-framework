@@ -208,7 +208,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 		 * A static array cache counter function would make it possible, but meh.
 		 * This function takes the most time anyway.
 		 */
-		$plugin_start = microtime( true );
+		$init_start = microtime( true );
 		$memory_start = $this->the_seo_framework_debug ? $this->profile( false, false, 'memory', 'html_output' ) : 0;
 
 		/**
@@ -317,8 +317,8 @@ class AutoDescription_Init extends AutoDescription_Query {
 			 * @since 2.4.0
 			 */
 			if ( $timer ) {
-				$memory = $this->the_seo_framework_debug ? ' | ' . number_format( $this->profile( false, true, 'memory', 'html_output' ) / 1024, 2 ) . ' kiB': '';
-				$indicatorafter = '<!-- ' . $end . $me . ' | ' . number_format( microtime( true ) - $plugin_start, 5 ) . 's' . $memory . ' -->' . "\r\n";
+				$memory = $this->the_seo_framework_debug ? ' | ' . number_format( $this->profile( false, true, 'memory', 'html_output' ) / 1024, 2 ) . ' kiB' : '';
+				$indicatorafter = '<!-- ' . $end . $me . ' | ' . number_format( microtime( true ) - $init_start, 5 ) . 's' . $memory . ' -->' . "\r\n";
 			} else {
 				$indicatorafter = '<!-- ' . $end . $me . ' -->' . "\r\n";
 			}

@@ -26,16 +26,16 @@
 class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 	/**
-	 * Wether to slash the url or not. Used when query vars are in url.
+	 * Whether to slash the url or not. Used when query vars are in url.
 	 *
 	 * @since 2.6.0
 	 *
-	 * @var bool Wether to slash the url.
+	 * @var bool Whether to slash the url.
 	 */
 	protected $url_slashit;
 
 	/**
-	 * Wether to add a subdomain to the url.
+	 * Whether to add a subdomain to the url if set.
 	 *
 	 * @since 2.6.0
 	 *
@@ -60,7 +60,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * 			@param bool $paged Return current page URL without pagination if false.
 	 * 			@param bool $from_option Get the canonical uri option
 	 * 			@param object $post The Post Object.
-	 * 			@param bool $external Wether to fetch the current WP Request or get the permalink by Post Object.
+	 * 			@param bool $external Whether to fetch the current WP Request or get the permalink by Post Object.
 	 * 			@param bool $is_term Fetch url for term.
 	 * 			@param object $term The term object.
 	 * 			@param bool $home Fetch home URL.
@@ -202,7 +202,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * 		@param bool $paged Return current page URL without pagination if false
 	 * 		@param bool $from_option Get the canonical uri option
 	 * 		@param object $post The Post Object.
-	 * 		@param bool $external Wether to fetch the current WP Request or get the permalink by Post Object.
+	 * 		@param bool $external Whether to fetch the current WP Request or get the permalink by Post Object.
 	 * 		@param bool $is_term Fetch url for term.
 	 * 		@param object $term The term object.
 	 * 		@param bool $home Fetch home URL.
@@ -331,7 +331,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * Generates relative URL for current post_ID.
 	 *
 	 * @param object $post The post.
-	 * @param bool $external Wether to fetch the WP Request or get the permalink by Post Object.
+	 * @param bool $external Whether to fetch the WP Request or get the permalink by Post Object.
 	 * @param id $post_id The page id.
 	 *
 	 * @since 2.3.0
@@ -415,7 +415,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 *
 	 * @param string $path the current URL path.
 	 * @param int $post_id The post ID.
-	 * @param bool $external Wether to fetch the WP Request or get the permalink by Post Object.
+	 * @param bool $external Whether to fetch the WP Request or get the permalink by Post Object.
 	 *
 	 * @since 2.6.0
 	 *
@@ -447,6 +447,8 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 *
 	 * @param string $path The current path.
 	 * @param int $post_id The Post ID. Unused.
+	 *
+	 * @global array $q_config
 	 *
 	 * @staticvar int $q_config_mode
 	 *
@@ -520,7 +522,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * @param string $path The current path.
 	 * @param int $post_id The Post ID.
 	 *
+	 * @global object $sitepress
+	 *
 	 * @staticvar bool $gli_exists
+	 * @staticvar string $default_lang
 	 *
 	 * @since 2.4.3
 	 *
@@ -537,7 +542,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 			static $gli_exists = null;
 
-			if ( ! isset( $gli_exists ) )
+			if ( is_null( $gli_exists ) )
 				$gli_exists = function_exists( 'wpml_get_language_information' );
 
 			if ( $gli_exists ) {
@@ -547,13 +552,14 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 				//* Cache default language.
 				static $default_lang = null;
-				if ( ! isset( $default_lang ) )
+				if ( is_null( $default_lang ) )
 					$default_lang = $sitepress->get_default_language();
 
 				/**
 				 * Applies filters wpml_post_language_details : array|wp_error
 				 *
 				 * ... Somehow WPML thought this would be great and understandable.
+				 * This should be put inside a callable function.
 				 * @since 2.6.0
 				 */
 				$lang_info = apply_filters( 'wpml_post_language_details', NULL, $post_id );
@@ -564,7 +570,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 
 					//* Cache the code.
 					static $lang_code = null;
-					if ( ! isset( $lang_code ) && defined( 'ICL_LANGUAGE_CODE' ) )
+					if ( is_null( $lang_code ) && defined( 'ICL_LANGUAGE_CODE' ) )
 						$lang_code = ICL_LANGUAGE_CODE;
 
 					$lang_info['language_code'] = $lang_code;
@@ -632,9 +638,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	/**
 	 * Generates relative URL for current term.
 	 *
-	 * @global WP_Query object $wp_query
-	 * @global WP_Rewrite $wp_rewrite
-	 * @global Paged $paged
+	 * @global WP_Rewrite object $wp_rewrite
 	 *
 	 * @param object $term The term object.
 	 * @param bool $args {
@@ -648,6 +652,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 * @return Relative term or taxonomy URL.
 	 */
 	public function get_relative_term_url( $term = null, $args = array() ) {
+		global $wp_rewrite;
 
 		if ( ! is_array( $args ) ) {
 			/**
@@ -665,16 +670,13 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		if ( $args['external'] && is_null( $term ) )
 			return '';
 
-		if ( is_null( $term ) ) {
-			global $wp_query;
-			$term = $wp_query->get_queried_object();
-		}
-
-		$paged = $this->maybe_get_paged( $this->paged(), $args['paged'], $args['paged_plural'] );
+		if ( is_null( $term ) )
+			$term = get_queried_object();
 
 		$taxonomy = $term->taxonomy;
 
-		global $wp_rewrite;
+		$paged = $this->maybe_get_paged( $this->paged(), $args['paged'], $args['paged_plural'] );
+
 		$termlink = $wp_rewrite->get_extra_permastruct( $taxonomy );
 
 		$slug = $term->slug;
@@ -683,7 +685,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		if ( empty( $termlink ) ) {
 			if ( 'category' === $taxonomy ) {
 				$termlink = '?cat=' . $term->term_id;
-			} elseif ( isset( $t->query_var ) && '' !== $t->query_var ) {
+			} else if ( isset( $t->query_var ) && '' !== $t->query_var ) {
 				$termlink = '?' . $t->query_var . '=' . $slug;
 			} else {
 				$termlink = '?taxonomy=' . $taxonomy . '&term=' . $slug;
@@ -734,6 +736,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 */
 	public function set_url_scheme( $url, $scheme = null, $use_filter = true ) {
 
+		/**
+		 * Core should uphold the coding standards (Yoda code). Open issue @link Github.com?
+		 * @todo yoda-fy
+		 */
 		if ( ! isset( $scheme ) ) {
 			$scheme = is_ssl() ? 'https' : 'http';
 		} else if ( $scheme === 'admin' || $scheme === 'login' || $scheme === 'login_post' || $scheme === 'rpc' ) {
@@ -791,7 +797,10 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 */
 		$scheme_settings = apply_filters( 'the_seo_framework_canonical_force_scheme', null, $current_scheme );
 
-		//* @TODO add options metabox.
+		/**
+		 * @TODO add options metabox.
+		 * @priority medium 2.6.5+
+		 */
 
 		if ( isset( $scheme_settings ) ) {
 			if ( 'https' ===  $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {

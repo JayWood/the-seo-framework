@@ -430,6 +430,8 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			$this->pre_output_site_updated_plugin_notice();
 		}
 
+		//* Flush rewrite rules at shutdown.
+		$this->enqueue_rewrite_flush_other( true );
 	}
 
 	/**

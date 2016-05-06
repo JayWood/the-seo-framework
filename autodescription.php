@@ -48,7 +48,7 @@
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA1' );
 
 /**
  * Plugin options filter
@@ -129,3 +129,16 @@ function the_seo_framework_locale_init() {
  * @uses THE_SEO_FRAMEWORK_DIR_PATH
  */
 require_once( THE_SEO_FRAMEWORK_DIR_PATH . '/load.class.php' );
+
+//* Load deprecated functions.
+require_once( THE_SEO_FRAMEWORK_DIR_PATH . 'inc/deprecated/deprecated.php' );
+
+/**
+ * FLush permalinks on activation/deactivation
+ *
+ * Calls functions statically.
+ *
+ * @since 2.2.9
+ */
+register_activation_hook( THE_SEO_FRAMEWORK_PLUGIN_BASE_FILE, array( 'The_SEO_Framework_Load', 'flush_rewrite_rules_activation' ) );
+register_deactivation_hook( THE_SEO_FRAMEWORK_PLUGIN_BASE_FILE, array( 'The_SEO_Framework_Load', 'flush_rewrite_rules_deactivation' ) );

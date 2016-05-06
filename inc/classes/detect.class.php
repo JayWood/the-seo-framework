@@ -619,8 +619,8 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	 *
 	 * @param null|string $title The given title
 	 * @param null|string $sep The separator
-	 * @param null|string $seplocation Wether the blogname is left or right.
-	 * @param bool $output Wether to store cache values or echo the output in the footer.
+	 * @param null|string $seplocation Whether the blogname is left or right.
+	 * @param bool $output Whether to store cache values or echo the output in the footer.
 	 *
 	 * @return void
 	 */
@@ -909,7 +909,7 @@ class AutoDescription_Detect extends AutoDescription_Render {
 	}
 
 	/**
-	 * Determines wether the theme is outputting the title correctly based on transient.
+	 * Determines whether the theme is outputting the title correctly based on transient.
 	 *
 	 * @since 2.5.2
 	 *

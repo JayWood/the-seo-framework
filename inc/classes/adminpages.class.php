@@ -82,6 +82,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			/**
 			 * Add specific Multisite options
 			 * @TODO
+			 * @priority low 3.0.0
 			 */
 			// if ( is_multisite() ) add_action( 'network_admin_menu', array( $this, 'add_network_menu_link' ) );
 
@@ -168,6 +169,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @return void
 	 *
 	 * @TODO Everything.
+	 * @priority low 3.0.0
 	 */
 	public function add_network_menu_link() {
 
@@ -241,7 +243,10 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				<?php
 				do_action( 'the_seo_framework_before_siteadmin_metaboxes_side', $this->pagehook );
 
-				// @TODO fill this in
+				/**
+				 * @TODO fill this in
+				 * @priority low 2.9.0
+				 */
 
 				do_action( 'the_seo_framework_after_siteadmin_metaboxes_side', $this->pagehook );
 				?>
@@ -748,6 +753,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @since 2.2.5
 	 *
 	 * @TODO use this
+	 * @priority low 2.8.0+
 	 *
 	 * @return string|null the default selected class.
 	 */

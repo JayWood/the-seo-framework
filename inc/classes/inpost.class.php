@@ -30,7 +30,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 	 *
 	 * @since 2.5.2
 	 *
-	 * @var bool|string Wether and where to show the inpost SEO bar.
+	 * @var bool|string Whether and where to show the inpost SEO bar.
 	 */
 	protected $inpost_seo_bar = false;
 

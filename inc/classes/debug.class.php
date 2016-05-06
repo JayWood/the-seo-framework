@@ -605,7 +605,7 @@ class AutoDescription_Debug extends AutoDescription_Core {
 
 		//* Get now.
 		$time_now = microtime( true );
-		$memory_usage_now = memory_get_usage( true );
+		$memory_usage_now = memory_get_usage();
 
 		//* Calculate difference.
 		$difference_time = $time_now - $timer_start[$key];

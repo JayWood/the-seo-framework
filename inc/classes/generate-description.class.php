@@ -679,7 +679,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 				 */
 				$title = $this->title( '', '', '', array( 'term_id' => $id, 'notagline' => true, 'description_title' => true, 'escape' => false ) );
 
-				// @TODO create option.
+				/**
+				 * @TODO create option.
+				 * @priority medium 2.8.0+
+				 */
 				/* translators: Front-end output. */
 				$title = __( 'Latest posts:', 'autodescription' ) . ' ' . $title;
 			} else if ( $term && is_object( $term ) ) {

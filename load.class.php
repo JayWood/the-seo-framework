@@ -125,6 +125,7 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	public $the_seo_framework_debug_hidden = false;
 	public $the_seo_framework_use_transients = true;
 	public $script_debug = false;
+	public $debug_time;
 
 	/**
 	 * Constructor, setup debug vars and then load parent constructor.
@@ -268,16 +269,3 @@ class The_SEO_Framework_Load extends The_SEO_Framework_Deprecated {
 	}
 
 }
-
-//* Load deprecated functions.
-require_once( THE_SEO_FRAMEWORK_DIR_PATH . 'inc/deprecated/deprecated.php' );
-
-/**
- * FLush permalinks on activation/deactivation
- *
- * Calls functions statically.
- *
- * @since 2.2.9
- */
-register_activation_hook( THE_SEO_FRAMEWORK_PLUGIN_BASE_FILE, array( 'The_SEO_Framework_Load', 'flush_rewrite_rules_activation' ) );
-register_deactivation_hook( THE_SEO_FRAMEWORK_PLUGIN_BASE_FILE, array( 'The_SEO_Framework_Load', 'flush_rewrite_rules_deactivation' ) );

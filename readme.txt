@@ -489,7 +489,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * New schema markup has been added, this helps Search Engines better understand your website.
 * Breadcrumbs have been expanded, to support nested categories and multiple categories. Now you can see multiple breadcrumb scripts to help Search Engines better understand your website's structure.
 * Breadcrumbs scripts now also work on WooCommerce products, enjoy!
-* Note: If you use PHP 5.3 or later, the nested scripts provide a more consitent (yet negligible) structure.
 
 **For everyone - About translations:**
 /
@@ -696,6 +695,7 @@ Not all planned features made it into 2.6.0.
 	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
 	* Blogname cache wasn't initialized correctly.
 	* Blog Description cache wasn't initialized correctly.
+	* TODO When using subsets of languages, e.g. "nl-NL-formal", it no longer falls back to "en_US", but to "nl_NL".
 * **Removed:**
 	/
 	* Shortlink URL from Homepage, as it's quite useless and self referring there.

@@ -36,7 +36,7 @@ class AutoDescription_Query extends AutoDescription_Compat {
 	/**
 	 * Get the real page ID, also depending on CPT.
 	 *
-	 * @param bool $use_cache Wether to use the cache or not.
+	 * @param bool $use_cache Whether to use the cache or not.
 	 *
 	 * @staticvar int $id the ID.
 	 *

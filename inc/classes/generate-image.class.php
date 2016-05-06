@@ -39,7 +39,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	 *
 	 * @param string $post_id the post ID
 	 * @param string $image output url for image
-	 * @param bool $escape Wether to escape the image url
+	 * @param bool $escape Whether to escape the image url
 	 *
 	 * @since 2.2.1
 	 *
@@ -47,7 +47,10 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	 * Applies filters string the_seo_framework_og_image_after_header
 	 * @since 2.5.2
 	 *
-	 * @todo create options and upload area
+	 * @todo create options and upload area.
+	 * @priority medium 2.8.0+
+	 * @todo listen to attached images within post.
+	 * @priority medium 2.7.0+
 	 */
 	public function get_image( $post_id = '', $args = array(), $escape = true ) {
 
@@ -238,6 +241,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 	 * @since 2.5.0
 	 *
 	 * @todo create formula to fetch transient.
+	 * @priority high 2.7.0
 	 *
 	 * @return string|empty Parsed image url or empty if already called
 	 */
