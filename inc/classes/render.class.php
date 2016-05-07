@@ -355,6 +355,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 			 * depend on the image from cache.
 			 *
 			 * @todo deprecate or place in cache.
+			 * @priority medium 2.8.0+
 			 */
 			$image = (string) apply_filters( 'the_seo_framework_ogimage_output', '', $id );
 
@@ -877,6 +878,27 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	}
 
 	/**
+	 * Outputs Yandex Site Verification code
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return string|null Yandex Webmaster code
+	 */
+	public function yandex_site_output() {
+
+		/**
+		 * Applies filters 'the_seo_framework_yandexsite_output' : string
+		 * @since 2.6.0
+		 */
+		$code = (string) apply_filters( 'the_seo_framework_yandexsite_output', $this->get_option( 'yandex_verification' ), $this->get_the_real_ID() );
+
+		if ( empty( $code ) )
+			return '';
+
+		return '<meta name="yandex-verification" content="' . esc_attr( $code ) . '" />' . "\r\n";
+	}
+
+	/**
 	 * Outputs Bing Site Verification code
 	 *
 	 * @since 2.5.2
@@ -1002,6 +1024,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 
 		if ( $prev )
 			$output .= sprintf( '<link rel="prev" href="%s" />' . "\r\n", $prev );
+
 		if ( $next )
 			$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
 

@@ -552,7 +552,7 @@ Not all planned features made it into 2.6.0.
 	* Headway compatibility. Done by using one of their SEO plugin detection filters which disables their SEO functionality.
 	* Runway Framework theme compatibility.
 	* Yandex sitemap pinging support.
-	* TODO Yandex Webmasters verification code support.
+	* Yandex Webmasters verification code support.
 	* Description excerpt detection. Now when an excerpt is filled in, no description additions will be added in front of them.
 	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s on post publish.
 	* The SEO Bar now has a Double Title check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
@@ -801,6 +801,10 @@ Not all planned features made it into 2.6.0.
 	* **New:**
 		/
 		* `(string) the_seo_framework_shortlink_output`
+		* `(string) the_seo_framework_googlesite_output`
+		* `(string) the_seo_framework_bingsite_output`
+		* `(string) the_seo_framework_yandexsite_output`
+		* `(string) the_seo_framework_pintsite_output`
 		* `(string) the_seo_framework_robots_output`
 		* `(string) the_seo_framework_paged_url_output_prev`
 		* `(string) the_seo_framework_paged_url_output_next`

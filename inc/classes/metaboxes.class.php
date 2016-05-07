@@ -1583,6 +1583,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$bing_site_url = "https://www.bing.com/webmaster/configure/verify/ownership?url=" . urlencode( $site_url );
 		$google_site_url = "https://www.google.com/webmasters/verification/verification?hl=" . $language . "&siteUrl=" . $site_url;
 		$pint_site_url = "https://analytics.pinterest.com/";
+		$yandex_site_url = "https://webmaster.yandex.com/site/verification.xml";
 
 		?>
 		<h4><?php _e( 'Webmaster Integration Settings', 'autodescription' ); ?></h4>
@@ -1609,6 +1610,16 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		</p>
 		<p class="fields">
 			<input type="text" name="<?php $this->field_name( 'bing_verification' ); ?>" class="large-text" id="<?php $this->field_id( 'bing_verification' ); ?>" placeholder="123A456B78901C2D3456E7890F1A234D" value="<?php echo esc_attr( $this->get_field_value( 'bing_verification' ) ); ?>" />
+		</p>
+
+		<p>
+			<label for="<?php $this->field_id( 'yandex_verification' ); ?>" class="toblock">
+				<strong><?php _e( "Yandex Webmaster Verification Code", 'autodescription' ); ?></strong>
+				<a href="<?php echo esc_url( $yandex_site_url ); ?>" target="_blank" class="description" title="<?php _e( 'Get the Yandex Verification Code', 'autodescription' ); ?>">[?]</a>
+			</label>
+		</p>
+		<p class="fields">
+			<input type="text" name="<?php $this->field_name( 'yandex_verification' ); ?>" class="large-text" id="<?php $this->field_id( 'yandex_verification' ); ?>" placeholder="12345abc678901d2" value="<?php echo esc_attr( $this->get_field_value( 'yandex_verification' ) ); ?>" />
 		</p>
 
 		<p>

@@ -222,6 +222,10 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 			)
 		);
 
+		/**
+		 * @todo create content="code" stripper
+		 * @priority low 2.9.0+
+		 */
 		$this->autodescription_add_option_filter(
 			's_no_html_space',
 			$this->settings_field,
@@ -230,6 +234,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 				'google_verification',
 				'bing_verification',
+				'yandex_verification',
 				'pint_verification',
 			)
 		);

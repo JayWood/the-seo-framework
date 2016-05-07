@@ -210,6 +210,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Webmasters.
 			'google_verification'	=> '', 	// Google Verification Code
 			'bing_verification'		=> '', 	// Bing Verification Code
+			'yandex_verification'	=> '', 	// Yandex Verification Code
 			'pint_verification'		=> '', 	// Pinterest Verification Code
 
 			// Knowledge general. https://developers.google.com/structured-data/customize/contact-points - This is extremely extended and valuable. Expect a premium version.

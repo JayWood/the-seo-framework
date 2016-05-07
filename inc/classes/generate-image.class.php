@@ -351,7 +351,7 @@ class AutoDescription_Generate_Image extends AutoDescription_Generate_Url {
 				$icon = $url_data ? $url_data[0] : '';
 			}
 
-		} else if ( is_int( $size ) && function_exists( 'has_site_icon' ) && $this->wp_version( '4.2.999', '>=' ) ) {
+		} else if ( is_int( $size ) && function_exists( 'has_site_icon' ) && $this->wp_version( '4.3', '>=' ) ) {
 			//* Also applies (MultiSite) filters.
 			$icon = get_site_icon_url( $size );
 		}

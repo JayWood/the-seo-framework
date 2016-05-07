@@ -67,9 +67,8 @@ class AutoDescription_Search extends AutoDescription_Generate_Author {
 			);
 
 			$protected_posts = get_posts( $args );
-			if ( $protected_posts ) {
+			if ( $protected_posts )
 				$post_ids = wp_list_pluck( $protected_posts, 'ID' );
-			}
 
 			$this->object_cache_set( $cache_key, $post_ids, 86400 );
 		}
@@ -89,6 +88,7 @@ class AutoDescription_Search extends AutoDescription_Generate_Author {
 	 * @since 2.1.7
 	 *
 	 * @todo run this only when one post triggers this option?
+	 * @todo priority low 2.7.0+
 	 */
 	public function search_filter( $query ) {
 

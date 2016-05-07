@@ -248,6 +248,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 						. $this->og_sitename()
 						. $this->google_site_output()
 						. $this->bing_site_output()
+						. $this->yandex_site_output()
 						. $this->pint_site_output()
 						;
 			} else {
@@ -276,6 +277,7 @@ class AutoDescription_Init extends AutoDescription_Query {
 						. $this->ld_json()
 						. $this->google_site_output()
 						. $this->bing_site_output()
+						. $this->yandex_site_output()
 						. $this->pint_site_output()
 						;
 			}
