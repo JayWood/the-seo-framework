@@ -40,14 +40,13 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 	 * @uses genesis_get_seo_option()   Get SEO setting value.
 	 * @uses genesis_get_custom_field() Get custom field value.
 	 *
-	 * @global WP_Query $wp_query Query object.
+	 * @global object $wp_query
 	 *
 	 * @TODO rewrite (optimize)
 	 *
 	 * @return array|null robots
 	 */
 	public function robots_meta() {
-		global $wp_query;
 
 		//* Defaults
 		$meta = array(
@@ -58,14 +57,15 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 			'noydir'    => $this->get_option( 'noydir' ) ? 'noydir' : '',
 		);
 
-		$query_vars = isset( $wp_query->query_vars ) ? $wp_query->query_vars : '';
-		$paged = $this->paged();
 		/**
 		 * Check the Robots SEO settings, set noindex for paged archives.
 		 * @since 2.2.4
 		 */
-		if ( $paged > 1 )
+		if ( $this->is_archive() && $this->paged() > 1 )
 			$meta['noindex'] = $this->get_option( 'paged_noindex' ) ? 'noindex' : $meta['noindex'];
+
+		if ( $this->is_front_page() && ( $this->page() > 1 || $this->paged() > 1 ) )
+			$meta['noindex'] = $this->get_option( 'home_paged_noindex' ) ? 'noindex' : $meta['noindex'];
 
 		//* Check home page SEO settings, set noindex, nofollow and noarchive
 		if ( $this->is_front_page() ) {
@@ -73,28 +73,31 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'homepage_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'homepage_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		} else {
+			global $wp_query;
+
 			/**
 			 * Check if archive is empty, set noindex for those.
+			 * @since 2.2.8
 			 *
 			 * @todo maybe create option
-			 * @since 2.2.8
+			 * @priority so low... 3.0.0+
 			 */
 			if ( isset( $wp_query->post_count ) && 0 === $wp_query->post_count )
 				$meta['noindex'] = 'noindex';
 		}
 
 		if ( $this->is_category() || $this->is_tag() ) {
-			$term = $wp_query->get_queried_object();
+			$term = get_queried_object();
 
 			$meta['noindex']   = empty( $meta['noindex'] ) && $term->admeta['noindex'] ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $term->admeta['nofollow'] ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $term->admeta['noarchive'] ? 'noarchive' : $meta['noarchive'];
 
-			if ( is_category() ) {
+			if ( $this->is_category() ) {
 				$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'category_noindex' ) ? 'noindex' : $meta['noindex'];
 				$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'category_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 				$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'category_noindex' ) ? 'noarchive' : $meta['noarchive'];
-			} else if ( is_tag() ) {
+			} else if ( $this->is_tag() ) {
 				$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'tag_noindex' ) ? 'noindex' : $meta['noindex'];
 				$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'tag_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 				$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'tag_noindex' ) ? 'noarchive' : $meta['noarchive'];
@@ -103,6 +106,7 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 			$flag = '0' !== $term->admeta['saved_flag'] ? true : false;
 
 			if ( false === $flag && isset( $term->meta ) ) {
+				//* Genesis support.
 				$meta['noindex']   = empty( $meta['noindex'] ) && $term->meta['noindex'] ? 'noindex' : $meta['noindex'];
 				$meta['nofollow']  = empty( $meta['nofollow'] ) && $term->meta['nofollow'] ? 'nofollow' : $meta['nofollow'];
 				$meta['noarchive'] = empty( $meta['noarchive'] ) && $term->meta['noarchive'] ? 'noarchive' : $meta['noarchive'];
@@ -119,11 +123,15 @@ class AutoDescription_Generate extends AutoDescription_TermInfo {
 		}
 
 		if ( $this->is_author() ) {
-			$author_id = (int) get_query_var( 'author' );
+			// $author_id = (int) get_query_var( 'author' );
 
-			$meta['noindex']   = empty( $meta['noindex'] ) && get_the_author_meta( 'noindex', $author_id ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = empty( $meta['nofollow'] ) && get_the_author_meta( 'nofollow', $author_id ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = empty( $meta['noarchive'] ) && get_the_author_meta( 'noarchive', $author_id ) ? 'noarchive' : $meta['noarchive'];
+			/**
+			 * @todo
+			 * @priority high 2.6.x
+			 */
+			// $meta['noindex']   = empty( $meta['noindex'] ) && get_the_author_meta( 'noindex', $author_id ) ? 'noindex' : $meta['noindex'];
+			// $meta['nofollow']  = empty( $meta['nofollow'] ) && get_the_author_meta( 'nofollow', $author_id ) ? 'nofollow' : $meta['nofollow'];
+			// $meta['noarchive'] = empty( $meta['noarchive'] ) && get_the_author_meta( 'noarchive', $author_id ) ? 'noarchive' : $meta['noarchive'];
 
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'author_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'author_nofollow' ) ? 'nofollow' : $meta['nofollow'];

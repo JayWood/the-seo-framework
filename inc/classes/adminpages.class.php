@@ -646,7 +646,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		if ( $echo ) {
 			if ( $wrap ) {
-				echo sprintf( 'class="%s"', $class );
+				printf( 'class="%s"', $class );
 			} else {
 				echo $class;
 			}
@@ -672,6 +672,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @param bool $echo optional echo or return the output.
 	 *
 	 * @since 2.3.4
+	 *
+	 * @return string Empty on echo or The class with an optional wrapper.
 	 */
 	public function is_warning_checked( $key, $setting = '', $wrap = true, $echo = true ) {
 
@@ -684,7 +686,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		if ( $echo ) {
 			if ( $wrap ) {
-				echo sprintf( 'class="%s"', $class );
+				printf( 'class="%s"', $class );
 			} else {
 				echo $class;
 			}
@@ -710,6 +712,8 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @param bool $echo optional echo or return the output.
 	 *
 	 * @since 2.3.4
+	 *
+	 * @return string Empty on echo or The class with an optional wrapper.
 	 */
 	public function is_conditional_checked( $key, $setting = '', $wrap = true, $echo = true ) {
 
@@ -728,7 +732,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 		if ( $echo ) {
 			if ( $wrap ) {
-				echo sprintf( 'class="%s"', $class );
+				printf( 'class="%s"', $class );
 			} else {
 				echo $class;
 			}

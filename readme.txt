@@ -362,25 +362,9 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 = 2.6.0 - Pragmatic Foundation =
 
-/
-** TODO TESTING CHECKLIST **
-/
-* Canonical URLs <- most important.
-* Custom Post Type Archives.
-* Descriptions are what they said to be.
-* AutoDescriptions ending with '.', ',', '!' and '?'.
-* Breadcrumb validation on posts and products with multiple and sub categories.
-* Schema sitename
-* Hundreds of filters... ugh :).
-* The SEO Bar colors, in many situations.
-* Title lengths.
-* Description lengths.
-* Post Author SEO settings.
-* Pre-"The SEO Framework" Genesis data.
-
 **Release date:**
 /
-* March TODO 2016
+* May TODO 2016
 
 **Preamble:**
 
@@ -389,14 +373,15 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Summarized:**
 /
-* With over 180 notable changes, I bring you a new Pragmatic Foundation.
-* At long last, something that was planned for almost half a year, **Author SEO** has finally been included, this affects all posts when set up.
-* As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
-* Also, many minor **translation improvements** have been put in place on many places. And **WPML compatibility** has received a rework, now all canonical URLs in the sitemap and front-end are always correct.
-* A new script has been added on the front-page. This will make sure the Breadcrumb homepage name will be correct in the Search Engine Results Page.
+* With over 200 (TODO) notable changes, I bring you a new Pragmatic Foundation.
 * Most importantly, this update allows you to be better informed about your website's index status, through the much improved SEO bar.
-* The breadcrumb script has been expanded to work on posts with multiple and nested categories. These scripts now also work on WooCommerce products. So don't be surprised if you suddenly have all kinds of scripts in the header! These scripts help Google better understand your website.
-* And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes** including major refactorization.
+* As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
+* Many new options have been included within the SEO Settings page. Including much desired Title and Description options.
+* Also, many **linguistic improvements** have been put in place on many places.
+* **WPML compatibility** has received a rework, now all canonical URLs in the sitemap and front-end are always correct. The **qTranslate X** settings are now also being taken into account when outputting canonical URLs.
+* A new script has been added on the front-page. This will make sure the Breadcrumb homepage name will be correct in the Search Engine Results Page.
+* The breadcrumb script has been expanded to work on posts with multiple and nested categories. These scripts now also work on WooCommerce products. Don't be surprised if you suddenly have all kinds of scripts in the header! These scripts help Google and other Search Engines better understand your website.
+* And for developers, with the code expanding rapidly, this update brings new light to the code by **reorganizing the code into dedicated classes** and is including many major refactorizations.
 
 **Feature highlights:**
 /
@@ -415,10 +400,11 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * New Sitemap Date output options.
 * Adaptive WPML & qTranslate X URL generation.
 * Improved editorial translations.
-* Automatic option merging.
+* Automatic option merging on update.
 * New AJAX integration when adding tags.
 * Personalized error handling for developers.
-* 129 new functions for developers.
+* Over 120 new public functions for developers.
+* 19 brand new filters for developers.
 * WP Query Admin synchronization for developers.
 * Automated setting navigation tabs for developers.
 
@@ -436,7 +422,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Anouncements:**
 
-* I'm announcing a new plugin extension for The SEO Framework! [Title Fix - The SEO Framework](https://wordpress.org/plugins/the-seo-framework-title-fix/).
+* When I started developing this update, I announced a new extension plugin for The SEO Framework! [Title Fix - The SEO Framework](https://wordpress.org/plugins/the-seo-framework-title-fix/).
 * This update ensures extra compatiblity with the Title Fix plugin, this will add back removed title features for if the theme is doing it wrong and when the Title Fix plugin is active.
 
 **About: Plugin progression and help wanted:**
@@ -473,17 +459,6 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * An update notification will shown whenever this happens, only to the Super Admin on Mutli-Site environments, and only to Admins on Single-Site environments.
 * The notification is unbranded, it will say "New SEO options have been updated." on the SEO Settings Page and will add "View the new options here." on all other Admin Pages.
 
-**For everyone - About Author SEO:**
-/
-* TODO When a post has an author assigned through the default WordPress interface, and the author SEO has been filled in, the post will obtain the Author information.
-* TODO If there's no Author information set, or the default Social Meta Settings will be used.
-
-**For everyone - About Canonical SEO:**
-/
-* TODO A new setting has been added to adjust the preffered URL scheme of your website.
-* TODO This new setting influences which page Search Engines index. Default (and recommended) is Automatic.
-* TODO This new setting doesn't affect scheme redirection of pages and posts, which should be done using `.htaccess`.
-
 **For everyone - About Schema Markup:**
 /
 * New schema markup has been added, this helps Search Engines better understand your website.
@@ -518,10 +493,10 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * I've tested out some yet undiscovered ground on PHP while doing millions of iterations in the benchmark.
 * These benchmarks can be found in the aptly named `benchmark.php` file.
 * What I found is that an if-statement looks passes if the value is a boolean. So converting any value to a boolean will improve its speed.
-* I also found that strict false checks are faster than using an exclamation mark. E.g. `false === $thing` is faster than `! $thing`, as the latter flips the boolean, which requires processing power.
+* I also found that strict false checks are faster than using an exclamation mark. E.g. `false === $thing` is faster than `! $thing`, as the latter flips the boolean, which requires extra processing power.
 * These methodologic improvements have put into effect throughout the whole plugin, with this you will notice an extremely minor performance improvement. But every little bit matters in a framework.
-* Because this plugin has grown massively in size in this update, the memory use has been increased by a negligible 500kiB.
-* The netto outcome of this plugin's performance in this update is about 0%, this is because many more items are being rendered, even though overall performance has been improved.
+* Because this plugin has grown massively in size with this update, the memory use has been increased negligibly. However, in a future update I will see if this can be improved upon.
+* The netto outcome of this plugin's performance with this update is about 0%, this is because many more items are being rendered, even though overall performance has been improved.
 
 **For developers - Refactoring classes:**
 
@@ -556,7 +531,7 @@ Not all planned features made it into 2.6.0.
 
 **Many, many other - both minor and major - changes did not make it to the detailed log. For example, when a new function has been added to check for a state, the use of it goes throughout the plugin, effectively added many changes.**
 
-*What do you think of this change? Let me know on [Slack](https://wordpress.slack.com/messages/@cybr/) (no support questions there, please)!*
+*What do you think of this change? Let me know at [Slack](https://wordpress.slack.com/messages/@cybr/) (no support questions there, please)!*
 
 **For everyone:**
 /
@@ -577,6 +552,7 @@ Not all planned features made it into 2.6.0.
 	* Headway compatibility. Done by using one of their SEO plugin detection filters which disables their SEO functionality.
 	* Runway Framework theme compatibility.
 	* Yandex sitemap pinging support.
+	* TODO Yandex Webmasters verification code support.
 	* Description excerpt detection. Now when an excerpt is filled in, no description additions will be added in front of them.
 	* Lowered pinging response time to 3s from 5s, to reduce max script time to 12s from 20s on post publish.
 	* The SEO Bar now has a Double Title check (will appear red). This will make sure that you can see where the copy of SEO data went wrong.
@@ -595,7 +571,7 @@ Not all planned features made it into 2.6.0.
 	* Term AJAX handler for the SEO bar, so when you add a new term you can already check its SEO state.
 	* Small notification in the Feed Settings when the feed is already converted into an excerpt.
 	* The blog page is now also shown within the Sitemap.
-	* TODO Front Page pagination robots index option. The Front page now only listens to this option. Default off.
+	* Front Page pagination robots noindex option. Default off.
 	* Front Page link relationship option. The Front page now only listens to this option. Default on.
 	* Color Deficiency options have been added to the character counters. Clicking on them will add extra information.
 	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
@@ -690,15 +666,15 @@ Not all planned features made it into 2.6.0.
 	* Servers that don't support PCRE will now have 301 redirects parsed correctly.
 	* Archive rel next/prev pagination links now also work on the Blog Page.
 	* Second or later archive pages now allow for pagination in the Canonical URL.
-	* TODO When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed temporarily.
+	* When the Home Page title additions location is set to Right and has a title filled in in the Inpost SEO Box as well as the Home Page Settings and when the Home Page Settings is emptied, the placeholder title location and additions are reversed when no Tagline options are touched.
 	* WordPress version compare could sometimes return incorrect values when dealing with unstable versions.
 	* The Canonical URL is now selecting the primary domain when available when using WPMUdev Domain Mapping.
 	* Blogname cache wasn't initialized correctly.
 	* Blog Description cache wasn't initialized correctly.
-	* When using subsets of languages, e.g. "nl-NL-formal", it no longer falls back to "en_US", but to "nl_NL".
+	* When using subsets of languages, e.g. "nl-NL-formal", the check no longer falls back to "en_US", but to "nl_NL". This affects `og:locale` in particular.
 * **Removed:**
 	/
-	* Shortlink URL from Homepage, as it's quite useless and self referring there.
+	* Shortlink URL from Home Page, as it's quite useless and self referring there.
 	* Yahoo Pinging option and initiation, as they've moved to Bing quite some time ago (oops).
 	* WPMUdev Avatars support. As WordPress core has taken over this feature and it was unreliable.
 	* Canonical URL from Search and 404 pages. It yields no value on those pages and might even yield incorrect results.
@@ -787,6 +763,8 @@ Not all planned features made it into 2.6.0.
 	* This plugin's admin CSS and JS are now registered and cached prior to enqueueing. This speeds things up if multiple script calling hooks are used.
 	* The Term SEO box initialization now only happens on the term edit screens.
 	* Automated Description Example now uses ID's rather than classes for better JavaScript performance.
+	* The protected warned site options are no longer stored in the object. Evidentily removing the `$warned_site_options` object variable and putting it into a function.
+	* `AutoDescription_Siteoptions::get_warned_settings()` now simply converts the given option values into booleans and then ones and zeros, rather than escaping thoroughly.
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
@@ -800,6 +778,8 @@ Not all planned features made it into 2.6.0.
 	* `The_SEO_Framework_Load::call_function()` now converts and checks for `$this` correctly. Evidently speeding up the plugin greatly.
 	* `The_SEO_Framework_Load::call_function()` now doesn't return a fatal error anymore if class and method isn't found when the class is referred to as string.
 	* LD+Json Home Page flushing cache wasn't initialized correctly on SEO settings save.
+	* Warned options cache.
+	* `AutoDescription::title_for_home()` now correctly fetches the front page title option if called outside of the Home Page loop.
 * **Deprecated:**
 	/
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
@@ -814,6 +794,7 @@ Not all planned features made it into 2.6.0.
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
 	* Filter/Constant/Action PHP comments indicating changes from 2.3.0 to clean up code.
 	* Title generation `placeholder` argument. Use `get_custom_field` and/or `notagline` instead.
+	* Leftover `.postbox-container` CSS adjustment.
 * **Other:**
 	* Cleaned up code, massively.
 * **Filter Notes:**

@@ -249,7 +249,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 */
 	protected function build_title_notagline( $args = array() ) {
 
-		$title = $this->get_title_pre_filter( '', $args, false );
+		$title = $this->do_title_pre_filter( '', $args, false );
 
 		if ( empty( $title ) )
 			$title = $this->get_notagline_title( $args );
@@ -257,7 +257,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( empty( $title ) )
 			$title = $this->untitled();
 
-		$title = $this->get_title_pro_filter( $title, $args, false );
+		$title = $this->do_title_pro_filter( $title, $args, false );
 
 		if ( $args['escape'] )
 			$title = $this->escape_title( $title );
@@ -468,28 +468,12 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Use filter title.
 		 * @since 2.6.0
 		 */
-		$title = $this->get_title_pre_filter( '', $args, false );
-		$blogname = $this->get_blogname();
+		$title = $this->do_title_pre_filter( '', $args, false );
+		$blogname = '';
 
-		$is_front_page = $this->is_front_page() || $args['page_on_front'] ? true : false;
-		/**
-		 * Cache the seplocation for is_home()
-		 * @since 2.2.2
-		 */
-		$seplocation_home = $seplocation;
+		$is_front_page = $this->is_front_page() || $args['page_on_front'] || $this->is_static_frontpage( $args['term_id'] ) ? true : false;
 
 		$seplocation = $this->get_title_seplocation( $seplocation );
-
-		//* Fetch title from custom fields.
-		if ( $args['get_custom_field'] && empty( $title ) )
-			$title = $this->get_custom_field_title( $title, $args['term_id'], $args['taxonomy'] );
-
-		/**
-		 * Tagline conditional for homepage
-		 *
-		 * @since 2.2.2
-		 */
-		$add_tagline = false;
 
 		/**
 		 * Generate the Title if empty or if home.
@@ -497,17 +481,23 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Generation of title has acquired its own functions.
 		 * @since 2.3.4
 		 */
-		if ( $is_front_page || $this->is_static_frontpage( $args['term_id'] ) || $args['is_front_page'] ) {
-			$generated = (array) $this->generate_home_title( $args['get_custom_field'], $seplocation, $seplocation_home, $escape = false );
+		if ( $is_front_page ) {
+			$generated = (array) $this->generate_home_title( $args['get_custom_field'], $seplocation, '', false );
+
+			var_dump( $generated );
 
 			if ( $generated && is_array( $generated ) ) {
-				$title = $generated['title'] && empty( $title ) ? (string) $generated['title'] : $title;
+				if ( empty( $title ) )
+					$title = $generated['title'] ? (string) $generated['title'] : $title;
+
 				$blogname = $generated['blogname'] ? (string) $generated['blogname'] : $blogname;
-				$add_tagline = $generated['add_tagline'] ? (bool) $generated['add_tagline'] : $add_tagline;
 				$seplocation = $generated['seplocation'] ? (string) $generated['seplocation'] : $seplocation;
 			}
-		} else if ( empty( $title ) ) {
-			$title = (string) $this->generate_title( $args, false );
+		} else {
+			//* Fetch the title as is.
+			if ( empty( $title ) )
+				$title = $this->get_notagline_title( $args );
+			$blogname = $this->get_blogname();
 		}
 
 		/**
@@ -522,27 +512,23 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * @since 2.4.1
 		 */
 		if ( ! $args['description_title'] ) {
-			$title = $this->add_title_protection( $title, $args['term_id'] );
-			$title = $this->add_title_pagination( $title );
 
-			//* Title for title (meta) tags.
-			if ( $is_front_page && false === $add_tagline ) {
-				//* Render frontpage output without tagline
-				$title = $blogname;
+			if ( $is_front_page ) {
+				$additions = $this->home_page_add_title_tagline();
+				$blogname = $this->add_title_protection( $blogname, $args['term_id'] );
+				$blogname = $this->add_title_pagination( $blogname );
+			} else {
+				$additions = $this->add_title_additions();
+				$title = $this->add_title_protection( $title, $args['term_id'] );
+				$title = $this->add_title_pagination( $title );
 			}
 
-			/**
-			 * On frontpage: Add title if add_tagline is true.
-			 * On all other pages: Add tagline if title additions is true.
-			 *
-			 * @since 2.4.3
-			 */
-			if ( ( false === $is_front_page && $this->add_title_additions() ) || ( $is_front_page && $add_tagline ) ) {
+			if ( $additions ) {
 				$title = $this->process_title_additions( $title, $blogname, $seplocation );
 			}
 		}
 
-		$title = $this->get_title_pro_filter( $title, $args, false );
+		$title = $this->do_title_pro_filter( $title, $args, false );
 
 		if ( $args['escape'] )
 			$title = $this->escape_title( $title );
@@ -640,11 +626,13 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Generate the title based on conditions for the home page.
 	 *
 	 * @since 2.3.4
+	 * @access private
 	 *
 	 * @param bool $get_custom_field Fetch Title from Custom Fields.
 	 * @param string $seplocation The separator location
-	 * @param string $seplocation_home The Homepage separator location
+	 * @param string $deprecated Deprecated: The Home Page separator location
 	 * @param bool $escape Parse Title through saninitation calls.
+	 * @param bool $get_site_option Whether to fetch the SEO Settings option.
 	 *
 	 * @return array {
 	 *		'title' => (string) $title : The Generated Title
@@ -653,24 +641,14 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *		'seplocation' => (string) $seplocation : The Separator Location
 	 *	}
 	 */
-	public function generate_home_title( $get_custom_field = true, $seplocation = '', $seplocation_home = '', $escape = false ) {
-
-		/**
-		 * Tagline conditional for homepage
-		 *
-		 * @since 2.2.2
-		 *
-		 * Conditional statement.
-		 * @since 2.3.4
-		 */
-		$add_tagline = $this->get_option( 'homepage_tagline' ) ? (bool) $this->get_option( 'homepage_tagline' ) : false;
+	public function generate_home_title( $get_custom_field = true, $seplocation = '', $deprecated = '', $escape = true, $get_site_option = true ) {
 
 		/**
 		 * Add tagline or not based on option
 		 *
 		 * @since 2.2.2
 		 */
-		if ( $add_tagline ) {
+		if ( $add_tagline = $this->home_page_add_title_tagline() ) {
 			/**
 			 * Tagline based on option.
 			 * @since 2.3.8
@@ -685,11 +663,13 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Render from function
 		 * @since 2.2.8
 		 */
-		$blogname = $this->title_for_home( '', $get_custom_field, false );
+		$blogname = $this->title_for_home( '', $get_custom_field, false, $get_site_option );
 		$seplocation = $this->get_home_title_seplocation( $seplocation );
 
-		if ( $escape )
+		if ( $escape ) {
 			$title = $this->escape_title( $title, false );
+			$blogname = $this->escape_title( $blogname, false );
+		}
 
 		return array(
 			'title' => $title,
@@ -708,31 +688,36 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * @param string $home_title The fallback title.
 	 * @param bool $get_custom_field Fetch Title from InPost Custom Fields.
 	 * @param bool $escape Parse Title through saninitation calls.
+	 * @param bool $get_site_option Whether to fetch the SEO Settings option.
 	 *
 	 * @return string The Title.
 	 */
-	public function title_for_home( $home_title = '', $get_custom_field = true, $escape = false ) {
+	public function title_for_home( $home_title = '', $get_custom_field = true, $escape = false, $get_site_option = true ) {
 
 		/**
 		 * Get blogname title based on option
 		 * @since 2.2.2
 		 */
-		$home_title_option = $this->get_option( 'homepage_title' ) ? (string) $this->get_option( 'homepage_title' ) : $home_title;
-		$title = $home_title_option ? $home_title_option : $this->get_blogname();
+		if ( $get_site_option ) {
+			$home_title_option = $this->get_option( 'homepage_title' ) ? (string) $this->get_option( 'homepage_title' ) : $home_title;
+			$home_title = $home_title_option ? $home_title_option : $home_title;
+		}
 
 		/**
-		 * Fetch from Home Page InPost SEO Box if empty.
+		 * Fetch from Home Page InPost SEO Box if available.
 		 * Only from page on front.
 		 */
-		if ( $get_custom_field && empty( $title ) && $this->has_page_on_front() ) {
-			$custom_field = $this->get_custom_field( '_genesis_title' );
-			$title = $custom_field ? (string) $custom_field : $title;
+		if ( $get_custom_field && empty( $home_title ) && $this->has_page_on_front() ) {
+			$custom_field = $this->get_custom_field( '_genesis_title', $this->get_the_front_page_ID() );
+			$home_title = $custom_field ? (string) $custom_field : $this->get_blogname();
+		} else {
+			$home_title = $home_title ? (string) $home_title : $this->get_blogname();
 		}
 
 		if ( $escape )
-			$title = $this->escape_title( $title, false );
+			$home_title = $this->escape_title( $home_title, false );
 
-		return (string) $title;
+		return (string) $home_title;
 	}
 
 	/**
@@ -1158,13 +1143,12 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Get Title Seplocation for the homepage.
 	 *
 	 * @since 2.6.0
-	 * @access private
 	 *
 	 * @param string $seplocation The current seplocation.
 	 *
 	 * @return string The Seplocation for the homepage.
 	 */
-	public function get_home_title_seplocation( $seplocation ) {
+	public function get_home_title_seplocation( $seplocation = '' ) {
 		return $this->get_title_seplocation( $seplocation, true );
 	}
 
@@ -1209,10 +1193,12 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		$title = trim( $title );
 		$blogname = trim( $blogname );
 
-		if ( 'left' === $seplocation ) {
-			$title = $blogname . " $sep " . $title;
-		} else {
-			$title = $title . " $sep " . $blogname;
+		if ( $blogname && $title ) {
+			if ( 'left' === $seplocation ) {
+				$title = $blogname . " $sep " . $title;
+			} else {
+				$title = $title . " $sep " . $blogname;
+			}
 		}
 
 		return $title;
@@ -1338,7 +1324,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *
 	 * @return string $title
 	 */
-	public function get_title_pre_filter( $title, $args, $escape = true ) {
+	public function do_title_pre_filter( $title, $args, $escape = true ) {
 
 		/**
 		 * Applies filters 'the_seo_framework_pre_add_title' : string
@@ -1367,7 +1353,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *
 	 * @return string $title
 	 */
-	public function get_title_pro_filter( $title, $args, $escape = true ) {
+	public function do_title_pro_filter( $title, $args, $escape = true ) {
 
 		/**
 		 * Applies filters 'the_seo_framework_pro_add_title' : string
@@ -1382,6 +1368,17 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 			$title = $this->escape_title( $title );
 
 		return $title;
+	}
+
+	/**
+	 * Whether to add home page tagline.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return bool
+	 */
+	public function home_page_add_title_tagline() {
+		return $this->is_option_checked( 'homepage_tagline' );
 	}
 
 }

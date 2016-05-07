@@ -880,12 +880,14 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * Do not return anything. Just be here. Thanks.
 	 */
 	public static function flush_rewrite_rules_activation() {
-		// This function is called statically.
-		$the_seo_framework = the_seo_framework();
+		global $wp_rewrite;
 
+		//* This function is called statically.
+		$the_seo_framework = the_seo_framework();
 		$the_seo_framework->rewrite_rule_sitemap( true );
 
-		$this->flush_rewrite_rules();
+		$wp_rewrite->init();
+		$wp_rewrite->flush_rules( true );
 	}
 
 	/**

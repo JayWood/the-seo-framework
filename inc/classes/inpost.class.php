@@ -140,6 +140,7 @@ class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
 					 * @since 2.6.0
 					 * @NOTE warning: might cause CSS and JS conflicts.
 					 * @TODO solve note.
+					 * @priority medium 2.7.0
 					 */
 					$id = (string) apply_filters( 'the_seo_framework_metabox_id', 'theseoframework-inpost-box' );
 					$context = 'normal';

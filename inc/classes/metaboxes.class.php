@@ -768,6 +768,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				<?php printf( __( 'Apply %s to every second or later archive page?', 'autodescription' ), $this->code_wrap( 'noindex' ) ) ?>
 			</label>
 		</p>
+		<span class="description"><?php _e( 'The Home Page has a specific option.', 'autodescription' ); ?></span>
 		<?php
 	}
 
@@ -888,7 +889,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$blog_description = $this->get_blogdescription();
 
 		/**
-		 * Homepage Tagline settings.
+		 * Home Page Tagline settings.
 		 * @since 2.3.8
 		 *
 		 * @param string $home_tagline The tagline option.
@@ -902,45 +903,21 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$blog_description = $home_tagline_value ? $home_tagline_value : $blog_description;
 
 		/**
-		 * Create a placeholder if there's no custom HomePage title found.
+		 * Create a placeholder for when there's no custom HomePage title found.
 		 * @since 2.2.4
-		 *
-		 * Reworked. Creates placeholders for when it's being emptied.
-		 * @since 2.3.4
 		 */
-		if ( $frompost_title ) {
-			//* Fetch frompost title.
-			if ( $this->get_option( 'homepage_tagline' ) ) {
-				$home_title_placeholder = $frompost_title . " $sep " . $blog_description;
-			} else {
-				$home_title_placeholder = $frompost_title;
-			}
-		} else if ( $home_title ) {
-			//* Fetch default title
-			$blogname = $this->get_blogname();
-
-			if ( $this->get_option( 'homepage_tagline' ) ) {
-				$home_title_placeholder = $blogname . " $sep " . $blog_description;
-			} else {
-				$home_title_placeholder = $blogname;
-			}
-		} else {
-			//* All is empty. Use default title.
-			$home_title_placeholder = $this->title( '', '', '', array( 'page_on_front' => true ) );
-		}
+		$home_title_args = $this->generate_home_title( true, '', '', true, false );
+		$home_title_placeholder = $this->process_title_additions( $home_title_args['title'], $home_title_args['blogname'], $home_title_args['seplocation'] );
 
 		/**
 		 * If the home title is fetched from the post, notify about that instead.
 		 * @since 2.2.4
 		 *
-		 * Added 'Note:'
-		 * @since 2.2.5
-		 *
 		 * Nesting often used translations
 		 */
 		if ( $home_title_frompost ) {
 			/* translators: 1: Option, 2: Page SEO Settings, 3: Home Page */
-			$title_from_post_message = __( 'Note:', 'autodescription' ) . ' ' . sprintf( __( 'The %1$s is fetched from the %2$s on the %3$s.', 'autodescription' ), $title_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
+			$title_from_post_message = sprintf( __( 'Note: The %1$s is fetched from the %2$s on the %3$s.', 'autodescription' ), $title_i18n, __( 'Page SEO Settings', 'autodescription' ), $home_page_i18n );
 		}
 
 		/**
@@ -1032,9 +1009,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		 * @since 2.3.4
 		 */
 		$tit_len = $this->escape_title( $tit_len_pre );
-	//	$tit_len = html_entity_decode( $tit_len_pre );
 		$desc_len = $this->escape_title( $desc_len_pre );
-	//	$desc_len = html_entity_decode( $desc_len_pre );
 
 		/**
 		 * Generate Examples for both left and right seplocations.
@@ -1150,7 +1125,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		<hr>
 
-		<h4><?php _e( 'Homepage Robots Meta Settings', 'autodescription' ); ?></h4>
+		<h4><?php _e( 'Home Page Robots Meta Settings', 'autodescription' ); ?></h4>
 
 		<p class="fields">
 			<label for="<?php $this->field_id( 'homepage_noindex' ); ?>" class="toblock">
@@ -1187,6 +1162,25 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		if ( $noindex_post || $nofollow_post || $noarchive_post ) {
 			?><p><span class="description"><?php printf( __( 'Note: If any of these options are unchecked, but are checked on the Home Page, they will be outputted regardless.', 'autodescription' ) ); ?></span></p><?php
 		}
+		?>
+
+		<hr>
+
+		<h4><?php _e( 'Home Page Pagination Robots Settings', 'autodescription' ); ?></h4>
+
+		<p class="description"><?php _e( "If your Home Page is paginated and outputs content that's also found elsewhere on the website, enabling this option might prevent duplicated content.", 'autodescription' ); ?></p>
+
+		<p class="fields">
+			<label for="<?php $this->field_id( 'home_paged_noindex' ); ?>" class="toblock">
+				<input type="checkbox" name="<?php $this->field_name( 'home_paged_noindex' ); ?>" id="<?php $this->field_id( 'home_paged_noindex' ); ?>" <?php $this->is_conditional_checked( 'home_paged_noindex' ); ?> value="1" <?php checked( $this->get_field_value( 'home_paged_noindex' ) ); ?> />
+				<?php
+					/* translators: 1: Option, 2: Location */
+					printf( __( 'Apply %1$s to every second or later page on the %2$s?', 'autodescription' ), $this->code_wrap( 'noindex' ), $home_page_i18n );
+				?>
+			</label>
+		</p>
+
+		<?php
 
 		do_action( 'the_seo_framework_homepage_metabox_after' );
 

@@ -164,6 +164,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 				'site_noarchive',
 
 				'paged_noindex',
+				'home_paged_noindex',
 
 				'homepage_noindex',
 				'homepage_nofollow',

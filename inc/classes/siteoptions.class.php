@@ -35,15 +35,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	protected $default_site_options = array();
 
 	/**
-	 * Filterable Site Settings array.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @var array Holds Site SEO options.
-	 */
-	protected $warned_site_options = array();
-
-	/**
 	 * Site Settings field.
 	 *
 	 * @since 2.2.2
@@ -78,7 +69,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 		//* Register defaults early.
 		add_action( 'after_setup_theme', array( $this, 'initialize_defaults' ), 0 );
-		add_action( 'after_setup_theme', array( $this, 'initialize_defaults_admin' ), 0 );
+		// add_action( 'after_setup_theme', array( $this, 'initialize_defaults_admin' ), 0 );
 
 		$this->settings_field = THE_SEO_FRAMEWORK_SITE_OPTIONS;
 
@@ -170,6 +161,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 			// Robots pagination index.
 			'paged_noindex'			=> 1,	// Every second or later page noindex
+			'home_paged_noindex'	=> 0,	// Every second or later homepage noindex
 
 			// Robots home.
 			'homepage_noindex'		=> 0,	// Home Page robots noindex
@@ -278,6 +270,16 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		if ( false === $this->is_admin() )
 			return;
 
+	}
+
+	/**
+	 * Holds warned site options array.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return array $options.
+	 */
+	public function pre_warned_site_options() {
 		/**
 		 * Warned site settings. Only accepts checkbox options.
 		 * When listed as 1, it's a feature which can destroy your website's SEO value when checked.
@@ -287,7 +289,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		 *
 		 * Only used within the SEO Settings page.
 		 */
-		$this->warned_site_options = array(
+		return array(
 			'title_rem_additions'	=> 1, 	// Title remove additions.
 			'title_rem_prefixes'	=> 0, 	// Title remove prefixes.
 
@@ -322,6 +324,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'site_noarchive'		=> 0,	// Site Page robots noarchive
 
 			'paged_noindex'			=> 0,	// Every second or later page noindex
+			'home_paged_noindex'	=> 0,	// Every second or later homepage noindex
 
 			'homepage_noindex'		=> 1,	// Home Page robots noindex
 			'homepage_nofollow'		=> 1,	// Home Page robots noarchive
@@ -617,7 +620,8 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 *
 	 * Applies filters the_seo_framework_default_site_options The default site options array.
 	 *
-	 * @param array $args The new default options through filter.
+	 * @param array $args Additional default options to filter.
+	 *
 	 * @return array The SEO Framework Options
 	 */
 	protected function default_site_options( $args = array() ) {
@@ -640,17 +644,18 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 *
 	 * Applies filters the_seo_framework_warned_site_options The warned site options array.
 	 *
-	 * @param array $args The new warned options through filter.
+	 * @param array $args Additional warned options to filter.
+	 *
 	 * @return array The SEO Framework Warned Options
 	 */
 	protected function warned_site_options( $args = array() ) {
-		return $this->warned_site_options = wp_parse_args(
+		return wp_parse_args(
 			$args,
 			apply_filters(
 				'the_seo_framework_warned_site_options',
 				wp_parse_args(
 					$args,
-					$this->warned_site_options
+					$this->pre_warned_site_options()
 				)
 			)
 		);
@@ -753,12 +758,12 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 *
 	 * @staticvar array $warned_cache
 	 *
-	 * @return 	int|bool|string default option
+	 * @return 	int 0|1 Whether the option is flagged as dangerous for SEO.
 	 *			int '-1' if option doesn't exist.
 	 */
 	public function get_warned_settings( $key, $setting = '', $use_cache = true ) {
 
-		if ( ! isset( $key ) || empty( $key ) )
+		if ( empty( $key ) )
 			return false;
 
 		//* Fetch default settings if it's not set.
@@ -772,7 +777,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			if ( ! is_array( $warned ) || ! array_key_exists( $key, $warned ) )
 				return -1;
 
-			return is_array( $warned[$key] ) ? stripslashes_deep( $warned[$key] ) : stripslashes( wp_kses_decode_entities( $warned[$key] ) );
+			return $this->s_one_zero( $warned[$key] );
 		}
 
 		static $warned_cache = array();
@@ -782,10 +787,12 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			//* Option has been cached
 			return $warned_cache[$key];
 
-		$warned_cache = $this->warned_site_options();
+		$warned_options = $this->warned_site_options();
 
-		if ( ! is_array( $warned_cache ) || ! array_key_exists( $key, (array) $warned_cache ) )
+		if ( ! is_array( $warned_options ) || ! array_key_exists( $key, (array) $warned_options ) )
 			$warned_cache[$key] = -1;
+
+		$warned_cache[$key] = $this->s_one_zero( $warned_options[$key] );
 
 		return $warned_cache[$key];
 	}
