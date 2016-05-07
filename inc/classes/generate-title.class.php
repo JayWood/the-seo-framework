@@ -484,8 +484,6 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		if ( $is_front_page ) {
 			$generated = (array) $this->generate_home_title( $args['get_custom_field'], $seplocation, '', false );
 
-			var_dump( $generated );
-
 			if ( $generated && is_array( $generated ) ) {
 				if ( empty( $title ) )
 					$title = $generated['title'] ? (string) $generated['title'] : $title;
