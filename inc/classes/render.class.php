@@ -336,43 +336,48 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	 */
 	public function og_image() {
 
-		$id = $this->get_the_real_ID();
+		if ( $this->use_og_tags() ) {
 
-		/**
-		 * Applies filters 'the_seo_framework_ogimage_output' : string|bool
-		 * @since 2.3.0
-		 *
-		 * @NOTE: Use of this might cause incorrect meta since other functions
-		 * depend on the image from cache.
-		 *
-		 * @todo Place in listener cache.
-		 * @priority medium 2.8.0+
-		 */
-		$image = apply_filters( 'the_seo_framework_ogimage_output', '', $id );
+			$id = $this->get_the_real_ID();
 
-		/**
-		 * Now returns empty string on false.
-		 * @since 2.6.0
-		 */
-		if ( false === $image )
-			return '';
+			/**
+			 * Applies filters 'the_seo_framework_ogimage_output' : string|bool
+			 * @since 2.3.0
+			 *
+			 * @NOTE: Use of this might cause incorrect meta since other functions
+			 * depend on the image from cache.
+			 *
+			 * @todo Place in listener cache.
+			 * @priority medium 2.8.0+
+			 */
+			$image = apply_filters( 'the_seo_framework_ogimage_output', '', $id );
 
-		if ( empty( $image ) ) {
-			$image = $this->get_image_from_cache();
-		} else {
-			$image = (string) $image;
+			/**
+			 * Now returns empty string on false.
+			 * @since 2.6.0
+			 */
+			if ( false === $image )
+				return '';
+
+			if ( empty( $image ) ) {
+				$image = $this->get_image_from_cache();
+			} else {
+				$image = (string) $image;
+			}
+
+			/**
+			 * Always output
+			 * @since 2.1.1
+			 */
+			$output = '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
+
+			//* Fetch Product images.
+			$woocommerce_product_images = $this->render_woocommerce_product_og_image();
+
+			return $output . $woocommerce_product_images;
 		}
 
-		/**
-		 * Always output
-		 * @since 2.1.1
-		 */
-		$output = '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
-
-		//* Fetch Product images.
-		$woocommerce_product_images = $this->render_woocommerce_product_og_image();
-
-		return $output . $woocommerce_product_images;
+		return '';
 	}
 
 	/**
