@@ -339,43 +339,40 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		$id = $this->get_the_real_ID();
 
 		/**
-		 * Whether to render the OG image.
-		 * Applies filters 'the_seo_framework_ogimage_output_switch' : bool
+		 * Applies filters 'the_seo_framework_ogimage_output' : string|bool
+		 * @since 2.3.0
+		 *
+		 * @NOTE: Use of this might cause incorrect meta since other functions
+		 * depend on the image from cache.
+		 *
+		 * @todo Place in listener cache.
+		 * @priority medium 2.8.0+
+		 */
+		$image = apply_filters( 'the_seo_framework_ogimage_output', '', $id );
+
+		/**
+		 * Now returns empty string on false.
 		 * @since 2.6.0
 		 */
-		$render = $this->use_og_tags() && (bool) apply_filters( 'the_seo_framework_ogimage_output_switch', true, $id );
+		if ( false === $image )
+			return '';
 
-		if ( $render ) {
-
-			/**
-			 * Applies filters 'the_seo_framework_ogimage_output' : string
-			 * @since 2.3.0
-			 *
-			 * @NOTE: Use of this might cause incorrect meta since other functions
-			 * depend on the image from cache.
-			 *
-			 * @todo deprecate or place in cache.
-			 * @priority medium 2.8.0+
-			 */
-			$image = (string) apply_filters( 'the_seo_framework_ogimage_output', '', $id );
-
-			if ( empty( $image ) )
-				$image = $this->get_image_from_cache();
-
-			/**
-			 * Always output
-			 *
-			 * @since 2.1.1
-			 */
-			$output = '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
-
-			//* Fetch Product images.
-			$woocommerce_product_images = $this->render_woocommerce_product_og_image();
-
-			return $output . $woocommerce_product_images;
+		if ( empty( $image ) ) {
+			$image = $this->get_image_from_cache();
+		} else {
+			$image = (string) $image;
 		}
 
-		return '';
+		/**
+		 * Always output
+		 * @since 2.1.1
+		 */
+		$output = '<meta property="og:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
+
+		//* Fetch Product images.
+		$woocommerce_product_images = $this->render_woocommerce_product_og_image();
+
+		return $output . $woocommerce_product_images;
 	}
 
 	/**
@@ -604,16 +601,26 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 		if ( $this->use_twitter_tags() ) {
 
 			/**
-			 * Applies filters 'the_seo_framework_twitterimage_output' : string
+			 * Applies filters 'the_seo_framework_twitterimage_output' : string|bool
 			 * @since 2.3.0
 			 */
-			$image = (string) apply_filters( 'the_seo_framework_twitterimage_output', '', $this->get_the_real_ID() );
+			$image = apply_filters( 'the_seo_framework_twitterimage_output', '', $this->get_the_real_ID() );
 
-			if ( empty( $image ) )
+			/**
+			 * Now returns empty string on false.
+			 * @since 2.6.0
+			 */
+			if ( false === $image )
+				return '';
+
+			if ( empty( $image ) ) {
 				$image = $this->get_image_from_cache();
+			} else {
+				$image = (string) $image;
+			}
 
 			if ( $image )
-				return '<meta name="twitter:image:src" content="' . esc_attr( $image ) . '" />' . "\r\n";
+				return '<meta name="twitter:image" content="' . esc_attr( $image ) . '" />' . "\r\n";
 		}
 
 		return '';

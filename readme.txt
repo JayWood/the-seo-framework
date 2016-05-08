@@ -596,6 +596,7 @@ Not all planned features made it into 2.6.0.
 	* Open Graph plugin detection now only shows a notification, instead of removing OG output as well. These values may be duplicated (although undesired).
 	* When a Custom Home Page Title Tagline is set, it's now used for the Title on the description on the home page.
 	* When no Blog Tagline has been set, it will now return "Untitled".
+	* The `twitter:image:src` tag has been deprecated, it has been changed into `twitter:image`.
 * **Updated:**
 	/
 	* Several sentences to have a better English structure to what they do.
@@ -824,6 +825,8 @@ Not all planned features made it into 2.6.0.
 		* `(array) the_seo_framework_title_settings_tabs`
 		* `(string) the_seo_framework_feed_source_link_text`
 	* **Altered:**
+		* `(bool)/(string) the_seo_framework_twitterimage_output` now listens to `false`, resulting in no `twitter:image` being output.
+		* `(bool)/(string) the_seo_framework_ogimage_output` now listens to `false`, resulting in no `twitter:image` being output.
 		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
 		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
 		* `(string) the_seo_framework_description_output`, added `$post_id` parameter.

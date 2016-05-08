@@ -1909,7 +1909,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			$here = '<a href="' . $permalink_settings_url  . '" target="_blank" title="' . __( 'Permalink Settings', 'autodescription' ) . '">' . _x( 'here', 'The sitemap can be found %s.', 'autodescription' ) . '</a>';
 
 			?>
-			<h4><?php _e( "You're using the default permalink structure.", 'autodescription' ); ?></h4>
+			<h4><?php _e( "You're using the plain permalink structure.", 'autodescription' ); ?></h4>
 			<p><span class="description"><?php _e( "This means we can't output the sitemap through the WordPress rewrite rules.", 'autodescription' ); ?></span></p>
 			<hr>
 			<p><span class="description"><?php printf( _x( "Change your Permalink Settings %s (Recommended: 'postname').", '%s = here', 'autodescription' ), $here ); ?></span></p>
