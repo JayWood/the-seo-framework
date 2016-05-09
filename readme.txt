@@ -403,14 +403,20 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Automatic option merging on update.
 * New AJAX integration when adding tags.
 * Personalized error handling for developers.
-* Over 120 new public functions for developers.
-* 19 brand new filters for developers.
+* Over 120 (TODO) new public functions for developers.
+* 19 (TODO) brand new filters for developers.
 * WP Query Admin synchronization for developers.
 * Automated setting navigation tabs for developers.
 
 **Feature highlights visualized:**
 /
 * TODO View side-by-side visual changes [here](link_to_page)
+
+**No Stone Left Unturned:**
+
+* This massive update has touched almost every aspect of this plugin.
+* With this, many fixes are put into effect for all known and possibly many unknown bugs. Better standards have been put into place, both for WordPress and the coding world.
+* All changes have been tested thorougly. However, it's always possible something has been overlooked. If you find anything out of place, let me know in the [plugin support forums](https://wordpress.org/support/plugin/autodescription)!
 
 **SEO Tip of the Update: Redirects & Canonical**
 /
@@ -602,7 +608,6 @@ Not all planned features made it into 2.6.0.
 	* Several sentences to have a better English structure to what they do.
 	* TODO .POT translation file.
 * **Reworked:**
-	/
 	* URL generation.
 	* WPML URL generation, it's now much more consistent and will now also work with custom language settings. It will now also show the correct URL in admin at all times, moreover, it will with subdomains too.
 	* WPML shortlink URL now also redirect correctly when visited in special scenarios.
@@ -613,7 +618,6 @@ Not all planned features made it into 2.6.0.
 	* JavaScript caching and advanced optimizations for better browser performance through Google Closure Compiler.
 	* Description excerpt generation exceeding words calculation.
 * **Improved:**
-	/
 	* The SEO Bar's now more reliable in its data.
 	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
 	* The SEO Bar buttons are now converted to placeholder hyperlinks. So screen-readers know they're clickable.
@@ -637,8 +641,9 @@ Not all planned features made it into 2.6.0.
 	* External SEO plugin detection, it now uses constants to search for when applicable.
 	* External Sitemap plugin detection, it now uses constants to search for when applicable.
 	* Settings tabs vertical icon alignment.
+	* The Home Page settings are now divided with navigation tabs.
+	* No more accidents: The setting checkbox labels now don't overflow anymore to the width of its container. This means you have to click on the text for the checkbox to change, rather than also possibly on the whitespace next to it. In the future all checkboxes and radio buttons will obtain this property.
 * **Fixed:**
-	/
 	* Added cache key language detection, to build correct descriptions for the right language. This works on WPML, qTranslate X and many other translation plugins.
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
 	* Post type support check was run throughout the WordPress admin dashboard, now it only checks if there are actually posts to check.
@@ -674,7 +679,6 @@ Not all planned features made it into 2.6.0.
 	* Blog Description cache wasn't initialized correctly.
 	* When using subsets of languages, e.g. "nl-NL-formal", the check no longer falls back to "en_US", but to "nl_NL". This affects `og:locale` in particular.
 * **Removed:**
-	/
 	* Shortlink URL from Home Page, as it's quite useless and self referring there.
 	* Yahoo Pinging option and initiation, as they've moved to Bing quite some time ago (oops).
 	* WPMUdev Avatars support. As WordPress core has taken over this feature and it was unreliable.
@@ -684,7 +688,6 @@ Not all planned features made it into 2.6.0.
 **For developers:**
 
 * **Added:**
-	/
 	* New filters! See **Filter Notes** below.
 	* More than 150 new functions to make this plugin more maintainable.
 	* `AutoDescription_Core` class, this class replaced `AutoDescription_Init` from being the latest class.
@@ -715,7 +718,6 @@ Not all planned features made it into 2.6.0.
 	* Debugging now shows memory usage and processing time.
 	* When debugging is enabled, the memory usage is also shown in the plugin indicator within HTML.
 * **Changed:**
-	/
 	* Sitemap debug memory usage shows peak usage rather than current usage now.
 	* `AutoDescription_Core::post_type_support()` now has an array argument parameter.
 	* `AutoDescription_Core::get_the_real_ID()` now returns 0 instead of false if no ID is found.
@@ -729,7 +731,6 @@ Not all planned features made it into 2.6.0.
 	* JS files and cache.
 	* CSS files and cache.
 * **Reworked:**
-	/
 	* Class structure and order.
 	* `AutoDescription_DoingItRight` and all its contents.
 	* `AutoDescription_Generate_Description` and all its contents.
@@ -741,6 +742,7 @@ Not all planned features made it into 2.6.0.
 	* Debugging has been modified to clean up the code greatly.
 	* Metabox Setting Navigation Tabs, now your tabs are automatically styled and integrated when using the `AutoDescription_Metaboxes::nav_tab_wrapper()` function. It's also less "search-and-destroy" and thus easier on the browser.
 	* The metabox navigation tabs' content is now also automatically aligned.
+	* All SEO Settings page checkboxes are now wrapped in a normalized function for a more seamless integration and if-needed adjustments.
 * **Improved:**
 	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Hertz!).
 	* Cached the SEO bar translations.
@@ -766,6 +768,8 @@ Not all planned features made it into 2.6.0.
 	* Automated Description Example now uses ID's rather than classes for better JavaScript performance.
 	* The protected warned site options are no longer stored in the object. Evidentily removing the `$warned_site_options` object variable and putting it into a function.
 	* `AutoDescription_Siteoptions::get_warned_settings()` now simply converts the given option values into booleans and then ones and zeros, rather than escaping thoroughly.
+	* `AutoDescription_Adminpages::is_default_checked()` now doesn't return `''` anymore when using the echo parameter.
+	* `AutoDescription_Adminpages::is_warning_checked()` now doesn't return `''` anymore when using the echo parameter.
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
@@ -782,7 +786,6 @@ Not all planned features made it into 2.6.0.
 	* Warned options cache.
 	* `AutoDescription::title_for_home()` now correctly fetches the front page title option if called outside of the Home Page loop.
 * **Deprecated:**
-	/
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
 	* Second parameter for `AutoDescription_Generate_Url::the_url()`, use `$args['id']` instead.
 	* `AutoDescription_Debug::echo_debug_information()` function, replaced by `AutoDescription_Debug::get_debug_information()` and refactored.
@@ -791,7 +794,6 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Detect::is_locale()` function, replaced by `AutoDescription_Detect::check_wp_locale()` to eliminate naming confusion.
 	* `AutoDescription_Generate_Title::get_placeholder_title()` function, use `AutoDescription_Generate_Title::title()` instead with the argument `notagline`.
 * **Removed:**
-	/
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
 	* Filter/Constant/Action PHP comments indicating changes from 2.3.0 to clean up code.
 	* Title generation `placeholder` argument. Use `get_custom_field` and/or `notagline` instead.
@@ -800,7 +802,13 @@ Not all planned features made it into 2.6.0.
 	* Cleaned up code, massively.
 * **Filter Notes:**
 	* **New:**
-		/
+		* `(bool) the_seo_framework_json_name_output`
+		* `(bool) the_seo_framework_use_archive_title_prefix`
+		* `(bool) the_seo_framework_update_options_at_update`
+		* `(bool) the_seo_framework_schema_metabox`
+		* `(bool) the_seo_framework_seo_bar_pill`
+		* `(int) the_seo_framework_term_metabox_priority`
+		* `(int) the_seo_framework_bother_me_desc_length`
 		* `(string) the_seo_framework_shortlink_output`
 		* `(string) the_seo_framework_googlesite_output`
 		* `(string) the_seo_framework_bingsite_output`
@@ -810,23 +818,18 @@ Not all planned features made it into 2.6.0.
 		* `(string) the_seo_framework_paged_url_output_prev`
 		* `(string) the_seo_framework_paged_url_output_next`
 		* `(string) the_seo_framework_ldjson_scripts`
-		* `(bool) the_seo_framework_ogimage_output_switch`
-		* `(bool) the_seo_framework_json_name_output`
-		* `(bool) the_seo_framework_use_archive_title_prefix`
-		* `(bool) the_seo_framework_update_options_at_update`
+		* `(string) the_seo_framework_feed_source_link_text`
 		* `(string) the_seo_framework_pre_add_title`, used for embedding the title.
 		* `(string) the_seo_framework_pro_add_title`, used to fetch the written title and adjusting it accordingly.
 		* `(string) the_seo_framework_metabox_priority`
 		* `(string) the_seo_framework_metabox_id` (Warning: Do not use. Will break JS and CSS. It's a placeholder for a future update).
-		* `(int) the_seo_framework_term_metabox_priority`
-		* `(bool) the_seo_framework_seo_bar_pill`
-		* `(int) the_seo_framework_bother_me_desc_length`
-		* `(array) the_seo_framework_description_settings_tabs`
 		* `(array) the_seo_framework_title_settings_tabs`
-		* `(string) the_seo_framework_feed_source_link_text`
+		* `(array) the_seo_framework_description_settings_tabs`
+		* `(array) the_seo_framework_homepage_settings_tabs`
 	* **Altered:**
 		* `(bool)/(string) the_seo_framework_twitterimage_output` now listens to `false`, resulting in no `twitter:image` being output.
 		* `(bool)/(string) the_seo_framework_ogimage_output` now listens to `false`, resulting in no `twitter:image` being output.
+		* `(bool) the_seo_framework_output_canonical`, added `$post_id` parameter.
 		* `(string) the_seo_framework_og_image_after_featured`, added `$post_id` parameter.
 		* `(string) the_seo_framework_og_image_after_header`, added `$post_id` parameter.
 		* `(string) the_seo_framework_description_output`, added `$post_id` parameter.
@@ -847,7 +850,6 @@ Not all planned features made it into 2.6.0.
 		* `(string) the_seo_framework_facebookappid_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_publishedtime_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_modifiedtime_output`, added `$post_id` parameter.
-		* `(bool) the_seo_framework_output_canonical`, added `$post_id` parameter.
 		* `(string) the_seo_framework_googlesite_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_bingsite_output`, added `$post_id` parameter.
 		* `(string) the_seo_framework_pintsite_output`, added `$post_id` parameter.
@@ -857,7 +859,6 @@ Not all planned features made it into 2.6.0.
 		* `(array) the_seo_framework_knowledgegraph_settings_tabs`, added `$args` parameter.
 		* `(array) the_seo_framework_sitemaps_settings_tabs`, added `$args` parameter.
 	* **Removed:**
-		/
 		* `(bool) the_seo_framework_seo_bar_squared`. Replaced by `(bool) the_seo_framework_seo_bar_pill`.
 * **Constant Notes:**
 	* **New:**
@@ -868,6 +869,7 @@ Not all planned features made it into 2.6.0.
 	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
 	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace for The SEO Framework.
 	* At the moment this plugin is hooking into more than 90 actions and filters. WordPress hold the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, many class variables will be put into cached functions in an upcoming update.
+	* There's an upcoming function for the home title. Currently, the blogname and title are unaptly named. This means that the title is the blogname, and the blogname is the title. The current home page title functions are therefore marked private.
 
 = Full changelog =
 

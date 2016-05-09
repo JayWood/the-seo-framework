@@ -410,11 +410,6 @@ span.ad-seo .explanation-desc div {
 	display: block;
 }
 
-.autodescription-metaboxes .toblock {
-	display: block;
-	margin-bottom: 4px;
-}
-
 .autodescription-metaboxes #title-location label span,
 .autodescription-metaboxes #home-title-location label span,
 .autodescription-metaboxes #twitter-cards label span {
@@ -522,9 +517,30 @@ body.js .autodescription-metaboxes .seoframework-tabs-content.seoframework-activ
 	color: #dd3811;
 }
 
+.theseoframework-fields {
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 1em 0;
+}
+
+.theseoframework-fields .toblock {
+	display: block;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.theseoframework-fields p.description {
+	margin: 7px 0 5px;
+	color: #666;
+}
+
+.theseoframework-option-spacer {
+	margin: 1em 0;
+}
+
 @media screen and (max-width: 782px) {
-	.autodescription-metaboxes p.fields,
-	.theseoframework-inpost-box p.fields {
+	.autodescription-metaboxes p.theseoframework-fields,
+	.theseoframework-inpost-box p.theseoframework-fields {
 		line-height: 2.8
 	}
 

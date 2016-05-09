@@ -260,11 +260,16 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @see $this->title_metabox()		Callback for Title Settings box.
-	 * @see $this->robots_metabox()		Callback for Robots Settings box.
-	 * @see $this->homepage_metabox()	Callback for Home Page Settings box.
-	 * @see $this->social_metabox()		Callback for Social Settings box.
-	 * @see $this->webmaster_metabox()	Callback for Webmaster Settings box.
+	 * @see $this->title_metabox()			Callback for Title Settings box.
+	 * @see $this->description_metabox()	Callback for Description Settings box.
+	 * @see $this->robots_metabox()			Callback for Robots Settings box.
+	 * @see $this->homepage_metabox()		Callback for Home Page Settings box.
+	 * @see $this->social_metabox()			Callback for Social Settings box.
+	 * @see $this->knowledge_metabox()		Callback for Knowledge Graph Settings box.
+	 * @see $this->schema_metabox()			Callback for Schema Settings box.
+	 * @see $this->webmaster_metabox()		Callback for Webmaster Settings box.
+	 * @see $this->sitemaps_metabox()		Callback for Sitemap Settings box.
+	 * @see $this->feed_metabox()			Callback for Feed Settings box.
 	 */
 	public function metaboxes() {
 
@@ -280,6 +285,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 		$home 			= (bool) apply_filters( 'the_seo_framework_home_metabox', true );
 		$social 		= (bool) apply_filters( 'the_seo_framework_social_metabox', true );
 		$knowledge 		= (bool) apply_filters( 'the_seo_framework_knowledge_metabox', true );
+		$schema 		= (bool) apply_filters( 'the_seo_framework_schema_metabox', true );
 		$webmaster 		= (bool) apply_filters( 'the_seo_framework_webmaster_metabox', true );
 		$sitemap 		= (bool) apply_filters( 'the_seo_framework_sitemap_metabox', true );
 		$feed 			= (bool) apply_filters( 'the_seo_framework_feed_metabox', true );
@@ -334,6 +340,16 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 				'main'
 			);
 
+		//* Title Meta Box
+		if ( $schema )
+			add_meta_box(
+				'autodescription-schema-settings',
+				__( 'Schema Settings', 'autodescription' ),
+				array( $this, 'schema_metabox' ),
+				$this->pagehook,
+				'main'
+			);
+
 		//* Robots Meta Box
 		if ( $robots )
 			add_meta_box(
@@ -383,6 +399,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @since 2.2.2
 	 */
 	public function admin() {
+
 		?>
 		<div class="wrap autodescription-metaboxes">
 		<form method="post" action="options.php">
@@ -423,6 +440,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			//]]>
 		</script>
 		<?php
+
 	}
 
 	/**
@@ -432,6 +450,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @since 2.2.2
 	 */
 	public function network_admin() {
+
 		?>
 		<div class="wrap autodescription-metaboxes">
 		<form method="post" action="options.php">
@@ -470,6 +489,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			//]]>
 		</script>
 		<?php
+
 	}
 
 	/**
@@ -547,6 +567,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @return string Full field id
 	 */
 	public function field_id( $id, $echo = true ) {
+
 		if ( $echo ) {
 			echo $this->get_field_id( $id );
 		} else {
@@ -566,9 +587,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @return string Field value
 	 */
 	public function get_field_value( $key ) {
-		$option = $this->get_option( $key, $this->settings_field );
-
-		return $option;
+		return $this->get_option( $key, $this->settings_field );
 	}
 
 	/**
@@ -583,9 +602,7 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	 * @return string Field value
 	 */
 	public function get_field_value_network( $key ) {
-		$option = $this->get_site_option( $key, $this->settings_field );
-
-		return $option;
+		return $this->get_site_option( $key, $this->settings_field );
 	}
 
 	/**
@@ -602,7 +619,86 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 	}
 
 	/**
-	 * Load script and stylesheet assets via scripts() methods.
+	 * Echo or return a chechbox fields wrapper.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param string $input The input to wrap.
+	 * @param bool $echo Whether to echo or return.
+	 *
+	 * @return Wrapped $input.
+	 */
+	public function wrap_fields( $input = '', $echo = false ) {
+
+		if ( is_array( $input ) )
+			$input = implode( "\r\n", $input );
+
+		if ( $echo )
+			echo '<div class="theseoframework-fields">' . "\r\n" . $input . "\r\n" . '</div>';
+		else
+			return '<div class="theseoframework-fields">' . "\r\n" . $input . "\r\n" . '</div>';
+	}
+
+	/**
+	 * Return a chechbox wrapper.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param string $field_id The option ID. Must be within the Autodescription settings.
+	 * @param string $label The checkbox description label
+	 * @param string $description Addition description to place beneath the checkbox.
+	 *
+	 * @return HTML checkbox output.
+	 */
+	public function make_checkbox( $field_id = '', $label = '', $description = '' ) {
+
+		$description = $description ? '<p class="description theseoframework-option-spacer">' . $description . '</p>' : '';
+
+		$output = '<span class="toblock">'
+					. '<label for="' . $this->get_field_id( $field_id ) . '">'
+						. '<input '
+							. 'type="checkbox" '
+							. 'name="' . $this->get_field_name( $field_id ) . '" '
+							. 'id="' . $this->get_field_id( $field_id ) . '" '
+							. $this->get_is_conditional_checked( $field_id ) . ' '
+							. 'value="1" '
+							. checked( $this->get_field_value( $field_id ), true, false ) .
+						' />'
+						. $label
+					. '</label>'
+				. '</span>'
+				. $description
+				;
+
+		return $output;
+	}
+
+	/**
+	 * Return a wrapped question mark.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param string $description The descriptive on-hover title.
+	 * @param string $link The non-escaped link.
+	 * @param bool $echo Whether to echo or return.
+	 *
+	 * @return HTML checkbox output.
+	 */
+	public function make_info( $description = '', $link = '', $echo = true ) {
+
+		if ( $link )
+			$output = '<a href="' . esc_url( $link ) . '" target="_blank" title="' . esc_attr( $description ) . '">[?]</a>';
+		else
+			$output = '<span title="' . esc_attr( $description ) . '">[?]</span>';
+
+		if ( $echo )
+			echo $output;
+		else
+			return $output;
+	}
+
+	/**
+	 * Load script and stylesheet assets via metabox_scripts() methods.
 	 *
 	 * @since 2.2.2
 	 */
@@ -645,19 +741,16 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 			$class = 'seoframework-default-selected';
 
 		if ( $echo ) {
-			if ( $wrap ) {
+			if ( $wrap )
 				printf( 'class="%s"', $class );
-			} else {
+			else
 				echo $class;
-			}
 		} else {
 			if ( $wrap )
 				return sprintf( 'class="%s"', $class );
 
 			return $class;
 		}
-
-		return '';
 	}
 
 	/**
@@ -696,8 +789,17 @@ class AutoDescription_Adminpages extends AutoDescription_Inpost {
 
 			return $class;
 		}
+	}
 
-		return '';
+	/**
+	 * Helper function that constructs id attributes for use in form fields.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param string $key The option name which returns boolean.
+	 */
+	public function get_is_conditional_checked( $key ) {
+		return $this->is_conditional_checked( $key, $this->settings_field, true, false );
 	}
 
 	/**

@@ -98,10 +98,11 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 
-			//* Securely check the referrer, instead of leaving holes everywhere.
-			if ( check_ajax_referer( 'add-tag', '_wpnonce_add-tag', false ) )
+			/**
+			 * Securely check the referrer, instead of leaving holes everywhere.
+			 */
+			if ( current_user_can( 'publish_posts' ) && check_ajax_referer( 'add-tag', '_wpnonce_add-tag', false ) )
 				$this->init_columns( '', true );
-
 		}
 
 	}

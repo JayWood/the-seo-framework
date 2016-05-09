@@ -681,6 +681,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * Gets the title for the static home page.
 	 *
 	 * @since 2.2.8
+	 * @access private
 	 * @see $this->generate_home_title()
 	 *
 	 * @param string $home_title The fallback title.
