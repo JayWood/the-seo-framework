@@ -2360,7 +2360,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			'https://developers.google.com/structured-data/site-name',
 			false
 		);
-		$description = sprintf( __( "The Site Name is: %s.", 'autodescription' ), $this->code_wrap( $this->get_blogname() ) );
+		$description = sprintf( __( "The Site Name is: %s", 'autodescription' ), $this->code_wrap( $this->get_blogname() ) );
 		$this->wrap_fields(
 			$this->make_checkbox(
 				'ld_json_sitename',

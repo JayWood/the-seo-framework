@@ -831,7 +831,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 
 			$home_url = $this->the_home_url_from_cache();
 			$parse_url = parse_url( $home_url );
-			$path = $parse_url['path'] ? ltrim( $parse_url['path'], ' /' ) : '';
+			$path = $parse_url['path'] ? rtrim( $parse_url['path'], ' /' ) : '';
 
 			$output .= $pre;
 			//* Output defaults
@@ -846,12 +846,12 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 * Applies filters the_seo_framework_robots_disallow_queries : Whether to allow queries for robots.
 			 * @since 2.5.0
 			 */
-			if ( (bool) apply_filters( 'the_seo_framework_robots_disallow_queries', false ) )
+			if ( apply_filters( 'the_seo_framework_robots_disallow_queries', false ) )
 				$output .= "Disallow: $path/*?*\r\n";
 
 			$output .= $pro;
 
-			if ( $this->get_option( 'sitemaps_output') && (bool) $this->get_option( 'sitemaps_robots' ) ) {
+			if ( $this->get_option( 'sitemaps_output') && $this->get_option( 'sitemaps_robots' ) ) {
 				//* Add whitespace before sitemap.
 				$output .= "\r\n";
 
