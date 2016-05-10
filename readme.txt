@@ -403,8 +403,8 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Automatic option merging on update.
 * New AJAX integration when adding tags.
 * Personalized error handling for developers.
-* Over 120 (TODO) new public functions for developers.
-* 19 (TODO) brand new filters for developers.
+* Over 155 new public functions for developers.
+* 24 brand new filters for developers.
 * WP Query Admin synchronization for developers.
 * Automated setting navigation tabs for developers.
 

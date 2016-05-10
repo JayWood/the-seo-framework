@@ -33,7 +33,7 @@
 	//if ( is_admin() ) {
 	//		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
 	//		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
-			define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
+	//		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
 	//}
 //}},0);
 
