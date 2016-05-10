@@ -3,7 +3,7 @@ Contributors: Cybr
 Donate link: https://theseoframework.com/donate/
 Tags: open graph, description, automatic, generate, generator, title, breadcrumbs, ogtype, meta, metadata, search, engine, optimization, seo, framework, canonical, redirect, bbpress, twitter, facebook, google, bing, yahoo, jetpack, genesis, woocommerce, multisite, robots, icon, cpt, custom, post, types, pages, taxonomy, tag, sitemap, sitemaps, screenreader, rtl, feed
 Requires at least: 3.8.0
-Tested up to: 4.5.0
+Tested up to: 4.5.2
 Stable tag: 2.5.2.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -545,8 +545,8 @@ Not all planned features made it into 2.6.0.
 	/
 	* Default options merging on plugin update, so you don't have to check out the new features manually with each update. When new features are added which have not yet been registered. These features will now be updated to its default settings. Multisite compatible.
 	* Archive title prefix options!
-	* TODO Schema SEO!
-	* TODO Schema SEO will allow you to enable and disable global Schema.org features.
+	* Schema SEO!
+	* Schema SEO will allow you to enable and disable global Schema.org features.
 	* LD+Json Schema.org website name and URL header markup on the front-page. This should change the `example.com > category > subcategory` output in Google to `Example Site > category > subcategory`. See [this page](https://developers.google.com/structured-data/site-name) for more info.
 	* Time display options for the sitemap. Now you can select how the time is output. Default "Complete date plus hours, minutes and timezone".
 	* Buffer cleaner before the sitemap begins outputting. This makes sure the sitemap can't be erroneous through other plugin or theme errors.
@@ -644,6 +644,7 @@ Not all planned features made it into 2.6.0.
 	* Settings tabs vertical icon alignment.
 	* The Home Page settings are now divided with navigation tabs.
 	* No more accidents: The setting checkbox labels now don't overflow anymore to the width of its container. This means you have to click on the text for the checkbox to change, rather than also possibly on the whitespace next to it. In the future all checkboxes and radio buttons will obtain this property.
+	* Reduced the chance of WPMUdev Domain Mapping's Async CDSSO Script being incorrect due to unorthodox rewrite flushing.
 * **Fixed:**
 	* Added cache key language detection, to build correct descriptions for the right language. This works on WPML, qTranslate X and many other translation plugins.
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
