@@ -977,6 +977,8 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $enqueue )
 			return $flush = true;
 
+		$this->wpmudev_domainmap_flush_fix( true );
+
 		return false;
 	}
 
@@ -1034,7 +1036,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 					add_rewrite_endpoint( Domainmap_Module_Cdsso::SSO_ENDPOINT, EP_ALL );
 
 					//* Force extra flush on init.
-					$key = 'the_seo_framework_wpmdev_dm' . get_current_blog_id() . '_extra_flush';
+					$key = 'tsf_wpmudev_dm' . get_current_blog_id() . '_extraf_' . $this->o_plugin_updated;
 
 					if ( $options_saved ) {
 						//* Reset the flush on option change.

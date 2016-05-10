@@ -443,7 +443,7 @@ class AutoDescription_Admin_Init extends AutoDescription_Init {
 		if ( $this->is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			//* If current user isn't allowed to edit posts, don't do anything.
 			if ( ! current_user_can( 'publish_posts' ) )
-				return;
+				exit;
 
 			$options = $this->get_all_options();
 

@@ -204,6 +204,10 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 
 				'excerpt_the_feed',
 				'source_the_feed',
+
+				'ld_json_searchbox',
+				'ld_json_sitename',
+				'ld_json_breadcrumbs',
 			)
 		);
 

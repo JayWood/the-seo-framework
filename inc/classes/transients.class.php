@@ -141,10 +141,10 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 * When the caching mechanism changes. Change this value.
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
-		$revision = '3';
+		$revision = '0';
 
-		$this->sitemap_transient = 'the_seo_framework_sitemap_' . (string) $revision . '_' . (string) $blog_id;
-		$this->theme_doing_it_right_transient = 'the_seo_framework_tdir_' . (string) $revision . '_' . (string) $blog_id;
+		$this->sitemap_transient = 'tsf_sitemap_' . (string) $revision . '_' . (string) $blog_id;
+		$this->theme_doing_it_right_transient = 'tsf_tdir_' . (string) $revision . '_' . (string) $blog_id;
 	}
 
 	/**
@@ -170,17 +170,10 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		$additions = $this->add_description_additions( $page_id, $taxonomy );
 
 		if ( $additions ) {
-			/**
-			 * Two different cache keys for two different settings.
-			 * @since 2.3.4
-			 */
-			if ( $this->get_option( 'description_blogname' ) ) {
-				$this->auto_description_transient = 'tsf_descall_' . $revision . '_' . $cache_key;
-			} else {
-				$this->auto_description_transient = 'tsf_descnob_' . $revision . '_' . $cache_key;
-			}
+			$option = $this->get_option( 'description_blogname' ) ? '1' : '0';
+			$this->auto_description_transient = 'tsf_desc_' . $option . '_' . $revision . '_' . $cache_key;
 		} else {
-			$this->auto_description_transient = 'tsf_descnoa_' . $revision . '_' . $cache_key;
+			$this->auto_description_transient = 'tsf_desc_noa_' . $revision . '_' . $cache_key;
 		}
 
 	}
@@ -202,9 +195,16 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		 *
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
-		$revision = '5';
+		$revision = '6';
 
-		$this->ld_json_transient = 'the_seo_f' . $revision . '_ldjs_' . $cache_key;
+		/**
+		 * Change key based on options.
+		 */
+		$options = $this->enable_ld_json_breadcrumbs() ? '1' : '0';
+		$options .= $this->enable_ld_json_sitename() ? '1' : '0';
+		$options .= $this->enable_ld_json_searchbox() ? '1' : '0';
+
+		$this->ld_json_transient = 'the_seo_f' . $revision . '_' . $options . '_ldjs_' . $cache_key;
 	}
 
 	/**
@@ -356,7 +356,7 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		}
 
 		/**
-		 * Static Front page isn't set or something else is happening. Causes all kinds of problems :(
+		 * Blog page isn't set or something else is happening. Causes all kinds of problems :(
 		 * Noob. :D
 		 */
 		if ( empty( $the_id ) )

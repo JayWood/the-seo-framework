@@ -34,7 +34,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 	 *
 	 * @var array Holds Site SEO options.
 	 */
-	protected $default_network_options = array();
+	// protected $default_network_options = array();
 
 	/**
 	 * Network Settings field.
@@ -45,7 +45,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 	 *
 	 * This value is subject to change based on page/class.
 	 */
-	protected $network_settings_field;
+	// protected $network_settings_field;
 
 	/**
 	 * Hold the Page ID for this class
@@ -54,7 +54,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 	 *
 	 * @var string Page ID
 	 */
-	protected $network_page_id;
+	// protected $network_page_id;
 
 	/**
 	 * Constructor, load parent constructor
@@ -69,6 +69,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 		 *
 		 * @since 2.2.2
 		 */
+        /*
 		$this->default_network_options = (array) apply_filters(
 		'the_seo_framework_default_network_options',
 			array(
@@ -82,6 +83,7 @@ class AutoDescription_Networkoptions extends AutoDescription_Siteoptions {
 
 		// Fetch the page_id
 		$this->network_page_id = 'autodescription-network-settings';
+		*/
 	}
 
 	/**

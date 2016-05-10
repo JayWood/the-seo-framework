@@ -424,6 +424,8 @@ class AutoDescription_Detect extends AutoDescription_Render {
 				),
 			);
 
+		//	var_dump(); get constants.
+
 		return $has_plugin = $this->detect_plugin( $plugins );
 	}
 

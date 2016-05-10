@@ -1672,8 +1672,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		?>
 		<h4><?php _e( 'Webmaster Integration Settings', 'autodescription' ); ?></h4>
-		<p><span class="description"><?php printf( __( "When adding your website to Google, Bing and other Webmaster Tools, you'll be asked to add a code or file to your website for verification purposes. These options will help you easily integrate those codes.", 'autodescription' ) ); ?></span></p>
-		<p><span class="description"><?php printf( __( "Verifying your website has no SEO value whatsoever. But you might gain added benefits such as search ranking insights to help you improve your Website's content.", 'autodescription' ) ); ?></span></p>
+		<p class="description"><?php _e( "When adding your website to Google, Bing and other Webmaster Tools, you'll be asked to add a code or file to your website for verification purposes. These options will help you easily integrate those codes.", 'autodescription' ); ?></p>
+		<p class="description"><?php _e( "Verifying your website has no SEO value whatsoever. But you might gain added benefits such as search ranking insights to help you improve your website's content.", 'autodescription' ); ?></p>
 
 		<hr>
 
@@ -2261,7 +2261,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			}
 
 			//* Echo checkbox.
-			echo $this->wrap_fields( $ping_checkbox );
+			$this->wrap_fields( $ping_checkbox, true );
 
 	}
 
@@ -2274,30 +2274,28 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 
 		do_action( 'the_seo_framework_feed_metabox_before' );
 
-		$site_url = $this->the_home_url_from_cache( true );
-
-		$feed_url = esc_url( user_trailingslashit( $site_url . 'feed' ) );
-
 		?>
 		<h4><?php _e( 'Content Feed Settings', 'autodescription' ); ?></h4>
-		<p><span class="description"><?php printf( __( "Sometimes, your content can get stolen by robots through the WordPress feeds. This can cause duplicate content issues. To prevent these issues from happening, it's recommended to convert the feed's content into an excerpt.", 'autodescription' ) ); ?></span></p>
-		<p><span class="description"><?php printf( __( "Adding a backlink below the feed's content will also let the visitors know where the content came from.", 'autodescription' ) ); ?></span></p>
+		<p class="description"><?php _e( "Sometimes, your content can get stolen by robots through the WordPress feeds. This can cause duplicate content issues. To prevent these issues from happening, it's recommended to convert the feed's content into an excerpt.", 'autodescription' ); ?></p>
+		<p class="description"><?php _e( "Adding a backlink below the feed's content will also let the visitors know where the content came from.", 'autodescription' ); ?></p>
 
 		<hr>
 
 		<h4><?php _e( 'Change Feed Settings', 'autodescription' ); ?></h4>
 		<?php
+			$excerpt_the_feed_label = __( 'Convert feed content into excerpts?', 'autodescription' );
+			$excerpt_the_feed_label .= ' ' . $this->make_info( __( "By default the excerpt will be at most 400 characters long", 'autodescription' ), '', false );
 
-		$excerpt_the_feed_label = __( 'Convert feed content into excerpts?', 'autodescription' );
-		$excerpt_the_feed_label .= ' ' . $this->make_info( __( "By default the excerpt will be at most 400 characters long", 'autodescription' ), '', false );
-		$excerpt_the_feed_checkbox = $this->make_checkbox( 'excerpt_the_feed', $excerpt_the_feed_label, '' );
+			$source_the_feed_label = __( 'Add backlinks below the feed content?', 'autodescription' );
+			$source_the_feed_label .= ' ' . $this->make_info( __( "This link will not be followed by Search Engines", 'autodescription' ), '', false );
 
-		$source_the_feed_label = __( 'Add backlinks below the feed content?', 'autodescription' );
-		$source_the_feed_label .= ' ' . $this->make_info( __( "This link will not be followed by Search Engines", 'autodescription' ), '', false );
-		$source_the_feed_checkbox = $this->make_checkbox( 'source_the_feed', $source_the_feed_label, '' );
-
-		//* Echo checkboxes.
-		echo $this->wrap_fields( $excerpt_the_feed_checkbox . $source_the_feed_checkbox );
+			//* Echo checkboxes.
+			$this->wrap_fields(
+				array(
+					$this->make_checkbox( 'excerpt_the_feed', $excerpt_the_feed_label, '' ),
+					$this->make_checkbox( 'source_the_feed', $source_the_feed_label, '' ),
+				), true
+			);
 
 		if ( $this->rss_uses_excerpt() ) {
 			$reading_settings_url = esc_url( admin_url( 'options-reading.php' ) );
@@ -2307,6 +2305,11 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 				printf( _x( "Note: The feed is already converted into an excerpt through the %s.", '%s = Reading Settings', 'autodescription' ), $reading_settings );
 			?></span></p><?php
 		}
+
+		$feed_url = esc_url( get_feed_link() );
+		$here = '<a href="' . $feed_url  . '" target="_blank" title="' . __( 'View feed', 'autodescription' ) . '">' . _x( 'here', 'The feed can be found %s.', 'autodescription' ) . '</a>';
+
+		?><p class="description"><?php printf( _x( 'The feed can be found %s.', '%s = here', 'autodescription' ), $here ); ?></p><?php
 
 		do_action( 'the_seo_framework_feed_metabox_after' );
 
@@ -2318,7 +2321,78 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 * @since 2.6.0
 	 */
 	public function schema_metabox() {
-		?><h4>Coming soon!</h4><?php
+
+		do_action( 'the_seo_framework_schema_metabox_before' );
+
+		?>
+		<h4><?php _e( 'Schema.org SEO Settings', 'autodescription' ); ?></h4>
+		<p class="description"><?php _e( "Schema.org markup is a standard way of annotating structured data for Search Engines. This markup is represented within hidden scripts throughout the website.", 'autodescription' ); ?></p>
+		<p class="description"><?php _e( "When your web pages include structured data markup, Search Engines can use that data to index your content better, present it more prominently in Search Results, and use it in several different applications.", 'autodescription' ); ?></p>
+
+		<hr>
+
+		<?php /* translators: https://developers.google.com/structured-data/slsb-overview */ ?>
+		<h4><?php _ex( 'Sitelinks Search Box', 'Product name', 'autodescription' ); ?></h4>
+		<p class="description"><?php _e( 'When Search users search for your brand name, the following option allows them to search through your website right from the Search Results.', 'autodescription' ); ?></p>
+		<?php
+		$info = $this->make_info(
+			_x( 'Sitelinks Search Box', 'Product name', 'autodescription' ),
+			'https://developers.google.com/structured-data/slsb-overview',
+			false
+		);
+		$this->wrap_fields(
+			$this->make_checkbox(
+				'ld_json_searchbox',
+				_x( 'Enable Sitelinks Search Box?', 'Product name', 'autodescription' ) . ' ' . $info,
+				''
+			),
+			true
+		);
+		?>
+
+		<hr>
+
+		<h4><?php _e( 'Site Name', 'autodescription' ); ?></h4>
+		<p class="description"><?php _e( "When using breadcrumbs, the first entry is by default your website's address. Using the following option will convert it to the Site Name.", 'autodescription' ); ?></p>
+		<?php
+		$info = $this->make_info(
+			__( 'Include your Site Name in Search Results', 'autodescription' ),
+			'https://developers.google.com/structured-data/site-name',
+			false
+		);
+		$description = sprintf( __( "The Site Name is: %s.", 'autodescription' ), $this->code_wrap( $this->get_blogname() ) );
+		$this->wrap_fields(
+			$this->make_checkbox(
+				'ld_json_sitename',
+				__( 'Convert URL to Site Name?', 'autodescription' ) . ' ' . $info,
+				$description
+			),
+			true
+		);
+		?>
+
+		<hr>
+
+		<h4><?php _e( 'Breadcrumbs', 'autodescription' ); ?></h4>
+		<p class="description"><?php _e( "Breadcrumb trails indicate the page's position in the site hierarchy. Using the following option will show the hierarchy within the Search Results when available.", 'autodescription' ); ?></p>
+		<?php
+		$info = $this->make_info(
+			__( 'About Breadcrumbs', 'autodescription' ),
+			'https://developers.google.com/structured-data/breadcrumbs',
+			false
+		);
+		$description = __( "Multiple trails can be output. The longest trail is prioritized.", 'autodescription' );
+		$this->wrap_fields(
+			$this->make_checkbox(
+				'ld_json_breadcrumbs',
+				__( 'Enable Breadcrumbs?', 'autodescription' ) . ' ' . $info,
+				$description
+			),
+			true
+		);
+
+		do_action( 'the_seo_framework_schema_metabox_after' );
+
 	}
 
 }

@@ -44,7 +44,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	protected $settings_field;
 
 	/**
-	 * Hold the Page ID for this class
+	 * Hold the Page ID for this plugin.
 	 *
 	 * @since 2.2.2
 	 *
@@ -67,11 +67,12 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	public function __construct() {
 		parent::__construct();
 
+		$this->settings_field = THE_SEO_FRAMEWORK_SITE_OPTIONS;
+		$this->o_plugin_updated = 'updated_' . str_replace( '.', '', THE_SEO_FRAMEWORK_VERSION );
+		$this->page_id = 'autodescription-settings';
+
 		//* Register defaults early.
 		add_action( 'after_setup_theme', array( $this, 'initialize_defaults' ), 0 );
-		// add_action( 'after_setup_theme', array( $this, 'initialize_defaults_admin' ), 0 );
-
-		$this->settings_field = THE_SEO_FRAMEWORK_SITE_OPTIONS;
 
 		//* Set up site settings and save/reset them
 		add_action( 'admin_init', array( $this, 'register_settings' ), 5 );
@@ -79,8 +80,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		//* Update site options at plugin update.
 		add_action( 'admin_init', array( $this, 'site_updated_plugin_option' ) );
 
-		// The settings page page_id.
-		$this->page_id = 'autodescription-settings';
 	}
 
 	/**
@@ -90,8 +89,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 * @since 2.5.0
 	 */
 	public function initialize_defaults() {
-
-		$this->o_plugin_updated = 'updated_' . str_replace( '.', '', THE_SEO_FRAMEWORK_VERSION );
 
 		/**
 		 * Switch when RTL is active;
@@ -117,13 +114,13 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		 */
 		$this->default_site_options = array(
 			// Title.
-			'title_seperator'		=> 'pipe',		// Title separator (note: TYPO)
+			'title_seperator'		=> 'pipe',		// Title separator (note: TYPO), dropdown
 			'title_location'		=> $titleloc,	// Title separation location
 			'title_rem_additions'	=> 0,			// Remove title additions
 			'title_rem_prefixes'	=> 0, 			// Remove title prefixes
 
 			// Description.
-			'description_separator'	=> 'pipe',	// Description separator
+			'description_separator'	=> 'pipe',	// Description separator, dropdown
 			'description_additions'	=> 1,		// "Title on Blogname" within Description
 			'description_blogname'	=> 1, 		// "on Blogname" within Description
 			'description_custom'	=> '',		// Custom prefix
@@ -197,7 +194,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'home_modify_time'		=> 0,	// Article Modified Time
 
 			// Twitter.
-			'twitter_card' 			=> 'summary_large_image',	// Twitter Card layout. If no twitter:image image is found, it'll change to 'summary'
+			'twitter_card' 			=> 'summary_large_image',	// Twitter Card layout. If no twitter:image image is found, it'll change to 'summary', dropdown
 			'twitter_site' 			=> '', 	// Twitter business @username
 			'twitter_creator' 		=> '', 	// Twitter user @username
 
@@ -215,7 +212,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 			// Knowledge general. https://developers.google.com/structured-data/customize/contact-points - This is extremely extended and valuable. Expect a premium version.
 			'knowledge_output'		=> 1,				// Default for outputing the Knowledge SEO.
-			'knowledge_type'		=> 'organization',	// Organization or Person
+			'knowledge_type'		=> 'organization',	// Organization or Person, dropdown
 
 			// Knowledge business. https://developers.google.com/structured-data/customize/logos
 			'knowledge_logo'		=> 1,	// Fetch logo from WP Favicon
@@ -236,7 +233,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Sitemaps.
 			'sitemaps_output'		=> 1,	// Output of sitemaps
 			'sitemaps_modified'		=> 1,	// Add sitemaps modified time
-			'sitemap_timestamps'	=> '1',	// Sitemaps modified time format
+			'sitemap_timestamps'	=> '1',	// Sitemaps modified time format, dropdown
 			'sitemaps_robots'		=> 1,	// Add sitemaps location to robots.txt
 			'ping_google'			=> 1,	// Ping Google
 			'ping_bing'				=> 1,	// Ping Bing
@@ -246,30 +243,17 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			'excerpt_the_feed'		=> 1,	// Generate feed Excerpts
 			'source_the_feed'		=> 1,	// Add backlink at the end of the feed
 
+			// Schema
+			'ld_json_searchbox'		=> 1,	// LD+Json Sitelinks Searchbox
+			'ld_json_sitename'		=> 1,	// LD+Json Sitename
+			'ld_json_breadcrumbs'	=> 1,	// LD+Json Breadcrumbs
+
 			// Misc.
 			'counter_type' => 3, // JS counter type.
 
 			// Cache.
 			$this->o_plugin_updated => 1,	// Plugin update cache.
 		);
-
-	}
-
-	/**
-	 * Initializes default settings very early at the after_setup_theme hook
-	 * Therefore supports is_rtl().
-	 *
-	 * Admin only.
-	 *
-	 * @since 2.5.0
-	 * @access private
-	 *
-	 * @return void Early if not WP-admin.
-	 */
-	public function initialize_defaults_admin() {
-
-		if ( false === $this->is_admin() )
-			return;
 
 	}
 
@@ -365,6 +349,10 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 			'excerpt_the_feed'		=> 0,	// Generate feed Excerpts
 			'source_the_feed'		=> 0,	// Add backlink at the end of the feed
+
+			'ld_json_searchbox'		=> 0,	// LD+Json Sitelinks Searchbox
+			'ld_json_sitename'		=> 0,	// LD+Json Sitename
+			'ld_json_breadcrumbs'	=> 0,	// LD+Json Breadcrumbs
 		);
 
 	}

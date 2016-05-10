@@ -32,6 +32,8 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 	public function __construct() {
 		parent::__construct();
 
+		//* @todo place this in loader function.
+		
 		add_filter( 'the_content_feed', array( $this, 'the_content_feed' ), 10, 2 );
 
 		//* Only add the feed link to the excerpt if we're only building excerpts.

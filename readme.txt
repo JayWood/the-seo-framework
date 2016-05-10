@@ -583,6 +583,7 @@ Not all planned features made it into 2.6.0.
 	* The Color Deficiency options have been split into four options: Counter, Counter + Name, Name, Counter inversed.
 	* Descriptive URL on Title Blogname removal option.
 	* Title generation cache. It no longer gets generated more than once per page load.
+	* Feed location URL in the Feed Settings.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -770,6 +771,7 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Siteoptions::get_warned_settings()` now simply converts the given option values into booleans and then ones and zeros, rather than escaping thoroughly.
 	* `AutoDescription_Adminpages::is_default_checked()` now doesn't return `''` anymore when using the echo parameter.
 	* `AutoDescription_Adminpages::is_warning_checked()` now doesn't return `''` anymore when using the echo parameter.
+	* Disabled the Network options constructor and its class variables, as it's not yet used (and protected).
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
@@ -793,6 +795,7 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Sitemaps::setup_sitemap_transient()` function, replaced by `AutoDescription_Sitemaps::setup_sitemap()` to eliminate naming confusion.
 	* `AutoDescription_Detect::is_locale()` function, replaced by `AutoDescription_Detect::check_wp_locale()` to eliminate naming confusion.
 	* `AutoDescription_Generate_Title::get_placeholder_title()` function, use `AutoDescription_Generate_Title::title()` instead with the argument `notagline`.
+	* `AutoDescription_Siteoptions::initialize_defaults_admin()` function. Without replacement.
 * **Removed:**
 	* Open Graph plugins check from Canonical URL output, these are unrelated.
 	* Filter/Constant/Action PHP comments indicating changes from 2.3.0 to clean up code.
@@ -802,7 +805,7 @@ Not all planned features made it into 2.6.0.
 	* Cleaned up code, massively.
 * **Filter Notes:**
 	* **New:**
-		* `(bool) the_seo_framework_json_name_output`
+		* `(bool) the_seo_framework_json_sitename_output`
 		* `(bool) the_seo_framework_use_archive_title_prefix`
 		* `(bool) the_seo_framework_update_options_at_update`
 		* `(bool) the_seo_framework_schema_metabox`
@@ -865,11 +868,15 @@ Not all planned features made it into 2.6.0.
 		* `(bool) THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS`. Note: Does not disable transients for pinging search engines.
 	* **Removed:**
 		* `(bool) THE_SEO_FRAMEWORK_DEBUG_MORE`. It always shows more now.
+* **Action Notes:**
+	* **New:**
+		* `the_seo_framework_schema_metabox_before`
+		* `the_seo_framework_schema_metabox_after`
 * **Notes:**
 	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
 	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace for The SEO Framework.
 	* At the moment this plugin is hooking into more than 90 actions and filters. WordPress hold the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, many class variables will be put into cached functions in an upcoming update.
-	* There's an upcoming function for the home title. Currently, the blogname and title are unaptly named. This means that the title is the blogname, and the blogname is the title. The current home page title functions are therefore marked private.
+	* There's an upcoming function for the home title. Currently, the blogname and title are unaptly named. This means that the title is the blogname, and the blogname is the title. The current home page title functions are therefore marked private. It will become: "title" - "sep" - "additions", this will be reflected upon throughout the title class.
 
 = Full changelog =
 

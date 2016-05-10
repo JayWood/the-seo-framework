@@ -350,4 +350,20 @@ class The_SEO_Framework_Deprecated extends AutoDescription_Feed {
 		return $this->title( $title, '', '', $args );
 	}
 
+	/**
+	 * Initializes default settings very early at the after_setup_theme hook.
+	 * Admin only.
+	 *
+	 * @since 2.5.0
+	 * @access private
+	 * @deprecated
+	 * @since 2.6.0
+	 *
+	 * @return void
+	 */
+	public function initialize_defaults_admin() {
+		$this->_deprecated_function( 'AutoDescription_Siteoptions::' . __FUNCTION__, '2.6.0' );
+		return;
+	}
+
 }

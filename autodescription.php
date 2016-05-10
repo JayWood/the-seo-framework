@@ -48,7 +48,7 @@
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA1' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA2' );
 
 /**
  * Plugin options filter

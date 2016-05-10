@@ -54,9 +54,12 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			//* Only display search helper and knowledge graph on front page.
 			if ( $this->is_front_page() ) {
 
+				$sitename = $this->ld_json_name();
 				$sitelinks = $this->ld_json_search();
 				$knowledgegraph = $this->ld_json_knowledge();
-				$sitename = $this->ld_json_name();
+
+				if ( $sitename )
+					$output .= $sitename;
 
 				if ( $sitelinks )
 					$output .= $sitelinks;
@@ -64,8 +67,6 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 				if ( $knowledgegraph )
 					$output .= $knowledgegraph;
 
-				if ( $sitename )
-					$output .= $sitename;
 			} else {
 				$breadcrumbhelper = $this->ld_json_breadcrumbs();
 
@@ -208,18 +209,10 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 * @since 2.2.8
 	 *
 	 * @return escaped LD+json search helper string.
-	 * @TODO Create option for output.
-	 * @priority high 2.6.0
 	 */
 	public function ld_json_search() {
 
-		/**
-		 * Applies filters the_seo_framework_json_search_output
-		 * @since 2.3.9
-		 */
-		$output = (bool) apply_filters( 'the_seo_framework_json_search_output', true );
-
-		if ( false === $output )
+		if ( false === $this->enable_ld_json_searchbox() )
 			return '';
 
 		$context = $this->schema_context();
@@ -248,18 +241,10 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 * @since 2.4.2
 	 *
 	 * @return escaped LD+json search helper string.
-	 * @TODO Create option for output.
-	 * @priority high 2.6.0
 	 */
 	public function ld_json_breadcrumbs() {
 
-		/**
-		 * Applies filters the_seo_framework_json_breadcrumb_output
-		 * @since 2.4.2
-		 */
-		$output = (bool) apply_filters( 'the_seo_framework_json_breadcrumb_output', true );
-
-		if ( false === $output )
+		if ( false === $this->enable_ld_json_breadcrumbs() )
 			return '';
 
 		//* Used to count ancestors and categories.
@@ -293,12 +278,13 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 		if ( $this->is_wc_product() )
 			$cat_type = 'product_cat';
 
-		//* Get categories.
+		//* Test categories.
 		$r = is_object_in_term( $post_id, $cat_type, '' );
 
 		if ( ! $r || is_wp_error( $r ) )
 			return '';
 
+		//* Get categories.
 		$cats = wp_get_object_terms( $post_id, $cat_type, array( 'fields' => 'all_with_object_id', 'orderby' => 'parent' ) );
 
 		if ( empty( $cats ) || is_wp_error( $cats ) )
@@ -826,12 +812,7 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 	 */
 	public function ld_json_name() {
 
-		/**
-		 * Applies filters 'the_seo_framework_json_name_output' : bool
-		 */
-		$output = (bool) apply_filters( 'the_seo_framework_json_name_output', true );
-
-		if ( false === $output )
+		if ( false === $this->enable_ld_json_sitename() )
 			return '';
 
 		$context = $this->schema_context();
@@ -846,6 +827,81 @@ class AutoDescription_Generate_Ldjson extends AutoDescription_Generate_Image {
 			$output = '<script type="application/ld+json">' . $json . '</script>' . "\r\n";
 
 		return $output;
+	}
+
+	/**
+	 * Determines if breadcrumbs scripts are enabled.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $cache
+	 *
+	 * @return bool
+	 */
+	public function enable_ld_json_breadcrumbs() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		/**
+		 * Applies filters the_seo_framework_json_breadcrumb_output
+		 * @since 2.4.2
+		 */
+		$filter = (bool) apply_filters( 'the_seo_framework_json_breadcrumb_output', true );
+		$option = $this->is_option_checked( 'ld_json_breadcrumbs' );
+
+		return $cache = $filter && $option ? true : false;
+	}
+
+	/**
+	 * Determines if sitename script is enabled.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $cache
+	 *
+	 * @return bool
+	 */
+	public function enable_ld_json_sitename() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		/**
+		 * Applies filters the_seo_framework_json_sitename_output
+		 * @since 2.6.0
+		 */
+		$filter = (bool) apply_filters( 'the_seo_framework_json_sitename_output', true );
+		$option = $this->is_option_checked( 'ld_json_sitename' );
+
+		return $cache = $filter && $option ? true : false;
+	}
+
+	/**
+	 * Determines if searchbox script is enabled.
+	 *
+	 * @since 2.6.0
+	 * @staticvar bool $cache
+	 *
+	 * @return bool
+	 */
+	public function enable_ld_json_searchbox() {
+
+		static $cache = null;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		/**
+		 * Applies filters the_seo_framework_json_search_output
+		 * @since 2.3.9
+		 */
+		$filter = (bool) apply_filters( 'the_seo_framework_json_search_output', true );
+		$option = $this->is_option_checked( 'ld_json_searchbox' );
+
+		return $cache = $filter && $option ? true : false;
 	}
 
 }
