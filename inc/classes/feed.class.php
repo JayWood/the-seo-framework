@@ -33,7 +33,7 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 		parent::__construct();
 
 		//* @todo place this in loader function.
-		
+
 		add_filter( 'the_content_feed', array( $this, 'the_content_feed' ), 10, 2 );
 
 		//* Only add the feed link to the excerpt if we're only building excerpts.
@@ -78,7 +78,7 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 				$max_len = (int) apply_filters( 'the_seo_framework_max_content_feed_length', 400 );
 
 				//* Generate excerpt.
-				$this->trim_excerpt( $excerpt, $excerpt_len, $max_len );
+				$excerpt = $this->trim_excerpt( $excerpt, $excerpt_len, $max_len );
 
 				$h2_output = '';
 
