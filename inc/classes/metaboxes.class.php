@@ -2325,8 +2325,8 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		do_action( 'the_seo_framework_schema_metabox_before' );
 
 		?>
-		<h4><?php _e( 'Schema.org SEO Settings', 'autodescription' ); ?></h4>
-		<p class="description"><?php _e( "Schema.org markup is a standard way of annotating structured data for Search Engines. This markup is represented within hidden scripts throughout the website.", 'autodescription' ); ?></p>
+		<h4><?php _e( 'Schema.org Output Settings', 'autodescription' ); ?></h4>
+		<p class="description"><?php _e( "The Schema.org markup is a standard way of annotating structured data for Search Engines. This markup is represented within hidden scripts throughout the website.", 'autodescription' ); ?></p>
 		<p class="description"><?php _e( "When your web pages include structured data markup, Search Engines can use that data to index your content better, present it more prominently in Search Results, and use it in several different applications.", 'autodescription' ); ?></p>
 
 		<hr>
