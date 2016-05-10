@@ -680,6 +680,7 @@ Not all planned features made it into 2.6.0.
 	* Blogname cache wasn't initialized correctly.
 	* Blog Description cache wasn't initialized correctly.
 	* When using subsets of languages, e.g. "nl-NL-formal", the check no longer falls back to "en_US", but to "nl_NL". This affects `og:locale` in particular.
+	* Robots.txt subdirectory admin path is now rendered correctly.
 * **Removed:**
 	* Shortlink URL from Home Page, as it's quite useless and self referring there.
 	* Yahoo Pinging option and initiation, as they've moved to Bing quite some time ago (oops).
