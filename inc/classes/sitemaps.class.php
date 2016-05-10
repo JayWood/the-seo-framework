@@ -829,9 +829,8 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			$pre = (string) apply_filters( 'the_seo_framework_robots_txt_pre', '' );
 			$pro = (string) apply_filters( 'the_seo_framework_robots_txt_pro', '' );
 
-			$home_url = $this->the_home_url_from_cache();
-			$parse_url = parse_url( $home_url );
-			$path = $parse_url['path'] ? rtrim( $parse_url['path'], ' /' ) : '';
+			$site_url = parse_url( site_url() );
+			$path = ( ! empty( $site_url['path'] ) ) ? $site_url['path'] : '';
 
 			$output .= $pre;
 			//* Output defaults
@@ -846,8 +845,11 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 * Applies filters the_seo_framework_robots_disallow_queries : Whether to allow queries for robots.
 			 * @since 2.5.0
 			 */
-			if ( apply_filters( 'the_seo_framework_robots_disallow_queries', false ) )
-				$output .= "Disallow: $path/*?*\r\n";
+			if ( apply_filters( 'the_seo_framework_robots_disallow_queries', false ) ) {
+				$home_url = $this->the_home_url_from_cache( true );
+				$home_path = ( ! empty( $site_url['path'] ) ) ? $site_url['path'] : '';
+				$output .= "Disallow: $home_path/*?*\r\n";
+			}
 
 			$output .= $pro;
 
@@ -856,7 +858,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				$output .= "\r\n";
 
 				//* Add sitemap full url
-				$output .= 'Sitemap: ' . trailingslashit( $home_url ) . "sitemap.xml\r\n";
+				$output .= 'Sitemap: ' . $this->the_home_url_from_cache( true ) . "sitemap.xml\r\n";
 			}
 
 			$this->object_cache_set( $cache_key, $output, 86400 );
