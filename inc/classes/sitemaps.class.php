@@ -847,7 +847,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 			 */
 			if ( apply_filters( 'the_seo_framework_robots_disallow_queries', false ) ) {
 				$home_url = $this->the_home_url_from_cache( true );
-				$home_path = ( ! empty( $site_url['path'] ) ) ? $site_url['path'] : '';
+				$home_path = ( ! empty( $home_url['path'] ) ) ? $home_url['path'] : '';
 				$output .= "Disallow: $home_path/*?*\r\n";
 			}
 
