@@ -620,7 +620,7 @@ Not all planned features made it into 2.6.0.
 	* Description excerpt generation exceeding words calculation.
 * **Improved:**
 	* The SEO Bar's now more reliable in its data.
-	* The SEO Bar hover balloon translations, **"but"** now can't show up twice, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
+	* The SEO Bar hover balloon linguistics, **"but"** now can't show up twice when the fact is enforcing upon its state, and is instead replaced with **"and"**. E.g. "But the blog isn't set to public. And there are no posts..."
 	* The SEO Bar buttons are now converted to placeholder hyperlinks. So screen-readers know they're clickable.
 	* The SEO Bar's text is now easier on the eyes due to added text-shadow.
 	* The SEO Bar's hover balloon is now aligned with its bar on Posts and Pages overview and to column in Term overview.
@@ -787,7 +787,7 @@ Not all planned features made it into 2.6.0.
 	* `The_SEO_Framework_Load::call_function()` now converts and checks for `$this` correctly. Evidently speeding up the plugin greatly.
 	* `The_SEO_Framework_Load::call_function()` now doesn't return a fatal error anymore if class and method isn't found when the class is referred to as string.
 	* LD+Json Home Page flushing cache wasn't initialized correctly on SEO settings save.
-	* Warned options cache.
+	* Warned options cache now works.
 	* `AutoDescription::title_for_home()` now correctly fetches the front page title option if called outside of the Home Page loop.
 * **Deprecated:**
 	* `AutoDescription_Detect::current_theme_supports()`, use core `current_theme_supports` instead.
@@ -875,9 +875,9 @@ Not all planned features made it into 2.6.0.
 		* `the_seo_framework_schema_metabox_before`
 		* `the_seo_framework_schema_metabox_after`
 * **Notes:**
-	* I marked numerous functions with `@access private`. These functions can change behavior at any time without notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
+	* I marked numerous functions with `@access private`. These functions can change behavior at any time without prior notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
 	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace for The SEO Framework.
-	* At the moment this plugin is hooking into more than 90 actions and filters. WordPress hold the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, many class variables will be put into cached functions in an upcoming update.
+	* At the moment this plugin is hooking into more than 90 actions and filters. WordPress holds the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, many class variables will be put into cached functions in an upcoming update.
 	* There's an upcoming function for the home title. Currently, the blogname and title are unaptly named. This means that the title is the blogname, and the blogname is the title. The current home page title functions are therefore marked private. It will become: "title" - "sep" - "additions", this will be reflected upon throughout the title class.
 
 = Full changelog =

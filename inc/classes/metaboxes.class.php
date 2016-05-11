@@ -1881,7 +1881,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		<hr>
 
 		<?php
-		$connectedi18n = _x( 'RelatedProfile', 'Example link placeholder for a social profile', 'autodescription' );
+		$connectedi18n = _x( 'RelatedProfile', 'No spaces. E.g. https://facebook.com/RelatedProfile', 'autodescription' );
 		$profile18n = _x( 'Profile', 'Social Profile', 'autodescription' );
 
 		/**
