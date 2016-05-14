@@ -4,7 +4,7 @@ Donate link: https://theseoframework.com/donate/
 Tags: open graph, description, automatic, generate, generator, title, breadcrumbs, ogtype, meta, metadata, search, engine, optimization, seo, framework, canonical, redirect, bbpress, twitter, facebook, google, bing, yahoo, jetpack, genesis, woocommerce, multisite, robots, icon, cpt, custom, post, types, pages, taxonomy, tag, sitemap, sitemaps, screenreader, rtl, feed
 Requires at least: 3.8.0
 Tested up to: 4.5.2
-Stable tag: 2.5.2.1
+Stable tag: 2.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,17 +46,18 @@ The small and hidden HTML comment can easily be disabled with the use of a filte
 
 Nobody has to know about the tools you've used to create your or someone else's website. A clean interface, for everyone.
 
-= Numbers don't lie =
+= Numbers don't lie, performance matters =
 Optimizing SEO is a fundamental process for any website. So we try to be non-intrusive with The SEO Framework.
 The SEO Framework is byte and process optimized on PHP level, with each update the optimization is improved when possible.
+Page rendering time matters in SEO. This is where we lay focus on.
 
 * This plugin is written with massive and busy (multi-)sites in mind.
-* This plugin is 125% to 184% faster compared to other popular SEO plugins.
-* This plugin consumes 161% more server resources than other popular SEO plugins in exchange for rendering performance. // var_dump retest this value.
-* This plugin has 130% to 160% more database interactions in exchange for rendering performance.
-* And last but not least, this plugin has 100% fewer advertisements. Let's keep it that way.
+* This plugin is on average 1.25x to 1.84x faster compared to other popular SEO plugins.
+* This plugin consumes on average 1.51x more server resources than other popular SEO plugins in exchange for improved performance.
+* This plugin has on average 1.30 to 1.60x more database interactions in exchange for improved performance.
+* And last but not least, this plugin always has 100% fewer advertisements. Let's keep it that way.
 
-*Numbers may vary per installation and version.*
+*Numbers may vary per installation and version. Last checked: 14th May 2016*
 
 = Completely pluggable =
 The SEO Framework also features pluggable functions. All functions are active and can be called within the WordPress Loop.
@@ -65,11 +66,12 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 
 = Still not convinced? Let's dive deeper =
 
-**This plugin automatically generates:**
+**By default, this plugin automatically generates:**
 
+* Title, with super-fast 'wrong themes' support.
 * Description, with anti-spam techniques.
-* Title, with super-fast 'wrong themes' support (so no buffer rewriting!).
-* Various Open Graph tags.
+* A canonical URL.
+* Various Open Graph, Facebook and Twitter tags.
 * Special Open Graph description, which organically integrates with the Facebook and Twitter snippets
 * Extended Open Graph Images support, including image manipulation.
 * Canonical, with full WPMUdev Domain Mapping, subdomain and HTTPS support to prevent duplicated content.
@@ -79,15 +81,14 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 * Schema.org LD+Json script to show the correct site name in Google Breadcrumbs.
 * Publishing and editing dates, accurate to the day.
 * Link relationships, with full WPMUdev Domain Mapping and HTTPS support.
-* Various Facebook and Twitter Meta tags.
 * Simple Sitemap with Pages, Posts and Custom Post Types (CPT), which listens to the in-post settings.
 * Feed excerpts and backlinks to prevent content scraping.
 
 **This plugin goes further, behind the screens it:**
 
-* Prevents canonical errors with categories, pages, subdomains and multisite domain mapping.
+* Prevents canonical errors with categories, pages, subdomains and Multisite Domain Mapping.
 * Disables 404 pages and empty categories from being indexed, even if they don't send a 404 response.
-* Automatically notifies Google, Bing and Yahoo on Post or Page update when sitemaps are enabled.
+* Automatically notifies Google, Bing and Yandex on Post or Page update and deletion when sitemaps are enabled.
 
 **This plugin allows you to manually set these values for each post, page, supported CPT and term:**
 
@@ -95,45 +96,35 @@ We have also provided an API documentation located at [The SEO Framework API Doc
 * Description
 * Canonical URL
 * Robots (nofollow, noindex, noarchive)
-* Redirect, with MultiSite spam filter (Post/Page/CPT only)
+* Redirect, with optional Multisite spam filter (Post/Page/CPT only)
 * Local on-site search settings (Post/Page/CPT only)
 
-**This plugin allows you to adjust various site settings:**
+**This plugin allows you to adjust over 90 site settings, including:**
 
-* Title and Description Separators
-* Title Additions Location
-* Auto Description Output
-* Robots for Archives
-* Robots for the whole site
-* Home Page Description, Title, Tagline and various other options
-* Facebook Social integration
-* Twitter Social integration
-* Open Graph Meta output
-* Shortlink tag output
-* Post publishing time output
+* Title and Description Separators and additions.
+* Automated description output.
+* Schema.org output, including Knowledge Graph options.
+* Various robots options.
+* Many home page specific options.
+* Facebook, Twitter and Pinterest social integration
+* Shortlink tag output.
 * Link relationships
-* Google/Bing/Pinterest Webmaster verification
-* Google Knowledge Graph
-* Sitemap intergration
-* Robots.txt
-* Feed content output
-* And much more
+* Google, Bing, Pinterest and Yandex Webmaster verification
+* Sitemap intergration.
+* Robots.txt sitemap integration.
+* Feed anti-scraper options.
+* And much, much more.
 
 **This plugin helps you to create better content, at a glance. By showing you:**
 
-* If the title is too long, too short and/or automatically generated.
-* If the description is too long, too short and/or automatically generated.
-* If the description uses some words too often.
-* If the page is indexed, redirected, followed and/or archived.
-* If your website is publicly accessible.
+* If the title is too long, too short, duplicated, and/or automatically generated.
+* If the description is too long, too short, duplicated, has too many repeated words and/or automatically generated.
+* If the page is indexed, redirected, followed and/or archived, while looking at other WordPress settings.
 
 **We call this The SEO Bar. Check out the [Screenshots](https://wordpress.org/plugins/autodescription/screenshots/#plugin-info) to see how it helps you!**
 
 > This plugin is fully compatible with the [Domain Mapping plugin by WPMUdev](https://premium.wpmudev.org/project/domain-mapping/) and the [Domain Mapping plugin by Donncha](https://wordpress.org/plugins/wordpress-mu-domain-mapping/).<br>
-> This plugin is now also compatible with all kinds of custom post types.<br>
-> This will **prevent canonical errors**. This way your site will always be correctly indexed, no matter what you use!<br>
->
-> This plugin is also completely ad-free and has a WordPress integrated clean layout. As per WordPress.org plugin guidelines and standards.
+> This compatibility ensures **prevention of canonical errors**. This way your site will always be correctly indexed, no matter what you use!<br>
 
 = Caching =
 
@@ -143,15 +134,15 @@ A caching plugin isn't even needed for this plugin as you won't notice a differe
 **If you use object caching:**
 The output will be stored for each page, if you've edited a page the page output Meta will stay the same until the object cache expires. So be sure to clear your object cache or wait until it expires.
 
-**Supported Caches:**
+**Used Caches:**
 
 * Server-level Opcode (optimized).
 * Staticvar functions (prevents running code twice or more).
-* Staticvar class (instead of globals, prevents constructors running multiple times).
-* Objects for database calls.
-* Transients for process intensive operations or persisting communication with front-and back end.
-* CDN for Open Graph and Twitter images.
-* HTML and script Minification caching as well as Database caching are also supported.
+* Staticvar class (instead of discouraged globals, prevents constructors running multiple times).
+* Object caching for unique database calls and full front-end output.
+* Transients for process intensive operations and persistent communication with front-and back end.
+
+**All caching plugins are supported. If you use one, be sure to clear your cache when you want to robots to notice your changes.**
 
 = Compatibility =
 
@@ -159,14 +150,12 @@ The output will be stored for each page, if you've edited a page the page output
 
 * Full internationalization support through WordPress.org.
 * Extended Multibyte support (CJK).
-* Full Right to Left (RTL) support.
-* Color vision deficiency accessibility.
-* Screen-reader accessibility.
-* Admin screen: Posts, Pages, Taxonomies, Terms, Custom Post Types.
-* Front-end: Every page, post, taxonomy, term, custom post type, search request, 404, etc.
+* Full Right to Left (RTL) language support.
+* Extended Color vision deficiency accessibility.
+* Screen reader accessibility.
 * MultiSite, this plugin is in fact built upon one.
 * Detection of robots.txt and sitemap.xml files.
-* Detection of theme Title "doing it right" (or wrong).
+* Detection of theme Title output "doing it right" (or wrong).
 
 **Plugins:**
 
@@ -180,9 +169,9 @@ The output will be stored for each page, if you've edited a page the page output
 * Ultimate Member profiles.
 * AnsPress Questions, Profiles and Pages, also Canonical errors have been fixed.
 * StudioPress SEO Data Transporter for Posts and Pages.
-* WPML, URLs, sitemap and per-page/post SEO settings. (The full and automated compatibility is being discussed with WPML.)
-* qTranslate X, URLs, limited sitemap and per-page/post SEO settings (through shortcodes by set by qTranslate X).
-* Jetpack modules: Custom Content Types (Testimonials, Portfolio), Infinite Scroll, Photon.
+* WPML, URLs, full sitemap and per-page/post SEO settings (Documentation is coming soon).
+* qTranslate X, URLs, full sitemap and per-page/post SEO settings (Documentation is coming soon).
+* Confirmed Jetpack modules: Custom Content Types (Testimonials, Portfolio), Infinite Scroll, Photon, Sitemaps, Publicize.
 * Most popular SEO plugins, let's not get in each other's way.
 * Many, many other plugins, yet to confirm.
 
@@ -191,8 +180,7 @@ The output will be stored for each page, if you've edited a page the page output
 * All themes.
 * Special extended support for Genesis & Genesis SEO. This plugin takes all Post, Page, Category and Tag SEO values from Genesis and uses them within The SEO Framework Options. The easiest upgrade!
 
-If you have other popular SEO plugins activated, this plugin will automatically prevent SEO mistakes by deactivating itself on almost every part.
-It will however output robots metadata, LD+Json and og:image, among various other meta data which are bound to social media.
+If you have other popular SEO plugins activated, this plugin will most likely automatically prevent SEO mistakes by deactivating itself on almost every part.
 
 = Transferring SEO data using SEO Data Transporter =
 
@@ -212,14 +200,14 @@ Because this plugin was initially written to extend the Genesis SEO, it uses the
 >
 > The SEO Framework now uses the same data from the new Genesis SEO settings on Posts, Pages and Taxonomies.
 
-= About the sitemap =
+= About the Sitemap =
 
-The sitemap generated with The SEO Framework is sufficient for Search Engines to find Posts, Pages and supported Custom Post Types throughout your website.
+The Sitemap generated with The SEO Framework is sufficient for Search Engines to find Posts, Pages and supported Custom Post Types throughout your website.
 It also listens to the noindex settings on each of the items.
-If you however require a more expanded sitemap, feel free to activate a dedicated sitemap plugin. The SEO Framework will automatically deactivate its sitemap functionality when another (known) sitemap plugin is found.
+If you however require a more expanded Sitemap, feel free to activate a dedicated Sitemap plugin. The SEO Framework will automatically deactivate its Sitemap functionality when another (known) Sitemap plugin is found.
 If it is not automatically detected and no notification has been provided on the Sitemap Settings, feel free to open a support ticket and it will be addressed carefully.
 
-The Breadcrumb script generated by this plugin on posts will also make sure Google easily finds related categories which aren't included within the sitemap of this plugin.
+The Breadcrumb script generated by this plugin on Posts will also make sure Google easily finds related categories which aren't included within the Sitemap of this plugin.
 
 = Other notes =
 
@@ -363,7 +351,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Release date:**
 /
-* May TODO 2016
+* May 16th 2016 // TODO likely
 
 **Preamble:**
 
@@ -372,7 +360,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 
 **Summarized:**
 /
-* With over 200 (TODO) notable changes, I bring you a new Pragmatic Foundation.
+* With over 200 notable changes, I bring you a new Pragmatic Foundation.
 * Most importantly, this update allows you to be better informed about your website's index status, through the much improved SEO bar.
 * As the issue of the incorrect title length has finally been found, this update glorifies its plugin's **title counter** once more.
 * Many new options have been included within the SEO Settings page. Including much desired Title and Description options.
@@ -401,6 +389,7 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 * Improved editorial translations.
 * Automatic option merging on update.
 * New AJAX integration when adding tags.
+* Improved JetPack compatibilty.
 * Personalized error handling for developers.
 * Over 155 new public functions for developers.
 * 24 brand new filters for developers.
@@ -521,14 +510,13 @@ Transporting Terms and Taxonomies SEO data isn't supported.
 Not all planned features made it into 2.6.0.
 
 * WP.me shortlink integration.
-* Article modified time output can now be adjusted, just like the sitemap timing options.
+* Article modified time output options, just like the Sitemap time output options.
 * Per page title additions options (reverse of Global Settings).
 * The SEO Bar options.
 * Canonical SEO (URL scheme options).
 * Twitter card plugin detection and subtle notification of such.
-* Image Description is now used as an excerpt for the attachment's page meta descriptions.
+* Image Description as an excerpt for the attachment's page meta descriptions.
 * Author SEO (Title, Description, Twitter, Facebook, Google+, etc.).
-* Jetpack Sitemap detection.
 
 **Detailed log:**
 
@@ -584,6 +572,7 @@ Not all planned features made it into 2.6.0.
 	* Title generation cache. It no longer gets generated more than once per page load.
 	* Feed location URL in the Feed Settings.
 	* Disabling of JetPack Open Graph when The SEO Framework Open Graph is active.
+	* JetPack sitemap detection. When the Jetpack module is active, default "sitemap detected" behavior of this plugin follows. Which is showing a notification in the Sitemap settings and deactivating its functions for output.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -645,6 +634,8 @@ Not all planned features made it into 2.6.0.
 	* The Home Page settings are now divided with navigation tabs.
 	* No more accidents: The setting checkbox labels now don't overflow anymore to the width of its container. This means you have to click on the text for the checkbox to change, rather than also possibly on the whitespace next to it. In the future all checkboxes and radio buttons will obtain this property.
 	* Reduced the chance of WPMUdev Domain Mapping's Async CDSSO Script being incorrect due to unorthodox rewrite flushing.
+	* Sitemap flush on post deletion now only runs when post is certainly deleted.
+	* Screen-readers can now correctly read the SEO Bar status aloud on Edge with NVDA.
 * **Fixed:**
 	* Added cache key language detection, to build correct descriptions for the right language. This works on WPML, qTranslate X and many other translation plugins.
 	* Added back Genesis schema.org `<head>` markup indicator on the home page.
@@ -681,6 +672,8 @@ Not all planned features made it into 2.6.0.
 	* Blog Description cache wasn't initialized correctly.
 	* When using subsets of languages, e.g. "nl-NL-formal", the check no longer falls back to "en_US", but to "nl_NL". This affects `og:locale` in particular.
 	* Robots.txt subdirectory admin path is now rendered correctly.
+	* Conflicting plugin detection can now detect more than one plugin again.
+	* Sitemap and description transients should now always flush on page publish.
 * **Removed:**
 	* Shortlink URL from Home Page, as it's quite useless and self referring there.
 	* Yahoo Pinging option and initiation, as they've moved to Bing quite some time ago (oops).
@@ -824,7 +817,6 @@ Not all planned features made it into 2.6.0.
 		* `(string) the_seo_framework_bingsite_output`
 		* `(string) the_seo_framework_yandexsite_output`
 		* `(string) the_seo_framework_pintsite_output`
-		* `(string) the_seo_framework_robots_output`
 		* `(string) the_seo_framework_paged_url_output_prev`
 		* `(string) the_seo_framework_paged_url_output_next`
 		* `(string) the_seo_framework_ldjson_scripts`
@@ -833,6 +825,7 @@ Not all planned features made it into 2.6.0.
 		* `(string) the_seo_framework_pro_add_title`, used to fetch the written title and adjusting it accordingly.
 		* `(string) the_seo_framework_metabox_priority`
 		* `(string) the_seo_framework_metabox_id` (Warning: Do not use. Will break JS and CSS. It's a placeholder for a future update).
+		* `(array) the_seo_framework_robots_meta_array`, fires before `the_seo_framework_robots_meta`.
 		* `(array) the_seo_framework_title_settings_tabs`
 		* `(array) the_seo_framework_description_settings_tabs`
 		* `(array) the_seo_framework_homepage_settings_tabs`

@@ -46,27 +46,30 @@ class AutoDescription_Detect extends AutoDescription_Render {
 		//* Check for classes
 		if ( isset( $plugins['classes'] ) ) {
 			foreach ( $plugins['classes'] as $name ) {
-				if ( class_exists( $name ) )
+				if ( class_exists( $name ) ) {
 					return true;
 					break;
+				}
 			}
 		}
 
 		//* Check for functions
 		if ( isset( $plugins['functions'] ) ) {
 			foreach ( $plugins['functions'] as $name ) {
-				if ( function_exists( $name ) )
+				if ( function_exists( $name ) ) {
 					return true;
 					break;
+				}
 			}
 		}
 
 		//* Check for constants
 		if ( isset( $plugins['constants'] ) ) {
 			foreach ( $plugins['constants'] as $name ) {
-				if ( defined( $name ) )
+				if ( defined( $name ) ) {
 					return true;
 					break;
+				}
 			}
 		}
 
@@ -407,8 +410,10 @@ class AutoDescription_Detect extends AutoDescription_Render {
 					'scalible_sitemaps',
 					'Sewn_Xml_Sitemap',
 					'csitemap',
+					'Incsub_SimpleSitemaps',
 				),
 				'functions' => array(
+					'jetpack_sitemap_initialize', // Jetpack
 					'sm_Setup',
 					'wpss_init',
 					'gglstmp_sitemapcreate',
@@ -416,15 +421,15 @@ class AutoDescription_Detect extends AutoDescription_Render {
 					'build_baidu_sitemap',
 					'ect_sitemap_nav',
 					'apgmxs_generate_sitemap',
-					'sm_Setup',
 					'ADSetupSitemapPlugin',
 					'ksm_generate_sitemap',
 					'studio_xml_sitemap',
 					'RegisterPluginLinks_xmlsite',
 				),
+				'constants' => array(
+					'SIMPLE_SITEMAPS_USE_CACHE'
+				),
 			);
-
-		//	var_dump(); get constants.
 
 		return $has_plugin = $this->detect_plugin( $plugins );
 	}

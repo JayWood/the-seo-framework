@@ -70,10 +70,16 @@ class AutoDescription_Transients extends AutoDescription_Sitemaps {
 		// Setup Transient names
 		add_action( 'plugins_loaded', array( $this, 'setup_transient_names' ), 10 );
 
-		//* Delete Sitemap and Description transients on post publish/delete.
+		/**
+		 * Delete Sitemap and Description transients on post publish/delete.
+		 * @see WP Core wp_transition_post_status()
+		 */
 		add_action( 'publish_post', array( $this, 'delete_transients_post' ) );
-		add_action( 'delete_post', array( $this, 'delete_transients_post' ) );
+		add_action( 'publish_page', array( $this, 'delete_transients_post' ) );
+		add_action( 'deleted_post', array( $this, 'delete_transients_post' ) );
+		add_action( 'deleted_page', array( $this, 'delete_transients_post' ) );
 		add_action( 'post_updated', array( $this, 'delete_transients_post' ) );
+		add_action( 'page_updated', array( $this, 'delete_transients_post' ) );
 
 		add_action( 'edit_term', array( $this, 'delete_auto_description_transients_term' ), 10, 3 );
 		add_action( 'delete_term', array( $this, 'delete_auto_description_transients_term' ), 10, 4 );

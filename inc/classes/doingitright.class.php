@@ -448,8 +448,9 @@ class AutoDescription_DoingItRight extends AutoDescription_Search {
 	protected function wrap_the_seo_bar_block( $args ) {
 
 		$wrap 	= '<span class="ad-sec-wrap ' . $args['width'] . '">'
-				. '<a onclick="return false;" class="' . $args['class'] . '" data-desc="' . $args['notice'] . '">' . $args['indicator'] . '</a>'
-				. '<span class="screen-reader-text">' . $args['notice'] . '</span>'
+					. '<a onclick="return false;" class="' . $args['class'] . '" aria-label="' . $args['notice'] . '" data-desc="' . $args['notice'] . '">'
+						. $args['indicator']
+					. '</a>'
 				. '</span>';
 
 		return $wrap;

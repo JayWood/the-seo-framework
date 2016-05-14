@@ -58,8 +58,6 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	public function __construct() {
 		parent::__construct();
 
-		$this->max_posts = (int) apply_filters( 'the_seo_framework_sitemap_post_limit', 700 );
-
 		// I'm not going to initialize my own rewrite engine. Causes too many problems.
 		$this->pretty_permalinks = ( '' !== get_option( 'permalink_structure' ) ) ? true : false;
 
@@ -164,6 +162,12 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 				$wp_query->is_404 = false;
 
 				$this->doing_sitemap = true;
+
+				/**
+				 * Applies filters 'the_seo_framework_sitemap_post_limit' : int
+				 * @since 2.2.9
+				 */
+				$this->max_posts = (int) apply_filters( 'the_seo_framework_sitemap_post_limit', 700 );
 
 				/**
 				 * Set at least 2000 variables free.

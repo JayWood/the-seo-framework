@@ -162,8 +162,6 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	/**
 	 * The SEO Framework error handler.
 	 *
-	 * @access private
-	 * Please don't use this error handler.
 	 * Only handles notices.
 	 * @see E_USER_NOTICE
 	 *
@@ -191,8 +189,6 @@ class AutoDescription_Debug extends AutoDescription_Core {
 	/**
 	 * The SEO Framework error handler.
 	 *
-	 * @access private
-	 * Please don't use this error handler.
 	 * Only handles notices.
 	 * @see E_USER_NOTICE
 	 *

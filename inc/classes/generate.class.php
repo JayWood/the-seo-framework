@@ -42,8 +42,6 @@ class AutoDescription_Generate extends AutoDescription_TermData {
 	 *
 	 * @global object $wp_query
 	 *
-	 * @TODO rewrite (optimize)
-	 *
 	 * @return array|null robots
 	 */
 	public function robots_meta() {
@@ -161,6 +159,12 @@ class AutoDescription_Generate extends AutoDescription_TermData {
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->get_custom_field( '_genesis_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->get_custom_field( '_genesis_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
+
+		/**
+		 * Applies filters the_seo_framework_robots_meta_array : array
+		 * @since 2.6.0
+		 */
+		$meta = (array) apply_filters( 'the_seo_framework_robots_meta_array', $meta );
 
 		//* Strip empty array items
 		$meta = array_filter( $meta );
