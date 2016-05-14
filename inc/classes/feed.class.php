@@ -32,7 +32,18 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 	public function __construct() {
 		parent::__construct();
 
-		//* @todo place this in loader function.
+		add_action( 'template_redirect', array( $this, 'init_feed' ) );
+	}
+
+	/**
+	 * Initializes feed actions and hooks.
+	 *
+	 * @since 2.6.0
+	 */
+	public function init_feed() {
+
+		if ( false === $this->is_feed() )
+			return;
 
 		add_filter( 'the_content_feed', array( $this, 'the_content_feed' ), 10, 2 );
 
@@ -65,8 +76,11 @@ class AutoDescription_Feed extends AutoDescription_Transients {
 
 		if ( $content ) {
 
-			//* Don't alter already-excerpts or descriptions.
-			if ( $this->get_option( 'excerpt_the_feed' ) && isset( $feed_type ) ) {
+			/**
+			 * Don't alter already-excerpts or descriptions.
+			 * $feed_type is only set on 'the_content_feed' filter.
+			 */
+			if ( isset( $feed_type ) && $this->get_option( 'excerpt_the_feed' ) ) {
 				//* Strip all code and lines.
 				$excerpt = $this->get_excerpt_by_id( $content );
 

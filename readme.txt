@@ -50,12 +50,11 @@ Nobody has to know about the tools you've used to create your or someone else's 
 Optimizing SEO is a fundamental process for any website. So we try to be non-intrusive with The SEO Framework.
 The SEO Framework is byte and process optimized on PHP level, with each update the optimization is improved when possible.
 
-var_dump() update these..
 * This plugin is written with massive and busy (multi-)sites in mind.
-* This plugin is 197% to 867% faster compared to other popular SEO plugins.
-* This plugin consumes 177% to 260% fewer server resources than other popular SEO plugins.
-* 15% fewer database interactions (numbers may vary on this one depending on plugin compatibility).
-* 100% fewer advertisements. Let's keep it that way.
+* This plugin is 125% to 184% faster compared to other popular SEO plugins.
+* This plugin consumes 161% more server resources than other popular SEO plugins in exchange for rendering performance. // var_dump retest this value.
+* This plugin has 130% to 160% more database interactions in exchange for rendering performance.
+* And last but not least, this plugin has 100% fewer advertisements. Let's keep it that way.
 
 *Numbers may vary per installation and version.*
 
@@ -584,6 +583,7 @@ Not all planned features made it into 2.6.0.
 	* Descriptive URL on Title Blogname removal option.
 	* Title generation cache. It no longer gets generated more than once per page load.
 	* Feed location URL in the Feed Settings.
+	* Disabling of JetPack Open Graph. However, disabling Open Graph within The SEO Framework will turn it back on again.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -687,6 +687,8 @@ Not all planned features made it into 2.6.0.
 	* WPMUdev Avatars support. As WordPress core has taken over this feature and it was unreliable.
 	* Canonical URL from Search and 404 pages. It yields no value on those pages and might even yield incorrect results.
 	* Official support for WordPress 3.6 and 3.7. It takes too much time to maintain such backwards compatibility.
+* **Note:**
+	* This version is yet incompatible with the upcoming Genesis 2.3.0 update. This means that this plugin can no longer automatically merge its data with previously set Genesis Terms data. This issue should be resolved in an upcoming update, which I hope to have released before Genesis 2.3.0.
 
 **For developers:**
 
@@ -774,6 +776,7 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Adminpages::is_default_checked()` now doesn't return `''` anymore when using the echo parameter.
 	* `AutoDescription_Adminpages::is_warning_checked()` now doesn't return `''` anymore when using the echo parameter.
 	* Disabled the Network options constructor and its class variables, as it's not yet used (and protected).
+	* Feed class loader is now only run on feeds to improve performance.
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.

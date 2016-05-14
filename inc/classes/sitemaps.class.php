@@ -979,7 +979,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 		if ( $enqueue )
 			return $flush = true;
 
-		$this->wpmudev_domainmap_flush_fix( true );
+		$this->wpmudev_domainmap_flush_fix( false, false );
 
 		return false;
 	}
@@ -1006,13 +1006,17 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	/**
 	 * Initialize and flush rewrite rules.
 	 *
+	 * @param bool $reset Whether to reset the rules.
+	 *
 	 * @since 2.6.0
 	 * @access private
 	 */
-	public function flush_rewrite_rules() {
+	public function flush_rewrite_rules( $reset = false ) {
 		global $wp_rewrite;
 
-		$wp_rewrite->init();
+		if ( $reset )
+			$wp_rewrite->init();
+
 		$wp_rewrite->flush_rules( true );
 	}
 
@@ -1021,6 +1025,7 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 * Domain Mapping bugfix.
 	 *
 	 * @param bool $options_saved : If we're in admin and the sanitiation function runs.
+	 * @param bool $flush_now : Whether to flush directly on call if not yet flushed.
 	 *
 	 * Runs a flush and updates the site option to "true".
 	 * When the site option is set to true, it not flush again on init.
@@ -1030,10 +1035,20 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 	 *
 	 * @since 2.3.0
 	 */
-	public function wpmudev_domainmap_flush_fix( $options_saved = false ) {
+	public function wpmudev_domainmap_flush_fix( $options_saved = false, $flush_now = true ) {
 
 		if ( $this->pretty_permalinks && $this->is_domainmapping_active() ) {
-			if ( 'init' === current_action() || $options_saved ) {
+
+			static $run = null;
+
+			if ( isset( $run ) && $run )
+				return;
+
+			$action = current_action();
+
+			if ( $options_saved || 'init' === $action || 'admin_init' === $action ) {
+				$run = true;
+
 				if ( class_exists( 'Domainmap_Module_Cdsso' ) && defined( 'Domainmap_Module_Cdsso::SSO_ENDPOINT' ) ) {
 					add_rewrite_endpoint( Domainmap_Module_Cdsso::SSO_ENDPOINT, EP_ALL );
 
@@ -1050,7 +1065,10 @@ class AutoDescription_Sitemaps extends AutoDescription_Metaboxes {
 							update_site_option( $key, true );
 
 							//* Now flush
-							$this->flush_rewrite_rules();
+							if ( $flush_now )
+								$this->flush_rewrite_rules();
+							else
+								$this->enqueue_rewrite_flush_other( true );
 						}
 					}
 				}

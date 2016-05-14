@@ -37,6 +37,10 @@ class AutoDescription_Compat extends AutoDescription_Debug {
 
 		//* Headway compat.
 		add_filter( 'headway_seo_disabled', '__return_true' );
+
+		//* Jetpack compat.
+		add_action( 'init', array( $this, 'jetpack_compat' ) );
+
 	}
 
 	/**
@@ -76,6 +80,20 @@ class AutoDescription_Compat extends AutoDescription_Debug {
 			);
 
 		return $plugins;
+	}
+
+	/**
+	 * Adds compatibility with various JetPack modules.
+	 *
+	 * @since 2.6.0
+	 */
+	public function jetpack_compat() {
+
+		if ( $this->use_og_tags() ) {
+			//* Disable Jetpack Publicize's Open Graph.
+			add_filter( 'jetpack_enable_open_graph', '__return_false', 99 );
+		}
+
 	}
 
 

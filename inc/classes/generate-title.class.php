@@ -630,7 +630,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * @param string $seplocation The separator location
 	 * @param string $deprecated Deprecated: The Home Page separator location
 	 * @param bool $escape Parse Title through saninitation calls.
-	 * @param bool $get_site_option Whether to fetch the SEO Settings option.
+	 * @param bool $get_option Whether to fetch the SEO Settings option.
 	 *
 	 * @return array {
 	 *		'title' => (string) $title : The Generated Title
@@ -639,7 +639,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 *		'seplocation' => (string) $seplocation : The Separator Location
 	 *	}
 	 */
-	public function generate_home_title( $get_custom_field = true, $seplocation = '', $deprecated = '', $escape = true, $get_site_option = true ) {
+	public function generate_home_title( $get_custom_field = true, $seplocation = '', $deprecated = '', $escape = true, $get_option = true ) {
 
 		/**
 		 * Add tagline or not based on option
@@ -661,7 +661,7 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 		 * Render from function
 		 * @since 2.2.8
 		 */
-		$blogname = $this->title_for_home( '', $get_custom_field, false, $get_site_option );
+		$blogname = $this->title_for_home( '', $get_custom_field, false, $get_option );
 		$seplocation = $this->get_home_title_seplocation( $seplocation );
 
 		if ( $escape ) {
@@ -687,17 +687,17 @@ class AutoDescription_Generate_Title extends AutoDescription_Generate_Descriptio
 	 * @param string $home_title The fallback title.
 	 * @param bool $get_custom_field Fetch Title from InPost Custom Fields.
 	 * @param bool $escape Parse Title through saninitation calls.
-	 * @param bool $get_site_option Whether to fetch the SEO Settings option.
+	 * @param bool $get_option Whether to fetch the SEO Settings option.
 	 *
 	 * @return string The Title.
 	 */
-	public function title_for_home( $home_title = '', $get_custom_field = true, $escape = false, $get_site_option = true ) {
+	public function title_for_home( $home_title = '', $get_custom_field = true, $escape = false, $get_option = true ) {
 
 		/**
 		 * Get blogname title based on option
 		 * @since 2.2.2
 		 */
-		if ( $get_site_option ) {
+		if ( $get_option ) {
 			$home_title_option = $this->get_option( 'homepage_title' ) ? (string) $this->get_option( 'homepage_title' ) : $home_title;
 			$home_title = $home_title_option ? $home_title_option : $home_title;
 		}

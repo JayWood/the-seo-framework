@@ -62,6 +62,8 @@ function the_seo_framework_load() {
  * @uses THE_SEO_FRAMEWORK_DIR_PATH_FUNCT
  * @uses THE_SEO_FRAMEWORK_DIR_PATH_CLASS
  *
+ * @benchmarked require_once (file inclusion) takes less than 0.0001s.
+ *
  * @since 2.1.6
  */
 require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'compat.php' );

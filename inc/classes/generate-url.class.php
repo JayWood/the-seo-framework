@@ -107,7 +107,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 * Fetch permalink if Feed.
 		 * @since 2.5.2
 		 */
-		if ( is_feed() )
+		if ( $this->is_feed() )
 			$url = get_permalink( $args['post'] );
 
 		if ( ! $args['home'] && empty( $url ) ) {

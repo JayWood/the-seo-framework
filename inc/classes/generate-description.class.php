@@ -609,9 +609,10 @@ class AutoDescription_Generate_Description extends AutoDescription_Generate {
 	 */
 	public function generate_description_additions( $id = '', $term = '', $ignore = false ) {
 
+		static $title = array();
+
 		if ( $ignore || $this->add_description_additions( $id, $term ) ) {
 
-			static $title = array();
 			if ( ! isset( $title[$id] ) )
 				$title[$id] = $this->generate_description_title( $id, $term, $ignore );
 
