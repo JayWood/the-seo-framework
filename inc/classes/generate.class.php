@@ -23,7 +23,7 @@
  *
  * @since 2.1.6
  */
-class AutoDescription_Generate extends AutoDescription_TermInfo {
+class AutoDescription_Generate extends AutoDescription_TermData {
 
 	/**
 	 * Constructor, load parent constructor

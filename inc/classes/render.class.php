@@ -825,9 +825,7 @@ class AutoDescription_Render extends AutoDescription_Admin_Init {
 	/**
 	 * LD+JSON helper output
 	 *
-	 * @uses $this->has_json_ld_plugin()
-	 * @uses $this->ld_json_search()
-	 * @uses $this->ld_json_knowledge()
+	 * @uses $this->render_ld_json_scripts()
 	 *
 	 * @since 1.2.0
 	 * @return string $json LD+json helpers in header on front page.

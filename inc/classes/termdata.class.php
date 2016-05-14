@@ -17,13 +17,13 @@
  */
 
 /**
- * Class AutoDescription_TermInfo
+ * Class AutoDescription_TermData
  *
- * Renders terms and taxonomy states.
+ * Holds Term and Taxonomy data.
  *
  * @since 2.6.0
  */
-class AutoDescription_TermInfo extends AutoDescription_PostInfo {
+class AutoDescription_TermData extends AutoDescription_PostData {
 
 	/**
 	 * Constructor, load parent constructor
@@ -46,7 +46,7 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 		if ( is_null( $term ) ) {
 			if ( $this->is_author() ) {
 				//* Special handling.
-				return $this->get_author_data();
+				return null;
 			}
 
 			$term = $this->fetch_the_term();
@@ -74,12 +74,6 @@ class AutoDescription_TermInfo extends AutoDescription_PostInfo {
 			return $data;
 		}
 
-		//* Return null if no term can be set.
-		return null;
-	}
-
-	public function get_author_data( $id ) {
-		//* TODO
 		//* Return null if no term can be set.
 		return null;
 	}

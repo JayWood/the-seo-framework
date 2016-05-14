@@ -583,7 +583,7 @@ Not all planned features made it into 2.6.0.
 	* Descriptive URL on Title Blogname removal option.
 	* Title generation cache. It no longer gets generated more than once per page load.
 	* Feed location URL in the Feed Settings.
-	* Disabling of JetPack Open Graph. However, disabling Open Graph within The SEO Framework will turn it back on again.
+	* Disabling of JetPack Open Graph when The SEO Framework Open Graph is active.
 * **Changed:**
 	/
 	* TODO New Plugin Logo!
@@ -704,7 +704,7 @@ Not all planned features made it into 2.6.0.
 	* `AutoDescription_Generate_Author` class.
 	* `AutoDescription_Author` class (placeholder for upcoming Author update; holding user/author data).
 	* `AutoDescription_PostInfo` class (placeholder for upcoming Author update; holding post publish/author meta).
-	* `AutoDescription_TermInfo` class.
+	* `AutoDescription_TermData` class.
 	* `AutoDescription_Compat` class.
 	* `AutoDescription_Debug` class.
 	* `AutoDescription_Query` class, this class contains queries which use the default WP_Query class, but then extends it to be used in the admin area as well.
@@ -752,7 +752,7 @@ Not all planned features made it into 2.6.0.
 	* Hundreds of type optimization checks in if-statements, not only making it more readable, but also two to forty time less taxing on the CPU per optimization (count the Hertz!).
 	* Cached the SEO bar translations.
 	* render.class.php filters can now return empty string to disable its output.
-	* `The_SEO_Framework_Load::call_function()` consumes less memory.
+	* `The_SEO_Framework_Load::call_function()` now consumes less memory.
 	* `the_seo_framework_knowledgegraph_settings_tabs` filter now has an argument parameter.
 	* `the_seo_framework_sitemaps_settings_tabs` filter now has an argument parameter.
 	* `the_seo_framework_social_settings_tabs` filter now has an argument parameter.
@@ -771,12 +771,13 @@ Not all planned features made it into 2.6.0.
 	* This plugin's admin CSS and JS are now registered and cached prior to enqueueing. This speeds things up if multiple script calling hooks are used.
 	* The Term SEO box initialization now only happens on the term edit screens.
 	* Automated Description Example now uses ID's rather than classes for better JavaScript performance.
-	* The protected warned site options are no longer stored in the object. Evidentily removing the `$warned_site_options` object variable and putting it into a function.
+	* The protected default site options are no longer stored in the object. Evidentily removing the `$warned_site_options` object variable and putting it into a publicly accessible function.
+	* The protected warned site options are no longer stored in the object. Evidentily removing the `$default_site_options` object variable and putting it into a publicly accessible function.
 	* `AutoDescription_Siteoptions::get_warned_settings()` now simply converts the given option values into booleans and then ones and zeros, rather than escaping thoroughly.
 	* `AutoDescription_Adminpages::is_default_checked()` now doesn't return `''` anymore when using the echo parameter.
 	* `AutoDescription_Adminpages::is_warning_checked()` now doesn't return `''` anymore when using the echo parameter.
 	* Disabled the Network options constructor and its class variables, as it's not yet used (and protected).
-	* Feed class loader is now only run on feeds to improve performance.
+	* Feed function initialization is now only run on feeds to improve performance.
 * **Fixed:**
 	* `the_seo_framework_dot_version()` now checks for four dot versions if applicable.
 	* `AutoDescription_Core::get_the_real_ID()` won't return the latest post ID anymore on taxonomial archives.
@@ -806,6 +807,7 @@ Not all planned features made it into 2.6.0.
 	* Filter/Constant/Action PHP comments indicating changes from 2.3.0 to clean up code.
 	* Title generation `placeholder` argument. Use `get_custom_field` and/or `notagline` instead.
 	* Leftover `.postbox-container` CSS adjustment.
+	* `AutoDescription_Networkoptions` class.
 * **Other:**
 	* Cleaned up code, massively.
 * **Filter Notes:**
@@ -880,7 +882,7 @@ Not all planned features made it into 2.6.0.
 * **Notes:**
 	* I marked numerous functions with `@access private`. These functions can change behavior at any time without prior notice and should never be used in extension plugins, even though publicly accessible. Please duplicate the function if you really need to use it.
 	* Please be aware that all CSS classes will change in a future update, to cover a synonymous namespace for The SEO Framework.
-	* At the moment this plugin is hooking into more than 90 actions and filters. WordPress holds the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, many class variables will be put into cached functions in an upcoming update.
+	* This plugin is hooking into more than 90 actions and filters. WordPress holds the class information when this is done (because of `$this`) and can take up a lot of memory. To resolve this, class variables holding arrays have been put into functions.
 	* There's an upcoming function for the home title. Currently, the blogname and title are unaptly named. This means that the title is the blogname, and the blogname is the title. The current home page title functions are therefore marked private. It will become: "title" - "sep" - "additions", this will be reflected upon throughout the title class.
 
 = Full changelog =

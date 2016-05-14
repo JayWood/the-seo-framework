@@ -241,4 +241,30 @@ class AutoDescription_PostData extends AutoDescription_Detect {
 		return $page_id;
 	}
 
+	/**
+	 * Fetches Post content.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @param int $id.
+	 *
+	 * @return string The post content.
+	 */
+	public function get_post_content( $id = 0 ) {
+
+		if ( empty( $id ) ) {
+			global $wp_query;
+
+			if ( isset( $wp_query->post->post_content ) )
+				return $wp_query->post->post_content;
+		} else {
+			$content = get_post_field( 'post_content', $id );
+
+			if ( is_string( $content ) )
+				return $content;
+		}
+
+		return '';
+	}
+
 }

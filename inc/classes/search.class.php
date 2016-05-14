@@ -33,8 +33,45 @@ class AutoDescription_Search extends AutoDescription_Generate_Author {
 	public function __construct() {
 		parent::__construct();
 
-		//* @TODO Add to network settings.
 		add_action( 'pre_get_posts', array( $this, 'search_filter' ), 999, 1 );
+	}
+
+	/**
+	 * Fetches posts with exclude_local_search option on
+	 *
+	 * @param array $query				The search query
+	 *
+	 * @uses $this->exclude_search_ids()
+	 *
+	 * @since 2.1.7
+	 *
+	 * @todo run this only when one post triggers this option?
+	 * @todo priority low 2.7.0+
+	 */
+	public function search_filter( $query ) {
+
+		// Don't exclude pages in wp-admin
+		if ( $query->is_search && false === $this->is_admin() ) {
+
+			/**
+			 * @param array $protected_posts : Posts array with excluded key
+			 */
+			$protected_posts = $this->exclude_search_ids();
+			if ( $protected_posts ) {
+				$get = $query->get( 'post__not_in' );
+
+				//* Merge user defined query.
+				if ( $get )
+					$protected_posts = array_merge( $protected_posts, $get );
+
+				$query->set( 'post__not_in', $protected_posts );
+			}
+
+			// Parse all ID's, even beyond the first page.
+			$query->set( 'no_found_rows', false );
+
+		}
+
 	}
 
 	/**
@@ -47,6 +84,8 @@ class AutoDescription_Search extends AutoDescription_Generate_Author {
 	 * @global int $blog_id
 	 *
 	 * @since 2.1.7
+	 *
+	 * @return array Excluded Post IDs
 	 */
 	public function exclude_search_ids() {
 		global $blog_id;
@@ -75,43 +114,6 @@ class AutoDescription_Search extends AutoDescription_Generate_Author {
 
 		// return an array of exclude post IDs
 		return $post_ids;
-	}
-
-	/**
-	 * Fetches posts with exclude_local_search option on
-	 *
-	 * @param array $query				The search query
-	 * @param array $protected_posts	Posts array with excluded key
-	 *
-	 * @uses $this->exclude_search_ids()
-	 *
-	 * @since 2.1.7
-	 *
-	 * @todo run this only when one post triggers this option?
-	 * @todo priority low 2.7.0+
-	 */
-	public function search_filter( $query ) {
-
-		// Don't exclude pages in wp-admin
-		if ( false === $this->is_admin() ) {
-			if ( $query->is_search ) {
-
-				$protected_posts = $this->exclude_search_ids();
-				if ( $protected_posts ) {
-					$get = $query->get( 'post__not_in' );
-
-					//* Merge user defined query.
-					if ( $get )
-						$protected_posts = array_merge( $protected_posts, $get );
-
-					$query->set( 'post__not_in', $protected_posts );
-				}
-
-				// Parse all ID's, even beyond the first page.
-				$query->set( 'no_found_rows', false );
-			}
-		}
-
 	}
 
 }

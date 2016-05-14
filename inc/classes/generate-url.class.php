@@ -729,7 +729,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 	 *
 	 * @param string $url Absolute url that includes a scheme.
 	 * @param string $scheme optional. Scheme to give $url. Currently 'http', 'https', 'login', 'login_post', 'admin', or 'relative'.
-	 * @param bool $use_filter
+	 * @param bool $use_filter Whether to parse filters.
 	 *
 	 * @since 2.4.2
 	 * @return string url with chosen scheme.
@@ -803,7 +803,7 @@ class AutoDescription_Generate_Url extends AutoDescription_Generate_Title {
 		 */
 
 		if ( isset( $scheme_settings ) ) {
-			if ( 'https' ===  $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {
+			if ( 'https' === $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {
 				$url = $this->set_url_scheme( $url, $scheme_settings, false );
 			} else if ( ! $scheme_settings ) {
 				$url = $this->set_url_scheme( $url, 'http', false );

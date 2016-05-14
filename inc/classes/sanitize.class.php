@@ -466,12 +466,12 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	 *
 	 * @since 2.2.2
 	 *
-	 * @param mixed $new_value Should be identical to any of the $this->title_separator values
+	 * @param mixed $new_value Should be identical to any of the $this->get_separator_list() values
 	 * @return string Title separator option
 	 */
 	protected function s_title_separator( $new_value ) {
 
-		$title_separator = $this->title_separator;
+		$title_separator = $this->get_separator_list();
 
 		$key = array_key_exists( $new_value, $title_separator );
 
@@ -498,7 +498,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	protected function s_description_separator( $new_value ) {
 
 		//* Use the same as title_separator
-		$description_separator = $this->title_separator;
+		$description_separator = $this->get_separator_list();
 
 		$key = array_key_exists( $new_value, $description_separator );
 
@@ -845,7 +845,7 @@ class AutoDescription_Sanitize extends AutoDescription_Adminpages {
 	protected function s_twitter_card( $new_value ) {
 
 		//* Fetch Twitter card array.
-		$card = $this->twitter_card;
+		$card = $this->get_twitter_card_types();
 
 		$key = array_key_exists( $new_value, $card );
 

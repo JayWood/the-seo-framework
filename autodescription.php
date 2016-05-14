@@ -37,18 +37,13 @@
 	//}
 //}},0);
 
-// Regex finding possible static initiators: ([$])([a-z_A-Z])([^=].*(null;))
-// Regex finding possible static initiators: ([$])([a-z_A-Z])([^=].*(array\(\);))
-// Regex finding static initiators: (static [$])([a-z_A-Z])([^=].*(null;))
-// Regex finding static initiators: (static [$])([a-z_A-Z])([^=].*(array\(\);))
-
 /**
  * CDN Cache buster. 3 to 4 point.
  * Not many caching plugins use CDN in dashboard. What a shame. Firefox does cache.
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA2' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '2.6.0-BETA4' );
 
 /**
  * Plugin options filter
@@ -72,7 +67,7 @@ define( 'THE_SEO_FRAMEWORK_NETWORK_OPTIONS', (string) apply_filters( 'the_seo_fr
  * The plugin map url.
  * Used for calling browser files.
  *
- * @since 1.0.0
+ * @since 2.2.2
  */
 define( 'THE_SEO_FRAMEWORK_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -80,7 +75,7 @@ define( 'THE_SEO_FRAMEWORK_DIR_URL', plugin_dir_url( __FILE__ ) );
  * The plugin map absolute path.
  * Used for calling php files.
  *
- * @since 1.0.0
+ * @since 2.2.2
  */
 define( 'THE_SEO_FRAMEWORK_DIR_PATH', plugin_dir_path( __FILE__ ) );
 

@@ -26,15 +26,6 @@
 class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 
 	/**
-	 * Filterable Site Settings array.
-	 *
-	 * @since 2.2.2
-	 *
-	 * @var array Holds Site SEO options.
-	 */
-	protected $default_site_options = array();
-
-	/**
 	 * Site Settings field.
 	 *
 	 * @since 2.2.2
@@ -71,9 +62,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		$this->o_plugin_updated = 'updated_' . str_replace( '.', '', THE_SEO_FRAMEWORK_VERSION );
 		$this->page_id = 'autodescription-settings';
 
-		//* Register defaults early.
-		add_action( 'after_setup_theme', array( $this, 'initialize_defaults' ), 0 );
-
 		//* Set up site settings and save/reset them
 		add_action( 'admin_init', array( $this, 'register_settings' ), 5 );
 
@@ -88,7 +76,16 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 *
 	 * @since 2.5.0
 	 */
-	public function initialize_defaults() {
+	public function initialize_defaults() {}
+
+	/**
+	 * Holds default site options.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return array Default site options.
+	 */
+	public function get_default_site_options() {
 
 		/**
 		 * Switch when RTL is active;
@@ -112,7 +109,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		 * No longer directly applies filters
 		 * @since 2.2.7
 		 */
-		$this->default_site_options = array(
+		return array(
 			// Title.
 			'title_seperator'		=> 'pipe',		// Title separator (note: TYPO), dropdown
 			'title_location'		=> $titleloc,	// Title separation location
@@ -254,7 +251,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 			// Cache.
 			$this->o_plugin_updated => 1,	// Plugin update cache.
 		);
-
 	}
 
 	/**
@@ -264,7 +260,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 *
 	 * @return array $options.
 	 */
-	public function pre_warned_site_options() {
+	public function get_warned_site_options() {
 		/**
 		 * Warned site settings. Only accepts checkbox options.
 		 * When listed as 1, it's a feature which can destroy your website's SEO value when checked.
@@ -380,10 +376,6 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	 */
 	public function site_updated_plugin_option() {
 
-		//* If current user isn't allowed to update options, don't do anything.
-		if ( ! current_user_can( $this->settings_capability() ) )
-			return;
-
 		$plugin_updated = $this->o_plugin_updated;
 
 		/**
@@ -391,6 +383,10 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 		 * Also prevent running if no settings field is found.
 		 */
 		if ( $this->get_option( $plugin_updated ) || empty( $this->settings_field ) )
+			return;
+
+		//* If current user isn't allowed to update options, don't do anything.
+		if ( ! current_user_can( $this->settings_capability() ) )
 			return;
 
 		/**
@@ -603,24 +599,24 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 	}
 
 	/**
-	 * Return the compiled default options array.
+	 * Return the parsed default options array.
 	 *
 	 * @since 2.2.7
 	 *
-	 * Applies filters the_seo_framework_default_site_options The default site options array.
+	 * Applies filters the_seo_framework_default_site_options : The default site options array.
 	 *
 	 * @param array $args Additional default options to filter.
 	 *
 	 * @return array The SEO Framework Options
 	 */
 	protected function default_site_options( $args = array() ) {
-		return $this->default_site_options = wp_parse_args(
+		return wp_parse_args(
 			$args,
 			apply_filters(
 				'the_seo_framework_default_site_options',
 				wp_parse_args(
 					$args,
-					$this->default_site_options
+					$this->get_default_site_options()
 				)
 			)
 		);
@@ -644,7 +640,7 @@ class AutoDescription_Siteoptions extends AutoDescription_Sanitize {
 				'the_seo_framework_warned_site_options',
 				wp_parse_args(
 					$args,
-					$this->pre_warned_site_options()
+					$this->get_warned_site_options()
 				)
 			)
 		);

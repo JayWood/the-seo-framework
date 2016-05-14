@@ -23,38 +23,24 @@
  *
  * @since 2.2.2
  */
-class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
+class AutoDescription_Metaboxes extends AutoDescription_Siteoptions {
 
 	/**
-	 * List of Title Separators
-	 *
-	 * @since 2.2.2
-	 *
-	 * @var array Title Separator list
-	 *
-	 * @fixed Typo (seperator -> separator)
-	 * @since 2.3.4
-	 */
-	protected $title_separator = array();
-
-	/**
-	 * List of Twitter Card types
-	 *
-	 * @since 2.2.2
-	 *
-	 * @var array Twitter Card types
-	 */
-	protected $twitter_card = array();
-
-	/**
-	 * Constructor, load parent constructor
-	 *
-	 * Cache various variables.
+	 * Constructor, load parent constructor.
 	 */
 	public function __construct() {
 		parent::__construct();
+	}
 
-		$this->title_separator = array(
+	/**
+	 * List of title separators.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return array Title separators.
+	 */
+	public function get_separator_list() {
+		return array(
 			'pipe'		=> '|',
 			'dash'		=> '-',
 			'ndash'		=> '&ndash;',
@@ -71,13 +57,21 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 			'lt'		=> '&lt;',
 			'gt'		=> '&gt;',
 		);
+	}
 
-		$this->twitter_card = array(
+	/**
+	 * Returns array of Twitter Card Types
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return array Twitter Card types.
+	 */
+	public function get_twitter_card_types() {
+		return array(
 			'summary' 				=> 'summary',
 			'summary_large_image'	=> 'summary-large-image',
 			'photo' 				=> 'photo',
 		);
-
 	}
 
 	/**
@@ -312,7 +306,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	 */
 	public function title_metabox_general_tab() {
 
-		$title_separator = $this->title_separator;
+		$title_separator = $this->get_separator_list();
 
 		$recommended = ' class="recommended" title="' . esc_attr__( 'Recommended', 'autodescription' ) . '"';
 
@@ -585,7 +579,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 	public function description_metabox_general_tab() {
 
 		//* Let's use the same separators as for the title.
-		$description_separator = $this->title_separator;
+		$description_separator = $this->get_separator_list();
 		$sep_option = $this->get_option( 'description_separator' );
 		$sep_option = $sep_option ? $sep_option : 'pipe';
 
@@ -1507,7 +1501,7 @@ class AutoDescription_Metaboxes extends AutoDescription_Networkoptions {
 		$tw_creator = $this->get_field_value( 'twitter_creator' );
 		$tw_creator_placeholder = empty( $tw_creator ) ? _x( '@your-personal-username', 'Twitter @username', 'autodescription' ) : '';
 
-		$twitter_card = $this->twitter_card;
+		$twitter_card = $this->get_twitter_card_types();
 
 		?>
 		<h4><?php _e( 'Default Twitter Integration Settings', 'autodescription' ); ?></h4>

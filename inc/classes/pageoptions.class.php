@@ -76,19 +76,17 @@ class AutoDescription_PageOptions extends AutoDescription_DoingItRight {
 
 		foreach ( (array) $data as $key => $value ) {
 			//* Sanitize the title
-			if ( '_genesis_title' === $key ) {
+			if ( '_genesis_title' === $key )
 				$data[$key] = trim( strip_tags( $value ) );
-			}
 
 			//* Sanitize the description
-			if ( '_genesis_description' === $key ) {
+			if ( '_genesis_description' === $key )
 				$data[$key] = $this->s_description( $value );
-			}
 
 			//* Sanitize the URL. Make sure it's an absolute URL
-			if ( 'redirect' === $key ) {
+			if ( 'redirect' === $key )
 				$data[$key] = $this->s_redirect_url( $value );
-			}
+
 		}
 
 		$this->save_custom_fields( $data, 'inpost_seo_save', 'hmpl_ad_inpost_seo_nonce', $post );

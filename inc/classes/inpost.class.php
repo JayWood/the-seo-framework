@@ -23,7 +23,7 @@
  *
  * @since 2.2.2
  */
-class AutoDescription_Inpost extends AutoDescription_AuthorOptions {
+class AutoDescription_Inpost extends AutoDescription_PageOptions {
 
 	/**
 	 * Add inpost SEO Bar through a filter.
